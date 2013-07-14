@@ -35,6 +35,7 @@ public interface Graph<T> {
 	 * is not an edge of the graph.
 	 */
 	public double getWeight(T a, T b);
+
 	
 	/**
 	 * Gets the neighbours of a given vertex.
@@ -50,4 +51,64 @@ public interface Graph<T> {
 	 * @return an iterator for the verices of the graph.
 	 */
 	Iterator<T> vertexIterator();
+	
+	/**
+	 * Small class to represent an edge.
+	 *
+	 * @param <T> The vertex type.
+	 */
+	public static final class Edge<T>
+	{
+		public Edge(T from, T to, double weight)
+		{
+			this.from = from;
+			this.to = to;
+			this.weight = weight;
+		}
+		
+		public final T from;
+		public final T to;
+		public final double weight;
+		
+		public boolean equals(Object o)
+		{
+			if (!(o instanceof Edge))
+			{
+				return false;
+			}
+			else
+			{
+				@SuppressWarnings("unchecked")
+				Edge<T> oe = ((Edge<T>) o);
+				return oe.from.equals(this.from) && oe.to.equals(this.to);
+			}
+		}
+		
+		public int hashCode()
+		{
+			return from.hashCode() ^ to.hashCode() ^ 31;
+		}
+	}
+	
+	/**
+	 * Gets an iterator over all of the edges of the graph.
+	 * 
+	 * @return an iterator over all of the edges of the graph.
+	 */
+	public Iterator<Edge<T>> edgeIterator();
+	
+	
+	/**
+	 * Gets all the vertices of the graph.
+	 * 
+	 * @return  The set of all vertices.  The returned set is not guaranteed to be mutable.
+	 */
+	Set<T> getVertices();
+	
+	/**
+	 * Gets all the edges of the graph.
+	 * 
+	 * @return  The set of all edges.  The returned set is not guaranteed to be mutable.
+	 */
+	Set<Edge<T>> getEdges();
 }
