@@ -56,7 +56,7 @@ public class TestAdjacencyListGraph {
 		assertFalse(g.isVertex(v3));
 		assertTrue(g.isVertex(v4));
 		
-		// Check that the neigbours sets come out OK.
+		// Check that the neighbours sets come out OK.
 		assertTrue(g.getNeighbours(v1).contains(v4));
 		assertTrue(g.getNeighbours(v1).contains(v5));
 		assertTrue(g.getNeighbours(v1).size() == 2);

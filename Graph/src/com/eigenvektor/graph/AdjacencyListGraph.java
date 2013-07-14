@@ -47,14 +47,14 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	public double getWeight(T a, T b) {
 		if (!this.adjacencyLists.containsKey(a))
 		{
-			return 0.0;
+			return Double.POSITIVE_INFINITY;
 		}
 		else
 		{
 			Map<T, Double> neighbours = this.adjacencyLists.get(a);
 			if (!neighbours.containsKey(b))
 			{
-				return 0.0;
+				return Double.POSITIVE_INFINITY;
 			}
 			else
 			{
