@@ -27,6 +27,7 @@ class DepthFirstIterator<T> implements Iterator<T>
 		if (s.isEmpty()) { throw new NoSuchElementException("Out of elements"); }
 		
 		Tree<T> next = this.s.get(0);
+		this.s.remove(0);
 		int idx = 0;
 		for (Tree<T> subTree : next.getSubTrees())
 		{

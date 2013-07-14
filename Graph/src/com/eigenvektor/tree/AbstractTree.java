@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Queue;
 
 /**
- * An abstract implemention of Tree that provides a semantic equals() and hashCode().
+ * An abstract implemention of Tree that provides a semantic equals() and hashCode().  Also iterators and toString().
  *
  * @param <T>
  */
@@ -77,6 +77,26 @@ public abstract class AbstractTree<T> implements Tree<T> {
 	public Iterator<T> getBreadthFirstIterator() {
 		Queue<Tree<T>> q = new ArrayDeque<Tree<T>>();
 		return new BreadthFirstIterator<T>(this, q);
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuffer buf = new StringBuffer();
+		buf.append(getRoot());
+		buf.append(":<");
+		Collection<Tree<T>> subTrees = getSubTrees();
+		for (Tree<T> subTree : subTrees)
+		{
+			double w = getSubTreeWeight(subTree);
+			buf.append("[");
+			buf.append(w);
+			buf.append("]");
+			buf.append(subTree);
+			buf.append(" ");
+		}
+		buf.append(">");
+		return buf.toString();
 	}
 
 }
