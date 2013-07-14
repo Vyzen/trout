@@ -48,7 +48,7 @@ public interface Graph<T> {
 	/**
 	 * Gets an iterator for the vertices of the graph.
 	 * 
-	 * @return an iterator for the verices of the graph.
+	 * @return an iterator for the vertices of the graph.
 	 */
 	Iterator<T> vertexIterator();
 	
@@ -87,6 +87,20 @@ public interface Graph<T> {
 		public int hashCode()
 		{
 			return from.hashCode() ^ to.hashCode() ^ 31;
+		}
+		
+		@Override
+		public String toString()
+		{
+			StringBuffer buf = new StringBuffer();
+			buf.append("(");
+			buf.append(from);
+			buf.append(", ");
+			buf.append(to);
+			buf.append(")[");
+			buf.append(weight);
+			buf.append("]");
+			return buf.toString();
 		}
 	}
 	
