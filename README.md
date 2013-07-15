@@ -1,8 +1,8 @@
-trout
-=====
+Trout
+-----
 
-Code that doesn't belong anywhere else.
+A small library of code for my own personal funsies.
 
-Gratuitous change to readme file to verify that I have git set up correctly.
-
-Even more gratuitous change to readme file to verify that I can pull to local correctly.
+Currently consists of two java trees:
+com.eigenvektor.graph -- A package for representing directed, weighted graphs.
+com.eignevketor.tree -- A package for representing weighted n-ary trees.
