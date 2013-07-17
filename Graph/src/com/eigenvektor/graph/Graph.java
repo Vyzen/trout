@@ -78,8 +78,7 @@ public interface Graph<T> {
 			}
 			else
 			{
-				@SuppressWarnings("unchecked")
-				Edge<T> oe = ((Edge<T>) o);
+				Edge<?> oe = ((Edge<?>) o);
 				return oe.from.equals(this.from) && oe.to.equals(this.to);
 			}
 		}
