@@ -26,19 +26,15 @@ public class TestDefaultTree {
 	@Before
 	public void setUp() throws Exception {
 		t = new DefaultTree<String>(v1);
+		t.addNode(v5, v1, 5);
+		t.addNode(v6, v5, 66);
+		t.addNode(v7, v5, 77);
 
-		DefaultTree<String> sub1 = new DefaultTree<String>(v5);
-		sub1.addSubTree(new DefaultTree<String>(v6), 66);
-		sub1.addSubTree(new DefaultTree<String>(v7), 77);
+		t.addNode(v2, v1, 2);
+		t.addNode(v3, v2, 33);
+		t.addNode(v4, v3, 333);
 
-		DefaultTree<String> sub2 = new DefaultTree<String>(v2);
-		DefaultTree<String> sub3 = new DefaultTree<String>(v3);
-		sub3.addSubTree(new DefaultTree<String>(v4), 444);
-		sub2.addSubTree(sub3, 33);
-
-		t.addSubTree(sub1, 5);
-		t.addSubTree(sub2, 2);
-		t.addSubTree(new DefaultTree<String>(v8), 8);
+		t.addNode(v8, v1, 8);
 	}
 
 	@After
@@ -49,7 +45,7 @@ public class TestDefaultTree {
 	@Test
 	public void testConstruction() {
 		assertTrue(t.getRoot().equals(v1));
-		assertTrue(t.getSubTrees().size() == 3);
+		assertTrue(t.getChildren(t.getRoot()).size() == 3);
 	}
 
 	@Test

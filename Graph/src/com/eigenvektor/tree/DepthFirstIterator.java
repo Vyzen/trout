@@ -9,12 +9,12 @@ class DepthFirstIterator<T> implements Iterator<T>
 {
 
 	private final Tree<T> tree;
-	List<Tree<T>> s = new LinkedList<Tree<T>>();
+	List<T> s = new LinkedList<T>();
 	
 	DepthFirstIterator(final Tree<T> tree)
 	{
 		this.tree = tree;
-		s.add(0, this.tree);
+		s.add(0, tree.getRoot());
 	}
 	
 	@Override
@@ -26,17 +26,17 @@ class DepthFirstIterator<T> implements Iterator<T>
 	public T next() {
 		if (s.isEmpty()) { throw new NoSuchElementException("Out of elements"); }
 		
-		Tree<T> next = this.s.get(0);
+		T next = this.s.get(0);
 		this.s.remove(0);
 		int idx = 0;
-		for (Tree<T> subTree : next.getSubTrees())
+		for (T x : tree.getChildren(next))
 		{
-			this.s.add(idx, subTree);
+			this.s.add(idx, x);
 			idx++;  // this is to ensure subtrees go into the stack in order, if the tree
 					// provides ordered subtrees.
 		}
 		
-		return next.getRoot();
+		return next;
 	}
 
 	@Override

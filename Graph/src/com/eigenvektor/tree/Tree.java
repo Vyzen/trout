@@ -20,33 +20,45 @@ public interface Tree<T> {
 	T getRoot();
 	
 	/**
-	 * Gets the number of subtrees.
+	 * Tells if an object is a node of this tree.
 	 * 
-	 * @return the number of subtrees.
+	 * @param x The object to consider.
+	 * @return true iff <i>x</i> is in the tree.
 	 */
-	int getNumSubTrees();
+	public boolean isNode(final T x);
 	
 	/**
-	 * Gets the subtrees of the tree.
+	 * Gets the weight of a node.
 	 * 
-	 * @return A collection of subtrees of the tree.  If subtree order is semantically important to this
-	 * tree, the collection returned should be ordered, otherwise it need not be.  The returned collection
-	 * is not guaranteed to be mutable.
+	 * @param x The node to consider.
+	 * @return The weight of <i>x</i>.
 	 */
-	Collection<Tree<T>> getSubTrees();
+	public double getWeight(final T x);
 	
 	/**
-	 * Gets the weight of the edge from the root to the subtree given.
+	 * Gets the parent of a node.
 	 * 
-	 * @return The weight of said edge.
+	 * @param x The node to consider.
+	 * @return The parent of <i>x</i>, or <i>null</i> if <i>x</i> is the root.
 	 */
-	double getSubTreeWeight(final Tree<T> t);
+	public T getParent(final T x);
+	
+	/**
+	 * Gets the children of a node.
+	 * 
+	 * @param x
+	 * @return The children of <i>x</i>.  If the children's order is important to the 
+	 * implementation, returns an ordered collection.  Return value is not necessarily
+	 * mutable.
+	 */
+	Collection<T> getChildren(final T x);
+
 	
 	/**
 	 * Gets an iterator that traverses the tree depth first.  If the children of nodes are ordered, their
 	 * subtrees are traversed in order.
 	 * 
-	 * @return An iterator that does that iteration.
+	 * @return An iterator that does that iteration in depth first order.
 	 */
 	Iterator<T> getDepthFirstIterator();
 	
@@ -54,7 +66,7 @@ public interface Tree<T> {
 	 * Gets an iterator that traverses the tree breadth first.  If the children of nodes are ordered, they
 	 * are traversed in order.
 	 * 
-	 * @return An iterator that does that iteration.
+	 * @return An iterator that does that iteration in breadth first order.
 	 */
 	Iterator<T> getBreadthFirstIterator();
 }

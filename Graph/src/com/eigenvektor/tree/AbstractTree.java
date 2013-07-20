@@ -18,7 +18,7 @@ public abstract class AbstractTree<T> implements Tree<T> {
 	 * matters to the implementation, this is reflected in the runtime type of the return value
 	 * of getSubTrees(), and reflected here as well.
 	 */
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		if (o == this)
 		{
@@ -32,15 +32,40 @@ public abstract class AbstractTree<T> implements Tree<T> {
 		
 		@SuppressWarnings("unchecked")
 		Tree<T> t = (Tree<T>) o;
-		Collection<Tree<T>> subTrees = getSubTrees();
-		if (!subTrees.equals(t.getSubTrees()))
+		return t.getRoot().equals(this.getRoot()) && equals(t, t.getRoot());
+	}
+	
+	/**
+	 * Tells if another tree is equal to <code>this</code> in its subtree of a given node.
+	 * 
+	 * @param other the second tree.
+	 * @param node  The node to compare under.
+	 * @return true iff the subtrees of node in other and this are the same.
+	 */
+	private boolean equals(final Tree<T> other, final T node)
+	{
+		if (!this.isNode(node)) 
 		{
 			return false;
 		}
 		
-		for (Tree<T> curTree : subTrees)
+		// Check that the weight of the node is correct.
+		if (this.getWeight(node) != other.getWeight(node))
 		{
-			if (this.getSubTreeWeight(curTree) != t.getSubTreeWeight(curTree)) { return false; }
+			return false;
+		}
+		
+		// Check that the children of the node are the same.
+		Collection<T> kids = this.getChildren(node);
+		if (!this.getChildren(node).equals(other.getChildren(node)))
+		{
+			return false;
+		}
+		
+		// Finally check that all of the child trees are the same.
+		for (T x : kids)
+		{
+			if (!equals(other, x)) { return false; }
 		}
 		
 		return true;
@@ -52,17 +77,26 @@ public abstract class AbstractTree<T> implements Tree<T> {
 	@Override
 	public int hashCode()
 	{
-		int hash = getRoot().hashCode();
+		return hashCode(getRoot());
+	}
+	
+	/**
+	 * Gets the hash code for the subtree below a given node.
+	 * 
+	 * @param node The node to get the hash code below.
+	 * @return The hash code for the subtree rooted at node.
+	 */
+	private int hashCode(final T node)
+	{
+		// Incorporate the current node.
+		int hash = node.hashCode();
+		Double w = getWeight(node);
+		hash ^= w.hashCode();
 		
-		// Fold in the subtrees.
-		Collection<Tree<T>> subTrees = getSubTrees();
-		hash ^= subTrees.hashCode();
-		
-		// Fold in the weights.
-		for (final Tree<T> t : subTrees)
+		// Incorporate the subtrees.
+		for (T x : getChildren(node))
 		{
-			Double w = getSubTreeWeight(t);
-			hash ^= w.hashCode();
+			hash ^= hashCode(x);
 		}
 		
 		return hash;
@@ -75,7 +109,7 @@ public abstract class AbstractTree<T> implements Tree<T> {
 
 	@Override
 	public Iterator<T> getBreadthFirstIterator() {
-		Queue<Tree<T>> q = new ArrayDeque<Tree<T>>();
+		Queue<T> q = new ArrayDeque<T>();
 		return new BreadthFirstIterator<T>(this, q);
 	}
 	
@@ -83,20 +117,30 @@ public abstract class AbstractTree<T> implements Tree<T> {
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
-		buf.append(getRoot());
+		toString(getRoot(), buf);
+		return buf.toString();
+	}
+	
+	/**
+	 * Writes out a string for  this tree below a subtree.
+	 * 
+	 * @param node The node to consider.
+	 * @param buf A buffer to write into.
+	 */
+	private void toString(final T node, final StringBuffer buf)
+	{
+		buf.append(node);
 		buf.append(":<");
-		Collection<Tree<T>> subTrees = getSubTrees();
-		for (Tree<T> subTree : subTrees)
+		for (T x : getChildren(node))
 		{
-			double w = getSubTreeWeight(subTree);
+			double w = getWeight(x);
 			buf.append("[");
 			buf.append(w);
 			buf.append("]");
-			buf.append(subTree);
+			toString(x, buf);
 			buf.append(" ");
 		}
 		buf.append(">");
-		return buf.toString();
 	}
 
 }
