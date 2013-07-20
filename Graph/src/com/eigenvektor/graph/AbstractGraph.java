@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * An abstract implementation of Graph which provides working toString(), hashCode(), equals(), and edgeIterator()
- * defined in terms of the other methods.
+ * An abstract implementation of Graph which provides working toString(), hashCode(), equals(), edgeIterator(),
+ * and getEdgesFrom defined in terms of the other methods.
  * 
  * @param <T> The type of vertex.
  */
@@ -99,5 +99,37 @@ public abstract class AbstractGraph<T> implements Graph<T> {
 	public Iterator<Edge<T>> edgeIterator()
 	{
 		return new GraphEdgeIterator<T>(this);
+	}
+
+	@Override
+	public Set<Edge<T>> getEdgesFrom(final T x)
+	{
+		Set<Edge<T>> ret = new HashSet<Edge<T>>();
+		
+		// Get the neighbours.
+		Set<T> neighbours = this.getNeighbours(x);
+		for (T y : neighbours)
+		{
+			double w = this.getWeight(x, y);
+			ret.add(new Edge<T>(x,y,w));
+		}
+		
+		return Collections.unmodifiableSet(ret);
+	}
+	
+	@Override
+	public Set<Edge<T>> getEdgesTo(final T x)
+	{
+		Set<Edge<T>> ret = new HashSet<Edge<T>>();
+		
+		// Get the neighbours.
+		Set<T> neighbours = this.getPreNeighbours(x);
+		for (T y : neighbours)
+		{
+			double w = this.getWeight(y, x);
+			ret.add(new Edge<T>(y,x,w));
+		}
+		
+		return Collections.unmodifiableSet(ret);
 	}
 }

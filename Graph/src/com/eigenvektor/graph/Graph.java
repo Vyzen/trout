@@ -36,7 +36,6 @@ public interface Graph<T> {
 	 */
 	public double getWeight(final T a, final T b);
 
-	
 	/**
 	 * Gets the neighbours of a given vertex.
 	 * 
@@ -44,6 +43,22 @@ public interface Graph<T> {
 	 * @return The set of neighbours of x.  The returned set is not guaranteed to be mutable.
 	 */
 	Set<T> getNeighbours(final T x);
+	
+	/**
+	 * Gets the edges from a given vertex.
+	 * 
+	 * @param x The vertex to consider.
+	 * @return The set of edges from x.  The returned set is not guaranteed to be mutable.
+	 */
+	Set<Edge<T>> getEdgesFrom(final T x);
+	
+	/**
+	 * Gets the edges to a given vertex.
+	 * 
+	 * @param x The vertex to consider.
+	 * @return The set of edges to x.  The returned set is not guaranteed to be mutable.
+	 */
+	Set<Edge<T>> getEdgesTo(final T x);
 	
 	/**
 	 * Gets the set of points for which x is a neighbour.
