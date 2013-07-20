@@ -36,7 +36,7 @@ public abstract class AbstractGraph<T> implements Graph<T> {
 	/**
 	 * Semantic equality for Graphs.
 	 */
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		if (o == this)
 		{

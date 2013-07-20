@@ -15,7 +15,7 @@ public interface Graph<T> {
 	 * @param x The element to test.
 	 * @return <i>true</i> iff <i>x</i> is in the graph.
 	 */
-	public boolean isVertex(T x);
+	public boolean isVertex(final T x);
 	
 	/**
 	 * Tells if there is a directed edge between two vertices in the graph.
@@ -24,7 +24,7 @@ public interface Graph<T> {
 	 * @param b The second vertex.
 	 * @return <i>true</i> iff <i>(a, b)</i> is a directed edge of the graph.
 	 */
-	public boolean isEdge(T a, T b);
+	public boolean isEdge(final T a, final T b);
 	
 	/**
 	 * Gets the weight of a directed edge of the graph.
@@ -34,7 +34,7 @@ public interface Graph<T> {
 	 * @return The weight of the edge <i>(a, b)</i>.  Returns infinite if <i>(a, b)</i> 
 	 * is not an edge of the graph.
 	 */
-	public double getWeight(T a, T b);
+	public double getWeight(final T a, final T b);
 
 	
 	/**
@@ -43,7 +43,15 @@ public interface Graph<T> {
 	 * @param x The vertex to consider.
 	 * @return The set of neighbours of x.  The returned set is not guaranteed to be mutable.
 	 */
-	Set<T> getNeighbours(T x);
+	Set<T> getNeighbours(final T x);
+	
+	/**
+	 * Gets the set of points for which x is a neighbour.
+	 * 
+	 * @param x The vertex to consider.
+	 * @return The points for which x is a neighbour.  The returned set is not guaranteed to be mutable.
+	 */
+	Set<T> getPreNeighbours(final T x);
 	
 	/**
 	 * Gets an iterator for the vertices of the graph.

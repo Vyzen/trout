@@ -17,6 +17,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	// The edge set.  First key is the "from" edge, second is the "to" edge, 
 	// value is the edge weight.
 	private Map<T, Map<T, Double>> adjacencyLists = new HashMap<T, Map<T, Double>>();
+	private Map<T, Map<T, Double>> preAdjacenyLists = new HashMap<T, Map<T, Double>>();
 	
 	/**
 	 * Creates a new AdjacenyListGraph with no vertices or edges.
@@ -26,12 +27,12 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	}
 
 	@Override
-	public boolean isVertex(T x) {
+	public boolean isVertex(final T x) {
 		return this.adjacencyLists.containsKey(x);
 	}
 
 	@Override
-	public boolean isEdge(T a, T b) {
+	public boolean isEdge(final T a, final T b) {
 		// If a is not a vertex, clearly (a, b) is not an edge.
 		if (!this.adjacencyLists.containsKey(a))
 		{	
@@ -44,7 +45,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	}
 
 	@Override
-	public double getWeight(T a, T b) {
+	public double getWeight(final T a, final T b) {
 		if (!this.adjacencyLists.containsKey(a))
 		{
 			return Double.POSITIVE_INFINITY;
@@ -70,7 +71,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	}
 
 	@Override
-	public Set<T> getNeighbours(T x) {
+	public Set<T> getNeighbours(final T x) {
 		if (!this.adjacencyLists.containsKey(x))
 		{
 			return Collections.emptySet();
@@ -78,6 +79,18 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 		else
 		{
 			return Collections.unmodifiableSet(this.adjacencyLists.get(x).keySet()); 
+		}
+	}
+	
+	@Override
+	public Set<T> getPreNeighbours(final T x) {
+		if (!this.preAdjacenyLists.containsKey(x))
+		{
+			return Collections.emptySet();
+		}
+		else
+		{
+			return Collections.unmodifiableSet(this.preAdjacenyLists.get(x).keySet());
 		}
 	}
 
@@ -93,11 +106,15 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 		
 		Map<T, Double> adj = new HashMap<T, Double>();
 		this.adjacencyLists.put(x, adj);
+		
+		Map<T, Double> preAdj = new HashMap<T, Double>();
+		this.preAdjacenyLists.put(x, preAdj);
 	}
 
 	@Override
 	public void removeVertex(T x) {
 		this.adjacencyLists.remove(x);
+		this.preAdjacenyLists.remove(x);
 	}
 
 	@Override
@@ -107,6 +124,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 		addVertex(b);
 		
 		this.adjacencyLists.get(a).put(b, w);
+		this.preAdjacenyLists.get(b).put(a, w);
 	}
 
 	@Override
@@ -115,6 +133,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 		if (!this.adjacencyLists.containsKey(b)) { return; }
 		
 		this.adjacencyLists.get(a).remove(b);
+		this.preAdjacenyLists.get(b).remove(a);
 	}
 
 }
