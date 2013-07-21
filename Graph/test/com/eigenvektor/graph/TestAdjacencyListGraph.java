@@ -12,24 +12,16 @@ import org.junit.Test;
 
 public class TestAdjacencyListGraph {
 	
-	private MutableGraph<String> g;
+	private MutableGraph<String> g = new AdjacencyListGraph<String>();
 	
-	String v1;
-	String v2;
-	String v3;
-	String v4;
-	String v5;
+	final String v1 = "one";
+	final String v2 = "two";
+	final String v3 = "three";
+	final String v4 = "four";
+	final String v5 = "five";
 
 	@Before
 	public void setUp() throws Exception {
-		g = new AdjacencyListGraph<String>();
-		
-		v1 = "one";
-		v2 = "two";
-		v3 = "three";
-		v4 = "four";
-		v5 = "five";
-		
 		g.addVertex(v1);
 		g.addVertex(v2);
 		
