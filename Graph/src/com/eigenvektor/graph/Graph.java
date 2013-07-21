@@ -139,12 +139,26 @@ public interface Graph<T> {
 	 * 
 	 * @return  The set of all vertices.  The returned set is not guaranteed to be mutable.
 	 */
-	Set<T> getVertices();
+	public Set<T> getVertices();
+	
+	/**
+	 * Gets the number of vertices in the graph.
+	 * 
+	 * @return The number of vertices in the graph.
+	 */
+	public int getNumVertices();
 	
 	/**
 	 * Gets all the edges of the graph.
 	 * 
 	 * @return  The set of all edges.  The returned set is not guaranteed to be mutable.
 	 */
-	Set<Edge<T>> getEdges();
+	public Set<Edge<T>> getEdges();
+	
+	/**
+	 * Gets the number of edges in the graph.
+	 * 
+	 * @return The number of edges in the graph.
+	 */
+	public int getNumEdges();
 }

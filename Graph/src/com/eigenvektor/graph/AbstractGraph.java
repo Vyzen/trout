@@ -96,6 +96,17 @@ public abstract class AbstractGraph<T> implements Graph<T> {
 	}
 	
 	@Override
+	public int getNumEdges()
+	{
+		int ret = 0;
+		for (Iterator<T> it = this.vertexIterator() ; it.hasNext() ; )
+		{
+			ret += this.getNeighbours(it.next()).size();
+		}
+		return ret;
+	}
+	
+	@Override
 	public Iterator<Edge<T>> edgeIterator()
 	{
 		return new GraphEdgeIterator<T>(this);

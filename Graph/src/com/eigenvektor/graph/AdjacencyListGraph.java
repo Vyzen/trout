@@ -69,6 +69,12 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	{
 		return Collections.unmodifiableSet(this.adjacencyLists.keySet());
 	}
+	
+	@Override
+	public int getNumVertices()
+	{
+		return this.adjacencyLists.size();
+	}
 
 	@Override
 	public Set<T> getNeighbours(final T x) {
@@ -119,7 +125,7 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 
 	@Override
 	public void addEdge(T a, T b, double w) {
-		// Make sure the verticies are both there.
+		// Make sure the vertices are both there.
 		addVertex(a);
 		addVertex(b);
 		
