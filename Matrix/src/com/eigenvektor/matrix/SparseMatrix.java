@@ -9,11 +9,11 @@ import java.util.HashMap;
 public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 {
 
-	final int nRows;
-	final int nCols;
+	private final int nRows;
+	private final int nCols;
 	
 	// A map from row to column to value for the non-zero values.
-	final Map<Integer, Map<Integer, Double>> values = new HashMap<Integer, Map<Integer, Double>>();
+	private final Map<Integer, Map<Integer, Double>> values = new HashMap<Integer, Map<Integer, Double>>();
 	
 	/**
 	 * Creates a new, empty instance.
