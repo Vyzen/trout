@@ -46,7 +46,7 @@ public abstract class AbstractMatrix implements Matrix
 					}
 				}
 			}
-			ret.append("[");
+			ret.append("]");
 		}
 		
 		return ret.toString();

@@ -39,7 +39,7 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 		// Copy the data.
 		for (int j = 0 ; j < nRows ; j++)
 		{
-			for (int k = 0 ; j < nCols ; k++)
+			for (int k = 0 ; k < nCols ; k++)
 			{
 				data[j*nCols + k] = m.get(j,  k);
 			}
@@ -89,7 +89,7 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 		FullMatrix ret = new FullMatrix(this.getNRows(), m.getNCols());
 		for (int j = 0 ; j < ret.getNRows() ; ++j)
 		{
-			for (int k = 0 ; j < ret.getNCols() ; ++k)
+			for (int k = 0 ; k < ret.getNCols() ; ++k)
 			{
 				double val = 0;
 				for (int i = 0 ; i < commonIndex ; ++i)
