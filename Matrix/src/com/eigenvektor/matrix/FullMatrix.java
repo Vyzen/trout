@@ -75,35 +75,6 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 	}
 
 	@Override
-	public Matrix multiply(Matrix m)
-	{
-		// Check that the matrix is compatible for multiply.
-		if (m.getNRows() != this.getNCols())
-		{
-			throw new IllegalArgumentException("Argument not compatable for matrix multiply.");
-		}
-		
-		final int commonIndex = m.getNRows();
-		
-		// Create an output matrix.
-		FullMatrix ret = new FullMatrix(this.getNRows(), m.getNCols());
-		for (int j = 0 ; j < ret.getNRows() ; ++j)
-		{
-			for (int k = 0 ; k < ret.getNCols() ; ++k)
-			{
-				double val = 0;
-				for (int i = 0 ; i < commonIndex ; ++i)
-				{
-					val += this.get(j, i) * m.get(i, k);
-				}
-				ret.set(j, k, val);
-			}
-		}
-		
-		return ret;
-	}
-
-	@Override
 	public void set(int row, int col, double val)
 	{
 		checkIndices(row, col);

@@ -2,11 +2,42 @@ package com.eigenvektor.matrix;
 
 /**
  * An abstract implementation of the Matrix interface.  Provides
- * <code>equals()</code> and <code>hashCode()</code> and 
- * <code>toString()</code>.
+ * <code>equals()</code>, <code>hashCode()</code>, 
+ * <code>toString()</code>, and a basic implementation
+ * of multiply(Matrix) that uses a Full representation for
+ * a return value.
  */
 public abstract class AbstractMatrix implements Matrix
 {
+	@Override
+	public Matrix multiply(Matrix m)
+	{
+		// Check that the matrix is compatible for multiply.
+		if (m.getNRows() != this.getNCols())
+		{
+			throw new IllegalArgumentException("Argument not compatable for matrix multiply.");
+		}
+		
+		final int commonIndex = m.getNRows();
+		
+		// Create an output matrix.
+		FullMatrix ret = new FullMatrix(this.getNRows(), m.getNCols());
+		for (int j = 0 ; j < ret.getNRows() ; ++j)
+		{
+			for (int k = 0 ; k < ret.getNCols() ; ++k)
+			{
+				double val = 0;
+				for (int i = 0 ; i < commonIndex ; ++i)
+				{
+					val += this.get(j, i) * m.get(i, k);
+				}
+				ret.set(j, k, val);
+			}
+		}
+		
+		return ret;
+	}
+	
 	/**
 	 * Gets a string representation of this.
 	 */
