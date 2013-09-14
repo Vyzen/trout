@@ -109,7 +109,7 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 	}
 
 	@Override
-	public Iterator<Element> getElements()
+	public Iterator<Element> iterator()
 	{
 		return new FullMatrixIterator(this);
 	}

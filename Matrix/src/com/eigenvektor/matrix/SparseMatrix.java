@@ -196,7 +196,7 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 	}
 
 	@Override
-	public Iterator<Element> getElements()
+	public Iterator<Element> iterator()
 	{
 		return new SparseMatrixIterator();
 	}

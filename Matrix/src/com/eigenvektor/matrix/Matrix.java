@@ -1,11 +1,9 @@
 package com.eigenvektor.matrix;
 
-import java.util.Iterator;
-
 /**
  * Specification for an immutable matrix.
  */
-public interface Matrix
+public interface Matrix extends Iterable<Matrix.Element>
 {
 
 	/**
@@ -18,14 +16,6 @@ public interface Matrix
 		public int getCol();
 		public double getValue();
 	};
-	
-	/**
-	 * Get an iterator for the elements of a matrix.
-	 * 
-	 * @return An iterator that iterates through the elements of this matrix.
-	 * For sparse representations, it should not iterate through zero elements.
-	 */
-	Iterator<Element> getElements();
 	
 	/**
 	 * Gets the number of rows.
