@@ -2,6 +2,10 @@ package com.eigenvektor.matrix;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +68,17 @@ public class TestSparseMatrix
 		assertTrue(p1.getNCols() == 3);
 		// s2 and f1 are semantically equal, so their products should be the same.
 		assertTrue(p1.equals(p2));
+	}
+	
+	@Test
+	public void testIterator()
+	{
+		List<Matrix.Element> l = new ArrayList<Matrix.Element>();
+		for (Iterator<Matrix.Element> it = s1.getElements(); it.hasNext() ;)
+		{
+			l.add(it.next());
+		}
+		assertTrue(l.size() == 2);
 	}
 
 }

@@ -1,7 +1,9 @@
 package com.eigenvektor.matrix;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 /**
  * A matrix backed by a sparse representation.
@@ -191,6 +193,98 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 		{
 			throw new IllegalArgumentException("row or col outside of matrix range.");
 		}
+	}
+
+	@Override
+	public Iterator<Element> getElements()
+	{
+		return new SparseMatrixIterator();
+	}
+	
+	/**
+	 * An iterator through just the represented entries of the matrix.
+	 */
+	private class SparseMatrixIterator implements Iterator<Element>
+	{
+		private Iterator<Map.Entry<Integer, Map<Integer, Double>>> rowIter;
+		private Iterator<Map.Entry<Integer, Double>> colIter;
+		
+		private int curRow;
+		private int curCol;
+		private double curValue;
+		
+		private boolean done = false;
+
+		public SparseMatrixIterator()
+		{
+			// Get an iterator through the rows.
+			rowIter = values.entrySet().iterator();
+			
+			// If it's empty, we're done here.
+			if (!rowIter.hasNext()) 
+			{ 
+				done = true;
+				return;
+			}
+			
+			// Set to the first column.
+			Map.Entry<Integer, Map<Integer, Double>> first = rowIter.next();
+			curRow = first.getKey();
+			colIter = first.getValue().entrySet().iterator();
+			
+			// Get the first column.
+			Map.Entry<Integer, Double> firstCol = colIter.next();
+			curCol = firstCol.getKey();
+			curValue = firstCol.getValue();
+		}
+
+		@Override
+		public boolean hasNext()
+		{
+			return !done;
+		}
+
+		@Override
+		public Element next()
+		{
+			if (done) { throw new NoSuchElementException("Iterator is done."); }
+			
+			DefaultMatrixElement ret = new DefaultMatrixElement(curRow, curCol, curValue);
+			
+			if (colIter.hasNext())
+			{
+				// If we're not at the end of a row, advance the column.
+				Map.Entry<Integer, Double> firstCol = colIter.next();
+				curCol = firstCol.getKey();
+				curValue = firstCol.getValue();
+			}
+			else if (rowIter.hasNext())
+			{
+				// If we are at the end of the column, but there are more rows, advance the row...
+				Map.Entry<Integer, Map<Integer, Double>> nextRow = rowIter.next();
+				curRow = nextRow.getKey();
+				colIter = nextRow.getValue().entrySet().iterator();
+				
+				/// ... and then reset the column.
+				Map.Entry<Integer, Double> firstCol = colIter.next();
+				curCol = firstCol.getKey();
+				curValue = firstCol.getValue();
+			}
+			else
+			{
+				// No more columns, no more rows, we're done.
+				done = true;
+			}
+			
+			return ret;
+		}
+
+		@Override
+		public void remove()
+		{
+			throw new UnsupportedOperationException("Remove not supported through this iterator.");
+		}
+		
 	}
 
 }

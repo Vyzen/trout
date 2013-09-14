@@ -2,6 +2,10 @@ package com.eigenvektor.matrix;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,4 +91,14 @@ public class TestFullMatrix
 				m1.get(2, 4) * m3.get(4, 0));
 	}
 
+	@Test
+	public void testIterator()
+	{
+		List<Matrix.Element> l = new ArrayList<Matrix.Element>();
+		for (Iterator<Matrix.Element> it = m1.getElements(); it.hasNext() ;)
+		{
+			l.add(it.next());
+		}
+		assertTrue(l.size() == 15);
+	}
 }

@@ -1,5 +1,7 @@
 package com.eigenvektor.matrix;
 
+import java.util.Iterator;
+
 /**
  * An implementation of a matrix that represents its data as one big array.
  */
@@ -104,6 +106,12 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 		{
 			throw new IllegalArgumentException("row or col outside of matrix range.");
 		}
+	}
+
+	@Override
+	public Iterator<Element> getElements()
+	{
+		return new FullMatrixIterator(this);
 	}
 
 }
