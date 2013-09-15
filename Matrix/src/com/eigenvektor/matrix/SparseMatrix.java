@@ -15,7 +15,7 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 	private final int nCols;
 	
 	// A map from row to column to value for the non-zero values.
-	private final Map<Integer, Map<Integer, Double>> values = new HashMap<Integer, Map<Integer, Double>>();
+	private final Map<Integer, Map<Integer, Double>> values = new HashMap<>();
 	
 	/**
 	 * Creates a new, empty instance.
@@ -75,7 +75,7 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 		for (Map.Entry<Integer, Map<Integer, Double>> e : s.values.entrySet())
 		{
 			// Copy the row maps.
-			Map<Integer, Double> rowMap = new HashMap<Integer, Double>(e.getValue());
+			Map<Integer, Double> rowMap = new HashMap<>(e.getValue());
 			this.values.put(e.getKey(), rowMap);
 		}
 	}
