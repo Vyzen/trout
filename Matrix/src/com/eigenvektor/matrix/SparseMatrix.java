@@ -347,4 +347,129 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 		
 	}
 
+	@Override
+	public void rowOperation(int from, int to, double c)
+	{
+		if (from >= nRows || to >= nRows || from < 0 || to < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		// If the coefficient is zero, there is nothing to do.
+		if (c == 0) { return; }
+		
+		// If the from row doesn't exist, do nothing.
+		if (!values.containsKey(from)) { return; }
+		
+		// If the "to" row doesn't exist, copy the "from" row and scale.
+		if (!values.containsKey(to))
+		{
+			Map<Integer, Double> newRow = new HashMap<>(values.get(from));
+			values.put(to, newRow);
+			for (Map.Entry<Integer, Double> e : newRow.entrySet())
+			{
+				double newVal = c*e.getValue();
+				e.setValue(newVal);
+			}
+			return;
+		}
+		
+		// The general case.
+		Map<Integer, Double> fromMap = values.get(from);
+		Map<Integer, Double> toMap = values.get(to);
+		for (Map.Entry<Integer, Double> e : fromMap.entrySet())
+		{
+			int col = e.getKey();
+			double val = e.getValue();
+			
+			if (!toMap.containsKey(col))
+			{
+				// If the "to" row doesn't have that column, this is easy.
+				toMap.put(col, c * val);
+			}
+			else
+			{
+				double newVal = toMap.get(col) + c * val;
+				
+				// I suspect that in practical problems, this results in zeros fairly often,
+				// and they don't need to be represented.
+				if (newVal == 0.0)
+				{
+					toMap.remove(col);
+				}
+				else
+				{
+					toMap.put(col, newVal);
+				}
+			}
+		}
+		
+		// There is a very slight chance that we have emptied the "to" map.  If we have, remove it.
+		if (toMap.isEmpty()) { values.remove(to); }
+		
+	}
+
+	@Override
+	public void swapRows(int from, int to)
+	{
+		if (from >= nRows || to >= nRows || from < 0 || to < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		// If the from and to indices are the same, do nothing.
+		if (from == to) { return; }
+		
+		if (values.containsKey(from))
+		{
+			if (values.containsKey(to))
+			{
+				// If both rows have maps, swap the maps.
+				Map<Integer, Double> fromRow = values.get(from);
+				values.put(from, values.get(to));
+				values.put(to, fromRow);
+			}
+			else
+			{
+				// if only from exists, move to the "to" row,
+				values.put(to, values.get(from));
+				values.remove(from);
+			}
+		}
+		else if (values.containsKey(to))
+		{
+			// if only "to" exists, move to the "from" row.
+			values.put(from, values.get(to));
+			values.remove(to);
+		}
+		
+		// Otherwise, neither row exists, and we're done already.
+		
+	}
+
+	@Override
+	public void scaleRow(int row, double c)
+	{
+		if (row >= nRows || row < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		// Zero times anything is still zero.
+		if (!values.containsKey(row)) { return; }
+		
+		// Anything times zero is zero.
+		if (c == 0.0)
+		{
+			values.remove(row);
+		}
+		
+		Map<Integer, Double> rowMap = values.get(row);
+		for (Map.Entry<Integer, Double> e : rowMap.entrySet())
+		{
+			double newVal = c*e.getValue();
+			e.setValue(newVal);
+		}
+	}
+
 }

@@ -114,4 +114,56 @@ public final class FullMatrix extends AbstractMatrix implements MutableMatrix
 		return new FullMatrixIterator(this);
 	}
 
+	@Override
+	public void rowOperation(int from, int to, double c)
+	{
+		if (from >= nRows || to >= nRows || from < 0 || to < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		int fromStart = from * nCols;
+		int toStart = to * nCols;
+		for (int j = 0 ; j < nCols ; ++j)
+		{
+			this.data[toStart+j] += c * this.data[fromStart+j];
+		}
+	}
+
+	@Override
+	public void swapRows(int from, int to)
+	{
+		if (from >= nRows || to >= nRows || from < 0 || to < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		// If the from and to indices are the same, do nothing.
+		if (from == to) { return; }
+		
+		int fromStart = from * nCols;
+		int toStart = to * nCols;
+		for (int j = 0 ; j < nCols ; ++j)
+		{
+			double x = this.data[fromStart+j];
+			this.data[fromStart + j] = this.data[toStart + j];
+			this.data[toStart+j] = x;
+		}
+	}
+
+	@Override
+	public void scaleRow(int row, double c)
+	{
+		if (row >= nRows || row < 0)
+		{
+			throw new IllegalArgumentException("Invalid row.");
+		}
+		
+		int rowStart = row * nCols;
+		for (int j = 0 ; j < nCols ; ++j)
+		{
+			data[rowStart + j] *= c;
+		}
+	}
+
 }
