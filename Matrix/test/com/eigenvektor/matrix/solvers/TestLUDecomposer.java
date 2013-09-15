@@ -16,7 +16,7 @@ import com.eigenvektor.matrix.SparseMatrix;
 public class TestLUDecomposer
 {
 	
-	private static final int SIZE = 3;
+	private static final int SIZE = 10;
 	
 	FullMatrix f1 = Matrices.fullIdentity(SIZE);
 	SparseMatrix s1 = Matrices.sparseIdentity(SIZE);
@@ -51,10 +51,6 @@ public class TestLUDecomposer
 		LUDecomposer lud = new LUDecomposer(new FullMatrix(f1));
 		Matrix l = lud.getL();
 		Matrix u = lud.getU();
-
-		System.out.println("f1 = " + f1);
-		System.out.println("l= " + l);
-		System.out.println("u= " + u);
 		
 		// Check that l is lower triangular.
 		for (Matrix.Element e : l)
@@ -76,8 +72,7 @@ public class TestLUDecomposer
 		
 		// Check the product.
 		Matrix m = l.multiply(u);
-		System.out.println(f1);
-		System.out.println(m);
+		assertTrue(Matrices.areClose(m, f1, 1e-10));
 	}
 	
 	@Test
@@ -86,10 +81,6 @@ public class TestLUDecomposer
 		LUDecomposer lud = new LUDecomposer(new SparseMatrix(s1));
 		Matrix l = lud.getL();
 		Matrix u = lud.getU();
-
-		System.out.println("s1 = " + s1);
-		System.out.println("l= " + l);
-		System.out.println("u= " + u);
 		
 		// Check that l is lower triangular.
 		for (Matrix.Element e : l)
@@ -111,8 +102,7 @@ public class TestLUDecomposer
 		
 		// Check the product.
 		Matrix m = l.multiply(u);
-		System.out.println(s1);
-		System.out.println(m);
+		assertTrue(Matrices.areClose(m, s1, 1e-10));
 	}
 
 }

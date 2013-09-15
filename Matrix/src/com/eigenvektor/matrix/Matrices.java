@@ -40,4 +40,43 @@ public final class Matrices
 		for (int j = 0 ; j < size ; ++j) { ret.set(j, j, 1); }
 		return ret;
 	}
+
+	/**
+	 * Tells of two matrices have entries that are close to each other.
+	 * 
+	 * @param m1  The first matrix.
+	 * @param m2  The second matrix
+	 * @param tol The tolerance.
+	 * @return <code>true</code> iff the m1 and m2 are the same size, and 
+	 * the entries of m1 and m2 are within tol of each other.
+	 */
+	public static boolean areClose(final Matrix m1, final Matrix m2, double tol)
+	{
+		if (m1 == null || m2 == null)
+		{
+			throw new NullPointerException("m1 and m2 may not be null.");
+		}
+		
+		if (tol < 0.0)
+		{
+			throw new IllegalArgumentException("tol must be non-negative.");
+		}
+		
+		if (m1.getNRows() != m2.getNRows() || m1.getNCols() != m2.getNCols())
+		{
+			return false;
+		}
+		
+		for (int j = 0 ; j < m1.getNRows() ; ++j)
+		{
+			for (int k = 0 ; k < m2.getNCols() ; ++k)
+			{
+				double diff = Math.abs(m1.get(j, k) - m2.get(j,  k));
+				if (diff > tol) { return false; } 
+			}
+		}
+		
+		return true;
+	}
+	
 }

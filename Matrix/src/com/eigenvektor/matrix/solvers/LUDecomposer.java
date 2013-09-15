@@ -72,7 +72,7 @@ final class LUDecomposer
 			
 			// Apply it to u, and its inverse to l.
 			op.apply(u);
-			op.applyInverse(l);
+			l.set(row, col, elem/diagElem);
 		}
 	}
 	
