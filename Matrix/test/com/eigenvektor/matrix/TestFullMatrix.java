@@ -100,4 +100,39 @@ public class TestFullMatrix
 		}
 		assertTrue(l.size() == 15);
 	}
+
+	@Test
+	public void testRowOperations()
+	{
+		// Make a copy of m1 to play with.
+		FullMatrix m = new FullMatrix(m1);
+		// Try a scaling.
+		m.scaleRow(1, 7);
+		for (int j = 0 ; j < m.getNCols() ; ++j)
+		{
+			assertTrue(m.get(0, j) == m1.get(0, j));
+			assertTrue(m.get(1, j) == m1.get(1, j)*7.0);
+			assertTrue(m.get(2, j) == m1.get(2, j));
+		}
+		
+		// Now try swapping rows.
+		m = new FullMatrix(m1);
+		m.swapRows(1, 2);
+		for (int j = 0 ; j < m.getNCols() ; ++j)
+		{
+			assertTrue(m.get(0, j) == m1.get(0, j));
+			assertTrue(m.get(1, j) == m1.get(2, j));
+			assertTrue(m.get(2, j) == m1.get(1, j));
+		}
+		
+		// Now try doing a row operation.
+		m = new FullMatrix(m1);
+		m.rowOperation(1, 2, 5);
+		for (int j = 0 ; j < m.getNCols() ; ++j)
+		{
+			assertTrue(m.get(0, j) == m1.get(0, j));
+			assertTrue(m.get(1, j) == m1.get(1, j));
+			assertTrue(m.get(2, j) == m1.get(2, j) + m1.get(1, j)*5);
+		}
+	}
 }

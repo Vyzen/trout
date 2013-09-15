@@ -374,6 +374,28 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 			return;
 		}
 		
+		// This has to be handled separately to prevent 
+		// concurrent modification of the map.
+		if (from == to)
+		{
+			// This amounts to a scaling of the value by 1+c.
+			double scale = 1.0 + c;
+			if (scale == 0.0)
+			{
+				// If we end up scaling by zero, kill the representation.
+				values.remove(from);
+				return;
+			}
+			
+			Map<Integer, Double> fromMap = values.get(from);
+			for (Map.Entry<Integer, Double> e : fromMap.entrySet())
+			{
+				double newVal = scale * e.getValue();
+				e.setValue(newVal);
+			}
+			return;
+		}
+		
 		// The general case.
 		Map<Integer, Double> fromMap = values.get(from);
 		Map<Integer, Double> toMap = values.get(to);

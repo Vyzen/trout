@@ -21,6 +21,7 @@ public class TestSparseMatrix
 	{
 		s1.set(4, 4, 3);
 		s1.set(6, 1, 7);
+		s1.set(6, 2, 8);
 		
 		s2.set(4, 1, 5);
 		s2.set(5, 2, 1);
@@ -81,7 +82,96 @@ public class TestSparseMatrix
 		{
 			l.add(x);
 		}
-		assertTrue(l.size() == 2);
+		assertTrue(l.size() == 3);
+	}
+	
+	@Test
+	public void testRowOperations()
+	{
+		// Make a copy of s1 to play with.
+		SparseMatrix s = new SparseMatrix(s1);
+		// Try a scaling.
+		s.scaleRow(4, 7);
+		for (int j = 0 ; j < s.getNCols() ; ++j)
+		{
+			assertTrue(s.get(0, j) == s1.get(0, j));
+			assertTrue(s.get(1, j) == s1.get(1, j));
+			assertTrue(s.get(2, j) == s1.get(2, j));
+			assertTrue(s.get(3, j) == s1.get(3, j));
+			assertTrue(s.get(5, j) == s1.get(5, j));
+			assertTrue(s.get(6, j) == s1.get(6, j));
+			assertTrue(s.get(7, j) == s1.get(7, j));
+			assertTrue(s.get(8, j) == s1.get(8, j));
+
+			assertTrue(s.get(4, j) == s1.get(4, j)*7.0);
+		}
+		
+		// Now try swapping rows.
+		s = new SparseMatrix(s1);
+		s.swapRows(4, 6); // Both rows are represented.
+		s.swapRows(1, 2); // Both are not.
+		for (int j = 0 ; j < s.getNCols() ; ++j)
+		{
+			assertTrue(s.get(0, j) == s1.get(0, j));
+			assertTrue(s.get(1, j) == s1.get(2, j));
+			assertTrue(s.get(2, j) == s1.get(1, j));
+			assertTrue(s.get(3, j) == s1.get(3, j));
+			assertTrue(s.get(4, j) == s1.get(6, j));
+			assertTrue(s.get(5, j) == s1.get(5, j));
+			assertTrue(s.get(6, j) == s1.get(4, j));
+			assertTrue(s.get(7, j) == s1.get(7, j));
+			assertTrue(s.get(8, j) == s1.get(8, j));
+		}
+		
+		s = new SparseMatrix(s1);
+		s.swapRows(4, 2); // First row is represented, second is not.
+		s.swapRows(1, 6); // Second row is represented, first is not.
+		for (int j = 0 ; j < s.getNCols() ; ++j)
+		{
+			assertTrue(s.get(0, j) == s1.get(0, j));
+			assertTrue(s.get(1, j) == s1.get(6, j));
+			assertTrue(s.get(2, j) == s1.get(4, j));
+			assertTrue(s.get(3, j) == s1.get(3, j));
+			assertTrue(s.get(4, j) == s1.get(2, j));
+			assertTrue(s.get(5, j) == s1.get(5, j));
+			assertTrue(s.get(6, j) == s1.get(1, j));
+			assertTrue(s.get(7, j) == s1.get(7, j));
+			assertTrue(s.get(8, j) == s1.get(8, j));
+		}
+		
+		// Now try doing a row operation.
+		s = new SparseMatrix(s1);
+		s.rowOperation(6, 4, 5);
+		for (int j = 0 ; j < s.getNCols() ; ++j)
+		{
+			assertTrue(s.get(0, j) == s1.get(0, j));
+			assertTrue(s.get(1, j) == s1.get(1, j));
+			assertTrue(s.get(2, j) == s1.get(2, j));
+			assertTrue(s.get(3, j) == s1.get(3, j));
+			assertTrue(s.get(4, j) == s1.get(4, j) + s1.get(6, j) * 5);
+			assertTrue(s.get(5, j) == s1.get(5, j));
+			assertTrue(s.get(6, j) == s1.get(6, j));
+			assertTrue(s.get(7, j) == s1.get(7, j));
+			assertTrue(s.get(8, j) == s1.get(8, j));
+		}
+		
+		// These operations should zero the matrix completely.
+		s = new SparseMatrix(s1);
+		s.rowOperation(4, 4, -1);
+		s.rowOperation(6, 6, -1);
+		Matrix zero = new SparseMatrix(9, 7);
+		assertTrue(s.equals(zero));
+		
+		// Check that the elements have been removed from the representation.
+		List<Matrix.Element> l = new ArrayList<>();
+		for (Matrix.Element e : s)
+		{
+			l.add(e);
+		}
+		assertTrue(l.size() == 0);
+		
+		// Some operations to test the cases where one or the other or both
+		// of the rows are not represented.
 	}
 
 }
