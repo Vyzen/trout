@@ -67,7 +67,7 @@ public final class LUMatrixSolver implements MatrixSolver
 			double val = y[j];
 			for (int k = j + 1 ; k < nCols ; ++k)
 			{
-				val -= u.get(j, k) * ret.get(j, col);
+				val -= u.get(j, k) * ret.get(k, col);
 			}
 			val /= u.get(j, j);
 			ret.set(j, col, val);
