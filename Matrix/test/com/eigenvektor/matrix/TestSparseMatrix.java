@@ -67,6 +67,10 @@ public class TestSparseMatrix
 		assertTrue(p1.getNCols() == 3);
 		// s2 and f1 are semantically equal, so their products should be the same.
 		assertTrue(p1.equals(p2));
+		
+		// But one should be sparse, and the other full.
+		assertTrue(p1 instanceof SparseMatrix);
+		assertTrue(p2 instanceof FullMatrix);
 	}
 	
 	@Test

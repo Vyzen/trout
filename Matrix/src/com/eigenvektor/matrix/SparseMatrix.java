@@ -138,10 +138,70 @@ public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
 		}
 	}
 
+	/**
+	 * Separate multiplication algorithm solely for sparse matrcies
+	 * 
+	 * @param s A sparse matrix.
+	 * @return The product of this and s.
+	 */
 	private Matrix sparseMultiply(SparseMatrix s)
 	{
-		// TODO implement a quicker sparse matrix multiplication algorithm.
-		return super.multiply(s);
+		// Check that the matrix is compatible for multiply.
+		if (s.getNRows() != this.getNCols())
+		{
+			throw new IllegalArgumentException("Argument not compatable for matrix multiply.");
+		}
+
+		SparseMatrix ret = new SparseMatrix(nRows, s.nCols);
+		
+		for (Map.Entry<Integer, Map<Integer, Double>> rowMap : values.entrySet())
+		{
+			int row = rowMap.getKey();
+			for (Map.Entry<Integer, Double> colMap : rowMap.getValue().entrySet())
+			{
+				int col = colMap.getKey();
+				double val = colMap.getValue();
+				
+				for (int j = 0 ; j < s.nCols ; ++j)
+				{
+					ret.addToElement(row, j, val * s.get(col, j));
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Adds to a single element.
+	 * 
+	 * @param row The row of the element.
+	 * @param col The column of the element.
+	 * @param val The amount to add to the value.
+	 */
+	private void addToElement(int row, int col, double val)
+	{
+		if (val == 0.0) { return; }
+		
+		Map<Integer, Double> rowMap = null;
+		if (values.containsKey(row))
+		{
+			rowMap = values.get(row);
+			if (rowMap.containsKey(col))
+			{
+				rowMap.put(col, rowMap.get(col) + val);
+			}
+			else
+			{
+				rowMap.put(col, val);
+			}
+		} 
+		else
+		{
+			rowMap = new HashMap<Integer, Double>();
+			rowMap.put(col, val);
+			values.put(row, rowMap);
+		}
 	}
 	
 
