@@ -17,7 +17,7 @@ public final class Matrices
 	 * @param size The size of the identity to create.
 	 * @return A full identity matrix of that size.
 	 */
-	static FullMatrix fullIdentity(int size)
+	public static FullMatrix fullIdentity(int size)
 	{
 		if (size < 0) { throw new IllegalArgumentException("size must be non-negative."); }
 		
@@ -32,7 +32,7 @@ public final class Matrices
 	 * @param size The size of the identity to create.
 	 * @return A sparse identity matrix of that size.
 	 */
-	static SparseMatrix sparseIdentity(int size)
+	public static SparseMatrix sparseIdentity(int size)
 	{
 		if (size < 0) { throw new IllegalArgumentException("size must be non-negative."); }
 		
