@@ -67,11 +67,8 @@ final class LUDecomposer
 		{
 			double elem = u.get(row, col);
 			
-			// Get the operation that zeros out that element.
-			MatrixOperation op = new RowOperation(col, row, -elem/diagElem);
-			
-			// Apply it to u, and its inverse to l.
-			op.apply(u);
+			// Apply the operation that zeros out that element.
+			u.rowOperation(col, row, -elem/diagElem);
 			l.set(row, col, elem/diagElem);
 		}
 	}
