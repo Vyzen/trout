@@ -5,7 +5,7 @@ import java.util.Iterator;
 /**
  * An implementation of a matrix that represents its data as one big array.
  */
-public final class FullMatrix extends AbstractMatrix implements MutableMatrix
+public final class FullMatrix extends AbstractMutableMatrix 
 {
 	final int nRows;
 	final int nCols;

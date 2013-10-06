@@ -47,5 +47,31 @@ public interface MutableMatrix extends Matrix
 	 * @param c
 	 */
 	public void scaleRow(int row, double c);
+	
+	/**
+	 * Performs a column operation on the matrix.  Adds one column to another,
+	 * scaled by a coefficient.  this[:, to] += c*this[:, from].
+	 * 
+	 * @param from  The column to add from.
+	 * @param to The column to add to
+	 * @param c The coefficient.
+	 */
+	public void columnOperation(int from, int to, double c);
+	
+	/**
+	 * Swaps two columns of the matrix.
+	 * 
+	 * @param from The first column to swap.
+	 * @param to The second column to swap.
+	 */
+	public void swapColumns(int from, int to);
+	
+	/**
+	 * Scales a column by a coefficient.  this[:, col] = c*this[:, col]
+	 * 
+	 * @param col The column to scale.
+	 * @param c
+	 */
+	public void scaleColumn(int col, double c);
 
 }

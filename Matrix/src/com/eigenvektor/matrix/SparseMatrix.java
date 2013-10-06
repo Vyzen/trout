@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 /**
  * A matrix backed by a sparse representation.
  */
-public final class SparseMatrix extends AbstractMatrix implements MutableMatrix
+public final class SparseMatrix extends AbstractMutableMatrix 
 {
 
 	private final int nRows;
