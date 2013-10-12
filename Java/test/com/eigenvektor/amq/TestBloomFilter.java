@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class TestBloomFilter
 {
-	private BloomFilter<String> bf = new BloomFilter<String>(10000, 5);
+	private ApproxMemQuery<String> bf = new BloomFilter<String>(10000, 5);
 	
 	private String ts1 = "Test String 1";
 	private String ts2 = "Test String 2";

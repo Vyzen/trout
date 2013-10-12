@@ -5,7 +5,7 @@ import java.util.BitSet;
 /**
  * Implementation of a Bloom Filter
  */
-public final class BloomFilter<T>
+public final class BloomFilter<T> implements ApproxMemQuery<T>
 {
 	// The bits of the filter.
 	private BitSet bits;
@@ -51,11 +51,10 @@ public final class BloomFilter<T>
 		this(numBits, numHashes, new HashExtender<T>());
 	}
 	
-	/**
-	 * Adds an element to the Bloom filter.
-	 * 
-	 * @param x The element to add.
+	/* (non-Javadoc)
+	 * @see com.eigenvektor.amq.ApproxMemQuery#add(T)
 	 */
+	@Override
 	public void add(T x)
 	{
 		if (x == null) { throw new IllegalArgumentException("x may not be null."); }
@@ -74,13 +73,10 @@ public final class BloomFilter<T>
 		numAdds++;
 	}
 	
-	/**
-	 * Tells whether an object has been added.  There is a chance of a false positive
-	 * result, but not a false negative result.
-	 * 
-	 * @param x The element to query.
-	 * @return <code>true</code> if <code>x</code> is in this set.  Very likely <code>false</code> otherwise.
+	/* (non-Javadoc)
+	 * @see com.eigenvektor.amq.ApproxMemQuery#contains(T)
 	 */
+	@Override
 	public boolean contains(T x)
 	{
 		if (x == null) { throw new IllegalArgumentException("x may not be null."); }
