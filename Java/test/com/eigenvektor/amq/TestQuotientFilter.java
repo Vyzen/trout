@@ -24,7 +24,11 @@ public class TestQuotientFilter
 	public void test()
 	{
 		qf.add(5);
-		assertTrue(true);
+		assertTrue(qf.contains(5));
+		
+		int test = (3 << 29) + 63;
+		qf.add(test);
+		assertTrue(qf.contains(test));
 	}
 
 }

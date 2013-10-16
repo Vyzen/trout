@@ -9,6 +9,27 @@ import java.util.BitSet;
  */
 public final class QuotientFilter<T> implements ApproxMemQuery<T>
 {
+	/**
+	 * A simple class that splits an int between quotient and remainder.
+	 */
+	private static class SplitInt
+	{
+		/**
+		 * Splits an int.
+		 * 
+		 * @param x The int to split.
+		 * @param qBits The number of bits in the quotent.
+		 */
+		public SplitInt(int x, int qBits)
+		{
+			quotient = x >> 32-qBits;
+			remainder = (x << qBits) >>> qBits;
+		}
+		
+		public final int quotient;
+		public final int remainder;
+	}
+	
 	// The number of bits in the quotient.
 	private final int qBits;
 	
@@ -101,7 +122,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			ret = ret << 1;
 			if (bits.get(j))
 			{
-				ret &= 1;
+				ret |= 1;
 			}
 		}
 		return ret;
@@ -141,7 +162,21 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 */
 	private boolean containsInt(int x)
 	{
-		return false;
+		// Split the integer.
+		SplitInt split = new SplitInt(x, this.qBits);
+		
+		// Find its canonical slot.
+		int slotStart = split.quotient * recBits;
+		
+		if (!isOccupied(slotStart))
+		{
+			return false;
+		}
+		else
+		{
+			// TODO: handle the more complicated cases.
+			return getRemainder(slotStart) == split.remainder;
+		}
 	}
 
 	/**
@@ -151,7 +186,20 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 */
 	private void addInt(int x)
 	{
+		// Split the integer.
+		SplitInt split = new SplitInt(x, this.qBits);
+
+		// Find its canonical slot.
+		int slotStart = split.quotient * recBits;
 		
+		if (!isOccupied(slotStart))
+		{
+			fillSlot(slotStart, true, false, false, split.remainder);
+		}
+		else
+		{
+			// TODO: handle the more complicated cases.
+		}
 	}
 
 }
