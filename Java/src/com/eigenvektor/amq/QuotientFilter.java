@@ -64,7 +64,11 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	{
 		// Add the hash code.
 		final int hash = x.hashCode();
-		this.addInt(hash);
+		
+		// Split the hash.
+		SplitInt split = new SplitInt(hash, this.qBits);
+		
+		this.addQR(split.quotient, split.remainder);
 	}
 
 	@Override
@@ -72,14 +76,29 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	{
 		// Look for the hash code.
 		final int hash = x.hashCode();
-		return containsInt(hash);
+		
+		// Split the hash.
+		SplitInt split = new SplitInt(hash, this.qBits);
+		
+		return containsQR(split.quotient, split.remainder);
 	}
 	
 	/**
-	 * Tells if a particular slot is occupied.
+	 * Tells if a given slot is empty.
+	 * 
+	 * @param slot The index of the slot.
+	 * @return <code>true</code> iff this slot is completely empty.
+	 */
+	private boolean isEmpty(int slot)
+	{
+		return !isOccupied(slot) && !isContinuation(slot) && !isShifted(slot);
+	}
+	
+	/**
+	 * Tells if a particular slot is the canonical slot for some element in this filter.
 	 * 
 	 * @param slot The index of the  slot.
-	 * @return <code>true</code> if the slot is occupied.
+	 * @return <code>true</code> if the slot is the canonical slot for some element in this filter.
 	 */
 	private boolean isOccupied(int slot)
 	{
@@ -157,42 +176,38 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	}
 	
 	/**
-	 * Tells if the filter (probably) contains an integer.
+	 * Tells if the filter contains a quotient and remainder.
 	 * 
-	 * @param x The integer to check for.
-	 * @return <code>true</code> if x is contained in the filter.  Probably <code>false</code> otherwise.
+	 * @param quotient The quotient to look for.
+	 * @param remainder The remainder to look for.
+	 * @return <code>true</code> iff that quotient and remainder are contained in the filter.
 	 */
-	private boolean containsInt(int x)
+	private boolean containsQR(int quotient, int remainder)
 	{
-		// Split the integer.
-		SplitInt split = new SplitInt(x, this.qBits);
-		
 		// Check its canonical slot.
-		if (!isOccupied(split.quotient))
+		if (isEmpty(quotient))
 		{
 			return false;
 		}
 		else
 		{
 			// TODO: handle the more complicated cases.
-			return getRemainder(split.quotient) == split.remainder;
+			return getRemainder(quotient) == remainder;
 		}
 	}
 
 	/**
-	 * Adds an integer to the set.
+	 * Adds a quotient and remainder to the filter.
 	 * 
-	 * @param x The integer to add.
+	 * @param quotient The quotient to add.
+	 * @param remainder The remainder to add.
 	 */
-	private void addInt(int x)
+	private void addQR(int quotient, int remainder)
 	{
-		// Split the integer.
-		SplitInt split = new SplitInt(x, this.qBits);
-
-		// Find its canonical slot.
-		if (!isOccupied(split.quotient))
+		// If the canonical slot is empty, use it directly.
+		if (isEmpty(quotient))
 		{
-			fillSlot(split.quotient, true, false, false, split.remainder);
+			fillSlot(quotient, true, false, false, remainder);
 		}
 		else
 		{
