@@ -207,6 +207,7 @@ public class TestQuotientFilter
 		
 		Set<Integer> nums = new HashSet<Integer>();
 		
+		// Insert 1000 random numbers and see how it does.
 		Random rnd = new Random(1337);
 		for (int j = 0 ; j < 1000 ; ++j)
 		{
@@ -226,6 +227,28 @@ public class TestQuotientFilter
 		for (int x : nums)
 		{
 			assertTrue(qf.contains(x));
+		}
+		
+		// Do a bunch of negative tests as well.
+		for (int j = 0 ; j < 1000 ; ++j)
+		{
+			byte[] b = new byte[4];
+			rnd.nextBytes(b);
+			int test = 0;
+			for (int k = 0 ; k < 4 ; ++k)
+			{
+				test = test << 8;
+				test += b[k];
+			}
+			
+			if (nums.contains(test))
+			{
+				assertTrue(qf.contains(test));
+			}
+			else
+			{
+				assertTrue(!qf.contains(test));
+			}
 		}
 	}
 	
