@@ -42,6 +42,9 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	// The Bit set.
 	private final BitSet bits;
 	
+	// The number of occupied records;
+	private int numOccupied = 0;
+	
 	/**
 	 * Creates a new Quotient filter.
 	 * 
@@ -87,6 +90,42 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	}
 	
 	/**
+	 * Gets the number of occupied slots.
+	 * 
+	 * @return the number of occupied slots.
+	 */
+	public int getNumOccupied()
+	{
+		return this.numOccupied;
+	}
+	
+	/**
+	 * Gets the next slot given a slot.
+	 * 
+	 * @param slot The slot.
+	 * @return the next slot.
+	 */
+	int nextSlot(int slot)
+	{
+		int next = slot + 1;
+		if (next == nSlots) { next = 0;	}
+		return next;
+	}
+	
+	/**
+	 * Gets the previous slot given a slot.
+	 * 
+	 * @param slot The slot.
+	 * @return the previous slot.
+	 */
+	int prevSlot(int slot)
+	{
+		int prev = slot - 1;
+		if (prev == -1) { prev = nSlots - 1; }
+		return prev;
+	}
+	
+	/**
 	 * Tells if a given slot is empty.
 	 * 
 	 * @param slot The index of the slot.
@@ -109,6 +148,17 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	}
 	
 	/**
+	 * Sets the occupied flag for a slot.
+	 * 
+	 * @param slot The slot.
+	 * @param value The value to set the occupied flag to.
+	 */
+	private void setOccupied(int slot, boolean value)
+	{
+		bits.set(this.recBits * slot, value);
+	}
+	
+	/**
 	 * Tells if a particular slot is a continuation.
 	 * 
 	 * @param slot The index of the slot.
@@ -120,6 +170,17 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	}
 	
 	/**
+	 * Sets the continuation bit for a slot.
+	 * 
+	 * @param slot The slot to set.
+	 * @param val The value to set the continuation bit to.
+	 */
+	private void setContinuation(int slot, boolean val)
+	{
+		bits.set(this.recBits * slot + 1, val);
+	}
+	
+	/**
 	 * Tells if a particular slot is shifted.
 	 * 
 	 * @param slot The index of the slot.
@@ -128,6 +189,17 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	private boolean isShifted(int slot)
 	{
 		return bits.get(this.recBits * slot + 2);
+	}
+	
+	/**
+	 * Sets the shifted bit for a slot.
+	 * 
+	 * @param slot The slot to set.
+	 * @param val The value to set the shifted bit to.
+	 */
+	private void setShifted(int slot, boolean val)
+	{
+		bits.set(this.recBits * slot + 2, val);
 	}
 	
 	/**
@@ -176,6 +248,113 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			bits.set(j, (remainder & 1) == 1);
 			remainder = remainder >> 1;
 		}
+	}
+	
+	/**
+	 * Copies the data from one slot to another.  This method does not change
+	 * any isOccupied flags since they are associated with the slot, not the
+	 * data in it.
+	 * 
+	 * @param from The slot to copy from.
+	 * @param to The slot to copy to.  Any data already in this slot (other than
+	 * the isOccupied flag) is clobbered.
+	 */
+	private void copySlot(int from, int to)
+	{
+		int fromStart = this.recBits * from;
+		int toStart = this.recBits * to;
+		
+		for (int j = 1 ; j < recBits ; ++j)
+		{
+			bits.set(toStart+j, bits.get(fromStart+j));
+		}
+	}
+	
+	/**
+	 * Inserts some data into a slot, shifting all of the data up until the next empty slot to the right.
+	 * 
+	 * @param slot The slot to insert into.
+	 * @param isContinuation The isContinuation flag to be inserted.
+	 * @param isShifted The isShifted flag to be inserted.
+	 * @param remainder The remainder in the slot to be inserted.
+	 */
+	private void insertIntoSlot(
+			int slot, 
+			boolean isContinuation, 
+			boolean isShifted, 
+			int remainder)
+	{
+		// Find the first empty slot at or past slot.
+		int emptySlot = slot;
+		while (!isEmpty(emptySlot))
+		{
+			emptySlot++;
+			if (emptySlot == nSlots) { emptySlot = 0; }
+		}
+		
+		// Shift everything between here and there up one
+		int toSlot = emptySlot;
+		while (emptySlot != slot)
+		{
+			int fromSlot = toSlot - 1;
+			if (fromSlot < 0) { fromSlot += nSlots; }
+			copySlot(fromSlot, toSlot);
+			setShifted(toSlot, true); // record the shift
+			toSlot = fromSlot;
+		}
+		
+		// The isOccupied flag for the slot shouldn't change.
+		boolean isOccupied = isOccupied(slot);
+		
+		// Fill the slot with the new stuff.
+		fillSlot(slot, isOccupied, isContinuation, isShifted, remainder);
+	}
+	
+	/**
+	 * Inserts a remainder into a run.
+	 * 
+	 * @param startOfRun The start of the run.
+	 * @param remainder The remainder to insert.
+	 * @param isShifted <code>true</code> iff this run is shifted from the canonical slot.
+	 * @return <code>true</code> if the insertion was done or <code>false</code> if that
+	 * remainder was already there.
+	 */
+	private boolean insertIntoRun(
+			int startOfRun,
+			int remainder,
+			boolean isShifted)
+	{
+		// Special case.  We are inserting at the start of the run.
+		int startRemainder = getRemainder(startOfRun);
+		if (startRemainder == remainder)
+		{
+			return false;
+		}
+		if (startRemainder > remainder)
+		{
+			// The start slot is now a continuation.
+			setContinuation(startOfRun, true);
+			
+			// Insert the new remainder here.
+			insertIntoSlot(startOfRun, false, isShifted, remainder);
+			
+			return true;
+		}
+		
+		// Find the position in the run to insert.
+		int slot = nextSlot(startOfRun);
+		int curRemainder = getRemainder(slot);
+		while (isContinuation(slot) && curRemainder <= remainder)
+		{
+			if (curRemainder == remainder) { return false; }
+			
+			slot = nextSlot(slot);
+			curRemainder = getRemainder(slot);
+		}
+		
+		// insert the new remainder here.
+		insertIntoSlot(slot, true, true, remainder);
+		return true;
 	}
 	
 	/**
@@ -275,7 +454,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		}
 		else
 		{
-			// First, find the start of it's cluster.
+			// First, find the start of its cluster.
 			int startOfCluster = findStartOfCluster(quotient);
 			
 			// Then find its run within the cluster.
@@ -293,15 +472,45 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 * @param remainder The remainder to add.
 	 */
 	private void addQR(int quotient, int remainder)
-	{
-		// If the canonical slot is empty, use it directly.
+	{	
 		if (isEmpty(quotient))
 		{
+			// If the canonical slot is empty, use it directly.
 			fillSlot(quotient, true, false, false, remainder);
+			this.numOccupied++;
+		}
+		else if (!isOccupied(quotient))
+		{
+			// There is no previous element with this quotient, so we are
+			// starting a new, already shifted run.
+			
+			// Set the occupied flag for this slot.
+			setOccupied(quotient, true);
+			
+			// Now, when we find the run, it will find the start of 
+			// the next run after where our run should be.
+			int startOfCluster = findStartOfCluster(quotient);
+			int startOfRun = findRun(startOfCluster, quotient);
+			
+			// Insert our new remainder here.
+			// It is shifted, but not a continuation of anything because
+			// this is a new run.
+			insertIntoSlot(startOfRun, false, true, remainder);
+			
+			this.numOccupied++;
 		}
 		else
 		{
-			// TODO: handle the more complicated cases.
+			// There is already a run for this quotient, find it
+			// and insert into it.
+			
+			// Now, when we find the run, it will find the start of 
+			// the next run after where our run should be.
+			int startOfCluster = findStartOfCluster(quotient);
+			int startOfRun = findRun(startOfCluster, quotient);
+			boolean inserted = insertIntoRun(startOfRun, remainder, startOfRun == quotient);
+			if (inserted) { this.numOccupied++; }  // increment the counter only if it was actually added,
+													// as opposed to just finding out it was already there.
 		}
 	}
 
