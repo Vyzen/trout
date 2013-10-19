@@ -47,7 +47,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	private final BitSet bits;
 	
 	// The number of occupied records;
-	private int numOccupied = 0;
+	private int nOccupied = 0;
 	
 	/**
 	 * Creates a new Quotient filter.
@@ -100,7 +100,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 */
 	public int getNumOccupied()
 	{
-		return this.numOccupied;
+		return this.nOccupied;
 	}
 	
 	/**
@@ -481,7 +481,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		{
 			// If the canonical slot is empty, use it directly.
 			fillSlot(quotient, true, false, false, remainder);
-			this.numOccupied++;
+			this.nOccupied++;
 		}
 		else if (!isOccupied(quotient))
 		{
@@ -501,7 +501,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			// this is a new run.
 			insertIntoSlot(startOfRun, false, true, remainder);
 			
-			this.numOccupied++;
+			this.nOccupied++;
 		}
 		else
 		{
@@ -513,7 +513,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			int startOfCluster = findStartOfCluster(quotient);
 			int startOfRun = findRun(startOfCluster, quotient);
 			boolean inserted = insertIntoRun(startOfRun, remainder, startOfRun == quotient);
-			if (inserted) { this.numOccupied++; }  // increment the counter only if it was actually added,
+			if (inserted) { this.nOccupied++; }  // increment the counter only if it was actually added,
 													// as opposed to just finding out it was already there.
 		}
 	}
@@ -526,7 +526,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			StringBuilder sb = new StringBuilder("QuotientFilter<nSlots=");
 			sb.append(this.nSlots);
 			sb.append(",nOccupied=");
-			sb.append(this.numOccupied);
+			sb.append(this.nOccupied);
 			sb.append(">");
 			return sb.toString();
 		}
