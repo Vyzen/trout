@@ -399,9 +399,11 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		int slot = startOfCluster;
 		while (true)
 		{
-			if (slot == canonicalSlot) { passedCanonical = true; }
-			if (isOccupied(slot) && passedCanonical) { numOccupied++; }
+			if (isOccupied(slot) && !passedCanonical) { numOccupied++; }
 			if (!isContinuation(slot)) { numRunStarts++; }
+
+			// If we've passed the canonical slot, we're no longer counting occupied slots.
+			if (slot == canonicalSlot) { passedCanonical = true; }
 			
 			// If we're ahead of the canonical slot, and we have the same
 			// number of run starts as seen occupied slots, this is our run start.
