@@ -9,4 +9,4 @@ Under Graph:
 + com.eigenvektor.graph -- A package for representing directed, weighted graphs.
 + com.eignevketor.tree -- A package for representing weighted n-ary trees.
 + com.eigenvektor.matrix -- A basic matrix manipulation package.
-+ com.eigenvektor.amq -- An approximate membership query package including a Bloom filter and soon a quotient filter.
++ com.eigenvektor.amq -- An approximate membership query package including a Bloom filter and a quotient filter.
