@@ -152,6 +152,46 @@ public class TestQuotientFilter
 		assertTrue(qf.contains(test6));
 	}
 	
+	/**
+	 * A test that creates a cluster, and then inserts into a slot that is 
+	 * canonically in the middle of the already extant cluster.
+	 */
+	@Test
+	public void testInsertIntoCluster()
+	{
+		// Create a single run of integers with the same quotient.
+		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(3); 
+		
+		int test1 = (3 << 29) + 63; // Canonically in 3
+		int test2 = (3 << 29) + 66;
+		
+		int test3 = (1 << 29) + 66; // Canonically all in 1, and enough of them that they push 3 out of the way.
+		int test4 = (1 << 29) + 65;
+		int test5 = (1 << 29) + 61;
+		int test6 = (1 << 29) + 3;
+		
+		int test7 = (4 << 29) + 99; // Canonically in 4.
+		
+		// Make the cluster.
+		qf.add(test3);
+		qf.add(test4);
+		qf.add(test5);
+		qf.add(test6);
+		qf.add(test7);
+		
+		// Insert into it.
+		qf.add(test1);
+		qf.add(test2);
+		
+		assertTrue(qf.contains(test1));
+		assertTrue(qf.contains(test2));
+		assertTrue(qf.contains(test3));
+		assertTrue(qf.contains(test4));
+		assertTrue(qf.contains(test5));
+		assertTrue(qf.contains(test6));
+		assertTrue(qf.contains(test7));
+	}
+	
 	
 
 }
