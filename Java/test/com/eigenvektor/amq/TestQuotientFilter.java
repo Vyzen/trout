@@ -28,6 +28,9 @@ public class TestQuotientFilter
 		int test = (3 << 29) + 63;
 		qf.add(test);
 		assertTrue(qf.contains(test));
+		
+		int test2 = (3 << 29) + 66;
+		assertTrue(!qf.contains(test2));
 	}
 
 }

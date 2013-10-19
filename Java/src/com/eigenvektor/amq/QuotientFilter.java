@@ -36,6 +36,9 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	// The number of bits in a record.
 	private final int recBits;
 	
+	// The number of records (equals 2^recBits).
+	private final int nSlots;
+	
 	// The Bit set.
 	private final BitSet bits;
 	
@@ -54,9 +57,9 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		this.qBits = nQuotientBits;
 		this.recBits = (32 - this.qBits) + 3; // Enough space for the remainder, plus the three control bits.
 		
-		// Create a bit
-		int nRecords = 1 << this.qBits;
-		bits = new BitSet(nRecords * recBits);
+		// Create a bit set
+		this.nSlots = 1 << this.qBits;
+		this.bits = new BitSet(nSlots * recBits);
 	}
 
 	@Override
@@ -176,6 +179,87 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	}
 	
 	/**
+	 * Gets the start of the cluster that contains a given slot.
+	 * 
+	 * @param slot The slot to consider.
+	 * @return The start of the cluster that contains <code>slot</code>
+	 */
+	private int findStartOfCluster(int slot)
+	{
+		// The start of the cluster is the first slot before at at this one that is not shifted.
+		while (isShifted(slot))
+		{
+			slot--;
+			
+			// We might wrap around.
+			if (slot < 0) { slot += this.nSlots; }
+		}
+		
+		return slot;
+	}
+	
+	/**
+	 * Finds the run for a particular canonical slot.
+	 * 
+	 * @param startOfCluster The start of that slot's cluster.
+	 * @param canonicalSlot The index of the canonical slot.
+	 * @return The start of the run for elements that would canonically be in
+	 * <code>canonicalSlot</code>
+	 */
+	private int findRun(int startOfCluster, int canonicalSlot)
+	{
+		// The number of canonically occupied slots found before the canonical slot.
+		int numOccupied = 0;
+		
+		// The number of run starts found.
+		int numRunStarts = 0;
+		
+		// Whether we have passed the canonical slot.
+		// (we can't simply use slot <= canoncialSlot because of wrap-around)
+		boolean passedCanonical = false;
+		
+		int slot = startOfCluster;
+		while (true)
+		{
+			if (slot == canonicalSlot) { passedCanonical = true; }
+			if (isOccupied(slot) && passedCanonical) { numOccupied++; }
+			if (!isContinuation(slot)) { numRunStarts++; }
+			
+			// If we're ahead of the canonical slot, and we have the same
+			// number of run starts as seen occupied slots, this is our run start.
+			if (passedCanonical && (numRunStarts == numOccupied))
+			{
+				return slot;
+			}
+			
+			slot++;
+			if (slot == nSlots) { slot = 0; } // We might wrap around.
+		}
+	}
+	
+	/**
+	 * Finds a remainder in a given run.
+	 * 
+	 * @param startOfRun The start of the run
+	 * @param remainder The remainder to look for.
+	 * @return <code>true</code> iff the remainder is in the run.
+	 */
+	private boolean findInRun(int startOfRun, int remainder)
+	{
+		// The first element of the run is not a continuation.
+		if (getRemainder(startOfRun) == remainder) { return true; }
+		
+		// The rest of the run is a continuation.
+		int slot = (startOfRun + 1) % nSlots;
+		while (isContinuation(slot))
+		{
+			if (getRemainder(slot) == remainder) { return true; }
+		}
+		
+		return false; // We didn't find it.
+	}
+	
+	/**
 	 * Tells if the filter contains a quotient and remainder.
 	 * 
 	 * @param quotient The quotient to look for.
@@ -191,8 +275,14 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		}
 		else
 		{
-			// TODO: handle the more complicated cases.
-			return getRemainder(quotient) == remainder;
+			// First, find the start of it's cluster.
+			int startOfCluster = findStartOfCluster(quotient);
+			
+			// Then find its run within the cluster.
+			int startOfRun = findRun(startOfCluster, quotient);
+			
+			// Then try to find the remainder in the run.
+			return findInRun(startOfRun, remainder);
 		}
 	}
 
