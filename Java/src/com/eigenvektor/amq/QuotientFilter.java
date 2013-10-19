@@ -78,44 +78,45 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	/**
 	 * Tells if a particular slot is occupied.
 	 * 
-	 * @param slot The index of the start of the slot.
+	 * @param slot The index of the  slot.
 	 * @return <code>true</code> if the slot is occupied.
 	 */
-	private boolean isOccupied(int slotStart)
+	private boolean isOccupied(int slot)
 	{
-		return bits.get(slotStart); // Bit 0 is the "occupied" bit.
+		return bits.get(this.recBits * slot); // Bit 0 is the "occupied" bit.
 	}
 	
 	/**
 	 * Tells if a particular slot is a continuation.
 	 * 
-	 * @param slotStart The index of the start of the slot.
+	 * @param slot The index of the slot.
 	 * @return <code>true</code> if the slot is a continuation.
 	 */
-	private boolean isContinuation(int slotStart)
+	private boolean isContinuation(int slot)
 	{
-		return bits.get(slotStart+1);
+		return bits.get(this.recBits * slot + 1);
 	}
 	
 	/**
 	 * Tells if a particular slot is shifted.
 	 * 
-	 * @param slotStart The index of the start of the slot.
+	 * @param slot The index of the slot.
 	 * @return <code>true</code> if the slot is shifted.
 	 */
-	private boolean isShifted(int slotStart)
+	private boolean isShifted(int slot)
 	{
-		return bits.get(slotStart+2);
+		return bits.get(this.recBits * slot + 2);
 	}
 	
 	/**
 	 * Gets the remainder from a slot.
 	 * 
-	 * @param slotStart The index of the start of the slot.
+	 * @param slot The index of the slot.
 	 * @return The remainder stored in the slot.
 	 */
-	private int getRemainder(int slotStart)
+	private int getRemainder(int slot)
 	{
+		int slotStart = this.recBits * slot;
 		int ret = 0;
 		for (int j = slotStart + 3 ; j < slotStart + recBits ; ++j)
 		{
@@ -131,19 +132,20 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	/**
 	 * Fills a slot with data.
 	 * 
-	 * @param slotStart slotStart The index of the start of the slot.
+	 * @param slot The index of the slot.
 	 * @param isOccupied The isOccupied flag.
 	 * @param isContinuation The isContinuation flag.
 	 * @param isShifted The isShifted flag.
 	 * @param remainder The remainder in the slot.
 	 */
 	private void fillSlot(
-			int slotStart, 
+			int slot, 
 			boolean isOccupied, 
 			boolean isContinuation, 
 			boolean isShifted, 
 			int remainder)
 	{
+		int slotStart = this.recBits * slot;
 		bits.set(slotStart, isOccupied);
 		bits.set(slotStart + 1, isContinuation);
 		bits.set(slotStart + 2, isShifted);
@@ -165,17 +167,15 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		// Split the integer.
 		SplitInt split = new SplitInt(x, this.qBits);
 		
-		// Find its canonical slot.
-		int slotStart = split.quotient * recBits;
-		
-		if (!isOccupied(slotStart))
+		// Check its canonical slot.
+		if (!isOccupied(split.quotient))
 		{
 			return false;
 		}
 		else
 		{
 			// TODO: handle the more complicated cases.
-			return getRemainder(slotStart) == split.remainder;
+			return getRemainder(split.quotient) == split.remainder;
 		}
 	}
 
@@ -190,11 +190,9 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		SplitInt split = new SplitInt(x, this.qBits);
 
 		// Find its canonical slot.
-		int slotStart = split.quotient * recBits;
-		
-		if (!isOccupied(slotStart))
+		if (!isOccupied(split.quotient))
 		{
-			fillSlot(slotStart, true, false, false, split.remainder);
+			fillSlot(split.quotient, true, false, false, split.remainder);
 		}
 		else
 		{

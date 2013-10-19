@@ -8,8 +8,6 @@ import org.junit.Test;
 
 public class TestQuotientFilter
 {
-	private ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(3);
-
 	@Before
 	public void setUp() throws Exception
 	{
@@ -21,8 +19,9 @@ public class TestQuotientFilter
 	}
 
 	@Test
-	public void test()
+	public void testSimpleInsert()
 	{
+		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(3);
 		qf.add(5);
 		assertTrue(qf.contains(5));
 		
