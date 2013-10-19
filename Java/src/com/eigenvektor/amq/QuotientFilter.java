@@ -109,7 +109,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 * @param slot The slot.
 	 * @return the next slot.
 	 */
-	int nextSlot(int slot)
+	private int nextSlot(int slot)
 	{
 		int next = slot + 1;
 		if (next == nSlots) { next = 0;	}
@@ -122,7 +122,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 * @param slot The slot.
 	 * @return the previous slot.
 	 */
-	int prevSlot(int slot)
+	private int prevSlot(int slot)
 	{
 		int prev = slot - 1;
 		if (prev == -1) { prev = nSlots - 1; }
@@ -292,16 +292,14 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		int emptySlot = slot;
 		while (!isEmpty(emptySlot))
 		{
-			emptySlot++;
-			if (emptySlot == nSlots) { emptySlot = 0; }
+			emptySlot = nextSlot(emptySlot);
 		}
 		
 		// Shift everything between here and there up one
 		int toSlot = emptySlot;
-		while (emptySlot != slot)
+		while (toSlot != slot)
 		{
-			int fromSlot = toSlot - 1;
-			if (fromSlot < 0) { fromSlot += nSlots; }
+			int fromSlot = prevSlot(toSlot);
 			copySlot(fromSlot, toSlot);
 			setShifted(toSlot, true); // record the shift
 			toSlot = fromSlot;
@@ -372,10 +370,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		// The start of the cluster is the first slot before at at this one that is not shifted.
 		while (isShifted(slot))
 		{
-			slot--;
-			
-			// We might wrap around.
-			if (slot < 0) { slot += this.nSlots; }
+			slot = prevSlot(slot);
 		}
 		
 		return slot;
@@ -415,8 +410,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 				return slot;
 			}
 			
-			slot++;
-			if (slot == nSlots) { slot = 0; } // We might wrap around.
+			slot = this.nextSlot(slot);
 		}
 	}
 	
@@ -433,10 +427,11 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		if (getRemainder(startOfRun) == remainder) { return true; }
 		
 		// The rest of the run is a continuation.
-		int slot = (startOfRun + 1) % nSlots;
+		int slot = this.nextSlot(startOfRun);
 		while (isContinuation(slot))
 		{
 			if (getRemainder(slot) == remainder) { return true; }
+			slot = this.nextSlot(slot);
 		}
 		
 		return false; // We didn't find it.
@@ -512,7 +507,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			// the next run after where our run should be.
 			int startOfCluster = findStartOfCluster(quotient);
 			int startOfRun = findRun(startOfCluster, quotient);
-			boolean inserted = insertIntoRun(startOfRun, remainder, startOfRun == quotient);
+			boolean inserted = insertIntoRun(startOfRun, remainder, startOfRun != quotient);
 			if (inserted) { this.nOccupied++; }  // increment the counter only if it was actually added,
 													// as opposed to just finding out it was already there.
 		}
