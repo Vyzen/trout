@@ -72,6 +72,9 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	@Override
 	public void add(T x)
 	{
+		// If we are out of space, refuse to insert.
+		if (nOccupied == nSlots) { throw new IllegalStateException("Quotient filter is full."); }
+		
 		// Add the hash code.
 		final int hash = x.hashCode();
 		

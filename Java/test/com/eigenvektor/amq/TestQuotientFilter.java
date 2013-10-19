@@ -2,6 +2,10 @@ package com.eigenvektor.amq;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -159,7 +163,6 @@ public class TestQuotientFilter
 	@Test
 	public void testInsertIntoCluster()
 	{
-		// Create a single run of integers with the same quotient.
 		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(3); 
 		
 		int test1 = (3 << 29) + 63; // Canonically in 3
@@ -190,6 +193,40 @@ public class TestQuotientFilter
 		assertTrue(qf.contains(test5));
 		assertTrue(qf.contains(test6));
 		assertTrue(qf.contains(test7));
+	}
+	
+	
+	/**
+	 * A bigger scale test
+	 */
+	@Test
+	public void bigTest()
+	{
+		// 1024 slots.
+		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(10); 
+		
+		Set<Integer> nums = new HashSet<Integer>();
+		
+		Random rnd = new Random(1337);
+		for (int j = 0 ; j < 1000 ; ++j)
+		{
+			byte[] b = new byte[4];
+			rnd.nextBytes(b);
+			int test = 0;
+			for (int k = 0 ; k < 4 ; ++k)
+			{
+				test = test << 8;
+				test += b[k];
+			}
+			
+			qf.add(test);
+			nums.add(test);
+		}
+		
+		for (int x : nums)
+		{
+			assertTrue(qf.contains(x));
+		}
 	}
 	
 	
