@@ -26,7 +26,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		 */
 		public SplitInt(int x, int qBits)
 		{
-			quotient = x >> 32-qBits;
+			quotient = x >>> 32-qBits;
 			remainder = (x << qBits) >>> qBits;
 		}
 		
