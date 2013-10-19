@@ -497,6 +497,153 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		}
 	}
 	
+	/**
+	 * A class to represent summary statistics for this quotient filter.
+	 */
+	public final class Stats
+	{
+		private final int nSlots;
+		private final int nOccupied;
+		private final int nCanonical;
+		private final int nShifted;
+		private final int nRuns;
+		private final int nClusters;
+		
+		/**
+		 * Creates a new set of summary statistics.
+		 * 
+		 * @param nSlots
+		 * @param nOccupied
+		 * @param nCanonical
+		 * @param nShifted
+		 * @param nRuns
+		 * @param nClusters
+		 */
+		private Stats(int nSlots, int nOccupied, int nCanonical, int nShifted, int nRuns,
+				int nClusters)
+		{
+			this.nSlots = nSlots;
+			this.nOccupied = nOccupied;
+			this.nCanonical = nCanonical;
+			this.nShifted = nShifted;
+			this.nRuns = nRuns;
+			this.nClusters = nClusters;
+		}
+		
+		/**
+		 * Gets the number of slots.
+		 * 
+		 * @return the number of slots.
+		 */
+		public int getNumSlots()
+		{
+			return nSlots;
+		}
+
+		/**
+		 * Gets the number of occupied slots.
+		 * 
+		 * @return the number of occupied slots.
+		 */
+		public int getNumOccupied()
+		{
+			return nOccupied;
+		}
+
+		/**
+		 * Gets the number of canonical slots used.
+		 * 
+		 * @return the number of canonical slots used.
+		 */
+		public int getNumCanonical()
+		{
+			return nCanonical;
+		}
+
+		/**
+		 * Gets the number of shifted slots.
+		 * 
+		 * @return the number of shifted slots.
+		 */
+		public int getNumShifted()
+		{
+			return nShifted;
+		}
+		
+		/**
+		 * Gets the number of runs.
+		 * 
+		 * @return the number of runs.
+		 */
+		public int getNumRuns()
+		{
+			return nRuns;
+		}
+		
+		/**
+		 * Gets the number of clusters.
+		 * 
+		 * @return the number of clusters.
+		 */
+		public int getNumClusters()
+		{
+			return nClusters;
+		}
+		
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder("[nSlots=");
+			sb.append(this.nSlots);
+			sb.append(", nOccupied=");
+			sb.append(this.nOccupied);
+			sb.append(", nCanonical=");
+			sb.append(this.nCanonical);
+			sb.append(", nShifted=");
+			sb.append(this.nShifted);
+			sb.append(", nRuns=");
+			sb.append(this.nRuns);
+			sb.append(", nClusters=");
+			sb.append(this.nClusters);
+			sb.append("]");
+			return sb.toString();
+		}
+	}
+	
+	/**
+	 * Gets some summary statistics for this quotient filter.
+	 * 
+	 * @return some summary stats.
+	 */
+	public Stats getStats()
+	{
+		int nCanonical = 0;
+		int nShifted = 0;
+		int nRuns = 0;
+		int nClusters = 0;
+		
+		for (int j =0 ; j < nSlots ; ++j)
+		{
+			if (isOccupied(j)) { nCanonical++; }
+			if (isShifted(j)) { nShifted++; }
+			
+			// If the slot is canonical and not shifted it is the start of a cluster and a run.
+			if (isOccupied(j) && !isShifted(j)) 
+			{ 
+				nClusters++;
+				nRuns++;
+			}
+			
+			// If it's shifted, but not a continuation, it's the start of a run that is not the
+			// start of a cluster.
+			if (isShifted(j) && !isContinuation(j))
+			{
+				nRuns++;
+			}
+		}
+		
+		return new Stats(this.nSlots, this.nOccupied, nCanonical, nShifted, nRuns, nClusters);
+	}
+	
 	@Override
 	public String toString()
 	{

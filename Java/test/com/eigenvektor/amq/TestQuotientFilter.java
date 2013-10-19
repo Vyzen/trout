@@ -203,7 +203,7 @@ public class TestQuotientFilter
 	public void bigTest()
 	{
 		// 1024 slots.
-		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(10); 
+		QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
 		
 		Set<Integer> nums = new HashSet<Integer>();
 		
@@ -228,6 +228,9 @@ public class TestQuotientFilter
 		{
 			assertTrue(qf.contains(x));
 		}
+		
+		QuotientFilter<Integer>.Stats stats = qf.getStats();
+		assertTrue(stats.getNumOccupied() == qf.getNumOccupied());
 		
 		// Do a bunch of negative tests as well.
 		for (int j = 0 ; j < 1000 ; ++j)
