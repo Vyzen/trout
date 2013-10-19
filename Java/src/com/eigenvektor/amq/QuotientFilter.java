@@ -13,26 +13,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	// the entire contents of the table in toString();
 	private static final int TOSTRING_GIVE_UP = 8;
 	
-	/**
-	 * A simple class that splits an int between quotient and remainder.
-	 */
-	private static class SplitInt
-	{
-		/**
-		 * Splits an int.
-		 * 
-		 * @param x The int to split.
-		 * @param qBits The number of bits in the quotent.
-		 */
-		public SplitInt(int x, int qBits)
-		{
-			quotient = x >>> 32-qBits;
-			remainder = (x << qBits) >>> qBits;
-		}
-		
-		public final int quotient;
-		public final int remainder;
-	}
+	private final QuotientingStrategy<T> quot;
 	
 	// The number of bits in the quotient.
 	private final int qBits;
@@ -49,6 +30,20 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	// The number of occupied records;
 	private int nOccupied = 0;
 	
+	public QuotientFilter(QuotientingStrategy<T> quot)
+	{
+		if (quot == null) { throw new IllegalArgumentException("quot may not be null."); }
+		
+		this.qBits = quot.getQuotientBits();
+		this.recBits = quot.getRemainderBits() + 3; // Enough space for the remainder, plus the three control bits.
+		
+		// Create a bit set
+		this.nSlots = 1 << this.qBits;
+		this.bits = new BitSet(nSlots * recBits);
+		
+		this.quot = quot;
+	}
+	
 	/**
 	 * Creates a new Quotient filter.
 	 * 
@@ -56,17 +51,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 */
 	public QuotientFilter(int nQuotientBits)
 	{
-		if (nQuotientBits < 1 || nQuotientBits > 31)
-		{
-			throw new IllegalArgumentException("Quotient must be between 1 and 31 bits.");
-		}
-		
-		this.qBits = nQuotientBits;
-		this.recBits = (32 - this.qBits) + 3; // Enough space for the remainder, plus the three control bits.
-		
-		// Create a bit set
-		this.nSlots = 1 << this.qBits;
-		this.bits = new BitSet(nSlots * recBits);
+		this(new HashQuotientingStrategy<T>(nQuotientBits));
 	}
 
 	@Override
@@ -75,25 +60,19 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		// If we are out of space, refuse to insert.
 		if (nOccupied == nSlots) { throw new IllegalStateException("Quotient filter is full."); }
 		
-		// Add the hash code.
-		final int hash = x.hashCode();
+		// Ask the quotienting strategy to split the object.
+		QuotientingStrategy.QuotientAndRemainder split = quot.getQuotientAndRemainder(x);
 		
-		// Split the hash.
-		SplitInt split = new SplitInt(hash, this.qBits);
-		
-		this.addQR(split.quotient, split.remainder);
+		this.addQR(split.getQuotient(), split.getRemainder());
 	}
 
 	@Override
 	public boolean contains(T x)
 	{
-		// Look for the hash code.
-		final int hash = x.hashCode();
+		// Ask the quotienting strategy to split the object.
+		QuotientingStrategy.QuotientAndRemainder split = quot.getQuotientAndRemainder(x);
 		
-		// Split the hash.
-		SplitInt split = new SplitInt(hash, this.qBits);
-		
-		return containsQR(split.quotient, split.remainder);
+		return containsQR(split.getQuotient(), split.getRemainder());
 	}
 	
 	/**

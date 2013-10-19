@@ -253,5 +253,39 @@ public class TestQuotientFilter
 	}
 	
 	
-
+	/**
+	 * A bigger scale test that only uses 10 bits for the remainder.
+	 */
+	@Test
+	public void bigTestSmallRemainder()
+	{
+		// 1024 slots, 10 bit remainder.
+		QuotientingStrategy<Integer> quot = new HashQuotientingStrategy<>(10, 10);
+		ApproxMemQuery<Integer> qf = new QuotientFilter<Integer>(quot); 
+		
+		Set<Integer> nums = new HashSet<Integer>();
+		
+		// Insert 1000 random numbers and see how it does.
+		Random rnd = new Random(1337);
+		for (int j = 0 ; j < 1000 ; ++j)
+		{
+			byte[] b = new byte[4];
+			rnd.nextBytes(b);
+			int test = 0;
+			for (int k = 0 ; k < 4 ; ++k)
+			{
+				test = test << 8;
+				test += b[k];
+			}
+			
+			qf.add(test);
+			nums.add(test);
+		}
+		
+		for (int x : nums)
+		{
+			assertTrue(qf.contains(x));
+		}
+		
+	}
 }
