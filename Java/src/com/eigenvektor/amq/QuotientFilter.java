@@ -9,6 +9,10 @@ import java.util.BitSet;
  */
 public final class QuotientFilter<T> implements ApproxMemQuery<T>
 {
+	// The largest size of filter for which it makes sense to print out
+	// the entire contents of the table in toString();
+	private static final int TOSTRING_GIVE_UP = 8;
+	
 	/**
 	 * A simple class that splits an int between quotient and remainder.
 	 */
@@ -512,6 +516,52 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			if (inserted) { this.numOccupied++; }  // increment the counter only if it was actually added,
 													// as opposed to just finding out it was already there.
 		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		if (this.nSlots > TOSTRING_GIVE_UP)
+		{
+			StringBuilder sb = new StringBuilder("QuotientFilter<nSlots=");
+			sb.append(this.nSlots);
+			sb.append(",nOccupied=");
+			sb.append(this.numOccupied);
+			sb.append(">");
+			return sb.toString();
+		}
+		else
+		{
+			StringBuilder sb = new StringBuilder("QuotientFilter<\n");
+			for (int j = 0 ; j < this.nSlots ; ++j)
+			{
+				sb.append(j);
+				sb.append(": ");
+				appendSlot(sb, j);
+				sb.append("\n");
+			}
+			sb.append(">");
+			return sb.toString();
+		}
+	}
+
+	/**
+	 * Appends a representation of a slot to a string builder.
+	 * 
+	 * @param sb the builder to add to.
+	 * @param idx The index of the slot.
+	 */
+	private void appendSlot(StringBuilder sb, int idx)
+	{
+		sb.append("[o=");
+		sb.append(isOccupied(idx)?1:0);
+		sb.append(",c=");
+		sb.append(isContinuation(idx)?1:0);
+		sb.append(",s=");
+		sb.append(isShifted(idx)?1:0);
+		sb.append(": ");
+		sb.append(getRemainder(idx));
+		sb.append("]");
 	}
 
 }
