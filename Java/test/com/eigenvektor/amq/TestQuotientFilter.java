@@ -229,7 +229,7 @@ public class TestQuotientFilter
 			assertTrue(qf.contains(x));
 		}
 		
-		QuotientFilter<Integer>.Stats stats = qf.getStats();
+		QuotientFilter.Stats stats = qf.getStats();
 		assertTrue(stats.getNumOccupied() == qf.getNumOccupied());
 		
 		// Do a bunch of negative tests as well.
@@ -290,7 +290,7 @@ public class TestQuotientFilter
 				assertTrue(qf.contains(x));
 			}
 
-			QuotientFilter<Integer>.Stats stats = qf.getStats();
+			QuotientFilter.Stats stats = qf.getStats();
 			assertTrue(stats.getNumOccupied() == qf.getNumOccupied());
 
 			// Do a bunch of negative tests as well.

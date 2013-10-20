@@ -500,7 +500,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	/**
 	 * A class to represent summary statistics for this quotient filter.
 	 */
-	public final class Stats
+	public static final class Stats
 	{
 		private final int nSlots;
 		private final int nOccupied;
