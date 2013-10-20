@@ -255,6 +255,68 @@ public class TestQuotientFilter
 		}
 	}
 	
+	/**
+	 * A bigger scale test
+	 */
+	@Test
+	public void reallyBigTest()
+	{
+		for (int iter = 0 ; iter < 100000 ; ++iter)
+		{
+			// 1024 slots.
+			QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
+
+			Set<Integer> nums = new HashSet<Integer>();
+
+			// Insert 1000 random numbers and see how it does.
+			Random rnd = new Random(iter);
+			for (int j = 0 ; j < 1000 ; ++j)
+			{
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int k = 0 ; k < 4 ; ++k)
+				{
+					test = test << 8;
+					test += b[k];
+				}
+
+				qf.add(test);
+				nums.add(test);
+			}
+
+			for (int x : nums)
+			{
+				assertTrue(qf.contains(x));
+			}
+
+			QuotientFilter<Integer>.Stats stats = qf.getStats();
+			assertTrue(stats.getNumOccupied() == qf.getNumOccupied());
+
+			// Do a bunch of negative tests as well.
+			for (int j = 0 ; j < 1000 ; ++j)
+			{
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int k = 0 ; k < 4 ; ++k)
+				{
+					test = test << 8;
+					test += b[k];
+				}
+
+				if (nums.contains(test))
+				{
+					assertTrue(qf.contains(test));
+				}
+				else
+				{
+					assertTrue(!qf.contains(test));
+				}
+			}
+		}
+	}
+	
 	
 	/**
 	 * A bigger scale test that only uses 10 bits for the remainder.
