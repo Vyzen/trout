@@ -431,7 +431,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	private boolean containsQR(int quotient, int remainder)
 	{
 		// Check its canonical slot.
-		if (isEmpty(quotient))
+		if (!isOccupied(quotient))
 		{
 			return false;
 		}

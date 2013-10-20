@@ -282,12 +282,37 @@ public class TestQuotientFilter
 			}
 			
 			qf.add(test);
-			nums.add(test);
+			
+			int canonical = test & 0b11111111110000000000001111111111;
+			nums.add(canonical);
 		}
 		
 		for (int x : nums)
 		{
 			assertTrue(qf.contains(x));
+		}
+		
+		// Do a bunch of negative tests as well.
+		for (int j = 0 ; j < 1000 ; ++j)
+		{
+			byte[] b = new byte[4];
+			rnd.nextBytes(b);
+			int test = 0;
+			for (int k = 0 ; k < 4 ; ++k)
+			{
+				test = test << 8;
+				test += b[k];
+			}
+
+			int canonical = test & 0b11111111110000000000001111111111;
+			if (nums.contains(canonical))
+			{
+				assertTrue(qf.contains(canonical));
+			}
+			else
+			{
+				assertTrue(!qf.contains(canonical));
+			}
 		}
 		
 	}
