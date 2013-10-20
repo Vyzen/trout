@@ -8,14 +8,14 @@ import java.util.BitSet;
 public final class BloomFilter<T> implements ApproxMemQuery<T>
 {
 	// The bits of the filter.
-	private BitSet bits;
+	private final BitSet bits;
 	
 	// The number of bits and number of hashes.
-	private int numBits;
-	private int numHashes;
+	private final int numBits;
+	private final int numHashes;
 	
 	// The hash code generator.
-	private MultiHash<T> hasher;
+	private final MultiHash<T> hasher;
 	
 	// The number of things that have been added to this bloom filter.
 	private int numAdds = 0;
