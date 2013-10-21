@@ -3,7 +3,7 @@ package com.eigenvektor.graph;
 /**
  * An exception to throw when a graph algorithm fails.
  */
-public class GraphAlgorithmException extends Exception {
+public final class GraphAlgorithmException extends Exception {
 
 	/**
 	 * 

@@ -5,13 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * An iterator that iterates through a tree depth first.
+ * 
+ * @param <T> The type of the tree.
+ */
 class DepthFirstIterator<T> implements Iterator<T> 
 {
 
 	private final Tree<T> tree;
-	List<T> s = new LinkedList<T>();
+	private final List<T> s = new LinkedList<T>();
 	
-	DepthFirstIterator(final Tree<T> tree)
+	public DepthFirstIterator(final Tree<T> tree)
 	{
 		this.tree = tree;
 		s.add(0, tree.getRoot());

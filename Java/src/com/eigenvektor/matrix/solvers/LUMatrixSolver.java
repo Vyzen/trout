@@ -7,7 +7,7 @@ import com.eigenvektor.matrix.MutableMatrix;
 public final class LUMatrixSolver implements MatrixSolver
 {
 	
-	private LUDecomposer lu;
+	private final LUDecomposer lu;
 	
 	/**
 	 * Creates a new solver.

@@ -15,7 +15,7 @@ public final class MatrixView extends AbstractMatrix
 	private final int endCol;
 	
 	/**
-	 * CReates a new Matrix view.
+	 * Creates a new Matrix view.
 	 * 
 	 * @param mat The matrix to view.
 	 * @param startRow The first row of the matrix to include in the view.

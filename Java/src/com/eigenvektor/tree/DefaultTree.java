@@ -72,8 +72,8 @@ public final class DefaultTree<T> extends AbstractTree<T> {
 	}
 	
 	// The elements.  A map from the element itself to the node record.
-	Map<T, TreeNode<T>> elements = new HashMap<T, TreeNode<T>>();
-	final T root;
+	private final Map<T, TreeNode<T>> elements = new HashMap<T, TreeNode<T>>();
+	private final T root;
 	
 	/**
 	 * Creates a tree with a known root.

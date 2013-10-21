@@ -16,8 +16,8 @@ public final class AdjacencyListGraph<T> extends AbstractGraph<T> implements Mut
 	
 	// The edge set.  First key is the "from" edge, second is the "to" edge, 
 	// value is the edge weight.
-	private Map<T, Map<T, Double>> adjacencyLists = new HashMap<>();
-	private Map<T, Map<T, Double>> preAdjacenyLists = new HashMap<>();
+	private final Map<T, Map<T, Double>> adjacencyLists = new HashMap<>();
+	private final Map<T, Map<T, Double>> preAdjacenyLists = new HashMap<>();
 	
 	/**
 	 * Creates a new AdjacenyListGraph with no vertices or edges.

@@ -8,8 +8,8 @@ import java.util.NoSuchElementException;
  */
 final class GraphEdgeIterator<T> implements Iterator<Graph.Edge<T>>
 {
-	private Graph<T> g = null;
-	private Iterator<T> vertexIterator = null;
+	private final Graph<T> g;
+	private final Iterator<T> vertexIterator;
 	private Iterator<T> neighbourIterator = null;
 	
 	private T currentEdgeStart = null;

@@ -7,9 +7,9 @@ import java.util.Iterator;
  */
 public final class FullMatrix extends AbstractMutableMatrix 
 {
-	final int nRows;
-	final int nCols;
-	final double[] data;
+	private final int nRows;
+	private final int nCols;
+	private final double[] data;
 	
 	/**
 	 * Creates a new instance with a specified size full of zeros.

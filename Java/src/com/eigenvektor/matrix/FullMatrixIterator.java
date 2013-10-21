@@ -8,14 +8,14 @@ import com.eigenvektor.matrix.Matrix.Element;
 /**
  * An iterator that iterates through the full matrix making no assumptions about how it is stored.
  */
-class FullMatrixIterator implements Iterator<Matrix.Element>
+final class FullMatrixIterator implements Iterator<Matrix.Element>
 {
-	final Matrix m;
-	int row;
-	int col;
+	private final Matrix m;
+	private int row;
+	private int col;
 	
-	final int nRows;
-	final int nCols;
+	private final int nRows;
+	private final int nCols;
 	
 	public FullMatrixIterator(Matrix m)
 	{

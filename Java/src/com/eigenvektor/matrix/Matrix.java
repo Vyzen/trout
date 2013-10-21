@@ -10,7 +10,7 @@ public interface Matrix extends Iterable<Matrix.Element>
 	 * Specification for an "element" interface.  This is used for
 	 * iterating through the elements of a matrix.
 	 */
-	public interface Element
+	public static interface Element
 	{
 		public int getRow();
 		public int getCol();

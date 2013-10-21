@@ -5,7 +5,7 @@ import com.eigenvektor.matrix.Matrix.Element;
 /**
  * Simple implementation of the MatrixElement interface.
  */
-class DefaultMatrixElement implements Element
+final class DefaultMatrixElement implements Element
 {
 
 	private final int row;

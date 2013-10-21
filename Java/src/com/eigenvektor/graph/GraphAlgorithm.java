@@ -25,7 +25,7 @@ public final class GraphAlgorithm<T> {
 	 * @param <T>
 	 *            The node type of the edges.
 	 */
-	private static class EdgeWeightComparator<T> implements
+	private static final class EdgeWeightComparator<T> implements
 			Comparator<Graph.Edge<T>> {
 		/**
 		 * Private constructor to prevent instantiation.
