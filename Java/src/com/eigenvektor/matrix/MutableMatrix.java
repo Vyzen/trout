@@ -23,6 +23,23 @@ public interface MutableMatrix extends Matrix
 	public void inPlaceMultiply(double scalar);
 	
 	/**
+	 * Adds another matrix into this one.
+	 * 
+	 * @param m The matrix to add.
+	 * @throws IllegalArgumentException if <code>m</code> is not compatible for addition.
+	 */
+	public void inPlaceAdd(Matrix m);
+	
+	
+	/**
+	 * Subtracts another matrix into this one.
+	 * 
+	 * @param m The matrix to subtract.
+	 * @throws IllegalArgumentException if <code>m</code> is not compatible for subtraction.
+	 */
+	public void inPlaceSubtract(Matrix m);
+	
+	/**
 	 * Performs a row operation on the matrix.  Adds one row to another,
 	 * scaled by a coefficient.  this[to, :] += c*this[from, :].
 	 * 

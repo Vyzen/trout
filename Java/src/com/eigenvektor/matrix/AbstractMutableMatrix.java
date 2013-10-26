@@ -4,11 +4,52 @@ package com.eigenvektor.matrix;
  * An abstract implementation for <code>MutableMatrix</code> that defines the row
  * and column operations in terms of the atomic get and set operations.  If an
  * subclass can provide a faster implementation of any of these, it should override.
+ * 
+ * Also provides default implementations of <code>inPlaceAdd()</code> and 
+ * </code>inPlaceSubtract()</code>.
  */
 public abstract class AbstractMutableMatrix extends AbstractMatrix implements
 		MutableMatrix
 {
 
+	@Override
+	public void inPlaceAdd(final Matrix m)
+	{
+		if (m == null) { throw new NullPointerException("m may not be null."); }
+		
+		if (m.getNRows() != this.getNRows() || m.getNCols() != this.getNCols())
+		{
+			throw new IllegalArgumentException("m not compatable for addition.");
+		}
+		
+		for (Matrix.Element e : m)
+		{
+			final int row = e.getRow();
+			final int col = e.getCol();
+			this.set(row, col, this.get(row, col) + e.getValue());
+		}
+	}
+	
+	
+	@Override
+	public void inPlaceSubtract(final Matrix m)
+	{
+		if (m == null) { throw new NullPointerException("m may not be null."); }
+		
+		if (m.getNRows() != this.getNRows() || m.getNCols() != this.getNCols())
+		{
+			throw new IllegalArgumentException("m not compatable for subtraction.");
+		}
+		
+		for (Matrix.Element e : m)
+		{
+			final int row = e.getRow();
+			final int col = e.getCol();
+			this.set(row, col, this.get(row, col) - e.getValue());
+		}
+	}
+	
+	
 	@Override
 	public void rowOperation(int from, int to, double c)
 	{

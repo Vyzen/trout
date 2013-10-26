@@ -47,7 +47,7 @@ public interface Matrix extends Iterable<Matrix.Element>
 	 * @param scalar The scalar to multiply by.
 	 * @return A copy of <code>this</code> multiplied by <code>scalar</code>
 	 */
-	Matrix multiply(double scalar);
+	public Matrix multiply(double scalar);
 	
 	/**
 	 * Multiplies this matrix by another matrix.
@@ -56,5 +56,23 @@ public interface Matrix extends Iterable<Matrix.Element>
 	 * @return A copy of <code>this</code> multiplied on the right by <code>m</code>
 	 * @throws IllegalArgumentException if <code>m</code> is not compatible for multiplication.
 	 */
-	Matrix multiply(Matrix m);
+	public Matrix multiply(Matrix m);
+	
+	/**
+	 * Adds a matrix to this matrix.
+	 * 
+	 * @param m The matrix to add.
+	 * @return A copy of <code>this</code> with <code>m</code> added to it.
+	 * @throws IllegalArgumentException if <code>m</code> is not compatible for addition.
+	 */
+	public Matrix add(Matrix m);
+	
+	/**
+	 * Subtracts a matrix from this matrix.
+	 * 
+	 * @param m The matrix to subtract.
+	 * @return A copy of <code>this</code> with <code>m</code> added to it.
+	 * @throws IllegalArgumentException if <code>m</code> is not compatible for subtraction.
+	 */
+	public Matrix subtract(Matrix m);
 }

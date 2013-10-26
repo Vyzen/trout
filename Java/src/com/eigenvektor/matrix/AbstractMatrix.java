@@ -3,15 +3,18 @@ package com.eigenvektor.matrix;
 /**
  * An abstract implementation of the Matrix interface.  Provides
  * <code>equals()</code>, <code>hashCode()</code>, 
- * <code>toString()</code>, and a basic implementation
- * of multiply(Matrix) that uses a Full representation for
- * a return value.
+ * <code>toString()</code>, and basic implementations
+ * of <code>multiply(Matrix)</code>, <code>add(Matrix)</code>,
+ * and <code>subtract(Matrix)</code> that use a Full representations
+ * for their return values.
  */
 public abstract class AbstractMatrix implements Matrix
 {
 	@Override
 	public Matrix multiply(Matrix m)
 	{
+		if (m == null) { throw new NullPointerException("m may not be null."); }
+		
 		// Check that the matrix is compatible for multiply.
 		if (m.getNRows() != this.getNCols())
 		{
@@ -35,6 +38,49 @@ public abstract class AbstractMatrix implements Matrix
 			}
 		}
 		
+		return ret;
+	}
+	
+
+	@Override
+	public Matrix add(Matrix m)
+	{
+		if (m == null) { throw new NullPointerException("m may not be null."); }
+		
+		if (m.getNRows() != this.getNRows() || m.getNCols() != this.getNCols())
+		{
+			throw new IllegalArgumentException("m not compatable for addition.");
+		}
+		
+		FullMatrix ret = new FullMatrix(this.getNRows(), this.getNCols());
+		for (int j = 0 ; j < ret.getNRows() ; ++j)
+		{
+			for (int k = 0 ; k < ret.getNCols() ; ++j)
+			{
+				ret.set(j, k, this.get(j,k) + m.get(j, k));
+			}
+		}
+		return ret;
+	}
+	
+
+	@Override
+	public Matrix subtract(Matrix m){
+		if (m == null) { throw new NullPointerException("m may not be null."); }
+		
+		if (m.getNRows() != this.getNRows() || m.getNCols() != this.getNCols())
+		{
+			throw new IllegalArgumentException("m not compatable for addition.");
+		}
+		
+		FullMatrix ret = new FullMatrix(this.getNRows(), this.getNCols());
+		for (int j = 0 ; j < ret.getNRows() ; ++j)
+		{
+			for (int k = 0 ; k < ret.getNCols() ; ++j)
+			{
+				ret.set(j, k, this.get(j,k) - m.get(j, k));
+			}
+		}
 		return ret;
 	}
 	
