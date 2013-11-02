@@ -3,8 +3,10 @@ package com.eigenvektor.amq;
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -377,5 +379,42 @@ public class TestQuotientFilter
 			}
 		}
 		
+	}
+	
+	@Test
+	public void iteratorTest()
+	{
+		// 1024 slots.
+		QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
+		
+		// A bunch of random elements.
+		Set<Integer> beforeElements = new TreeSet<>();
+		Random rnd = new Random(1337);
+		for (int j = 0 ; j < 500 ; ++j)
+		{
+			byte[] b = new byte[4];
+			rnd.nextBytes(b);
+			int test = 0;
+			for (int k = 0 ; k < 4 ; ++k)
+			{
+				test = test << 8;
+				test += b[k];
+			}
+			
+			qf.add(test);
+			beforeElements.add(test);
+		}
+		
+		// Re-get the elements through the iterator.
+		Set<Integer> afterElements = new TreeSet<>();
+		for (Iterator<QuotientingStrategy.QuotientAndRemainder> it = qf.getFingerprintIterator()
+				; it.hasNext(); )
+		{
+			QuotientingStrategy.QuotientAndRemainder qr = it.next();
+			int recover = (qr.getQuotient() << 22) | qr.getRemainder();
+			afterElements.add(recover);
+		}
+		
+		assertTrue(beforeElements.equals(afterElements));
 	}
 }

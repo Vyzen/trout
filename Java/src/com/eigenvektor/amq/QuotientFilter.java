@@ -507,7 +507,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 	 * 
 	 * @return An iterator that iterates through all of the fingerprints in the filter.
 	 */
-	Iterator<QuotientingStrategy.QuotientAndRemainder> getFingerprintIterator()
+	public Iterator<QuotientingStrategy.QuotientAndRemainder> getFingerprintIterator()
 	{
 		// Start at a slot that is at the start of a cluster.
 		int startOfCluster = findStartOfCluster(0);
@@ -552,6 +552,14 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		
 		private void advance()
 		{
+			// If we're done, say so.
+			// The this.next != null skips the case of first initialization.
+			if (this.cur == this.start && this.next != null)
+			{
+				this.next = null;
+				return;
+			}
+			
 			// If we're pointed at an empty slot, point to the next non-empty slot.
 			while (isEmpty(this.cur))
 			{
@@ -573,8 +581,10 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			int remainder = getRemainder(this.cur);
 			this.next = new QuotientingStrategy.QuotientAndRemainder(quotient, remainder);
 			
+			this.cur = nextSlot(this.cur);
+			
 			// If the next slot is not a continuation, pop the head off the queue.
-			if (!isContinuation(nextSlot(this.cur)))
+			if (!isContinuation(this.cur))
 			{
 				this.encounteredQuotients.remove();
 			}
@@ -584,7 +594,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		@Override
 		public boolean hasNext()
 		{
-			return next == null;
+			return next != null;
 		}
 
 		@Override
