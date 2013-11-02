@@ -76,4 +76,25 @@ public class DoublingQuotientingStrategy<T> implements QuotientingStrategy<T>
 		return new QuotientAndRemainder(newQ, newR);
 	}
 
+	@Override
+	public QuotientingStrategy<T> getDoubledStrategy(int numDoublings)
+	{
+		return new DoublingQuotientingStrategy<T>(this.strat, this.numBits +  numDoublings);
+	}
+	
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (!(o instanceof DoublingQuotientingStrategy)) { return false; }
+		@SuppressWarnings("unchecked")
+		DoublingQuotientingStrategy<T> dqs = (DoublingQuotientingStrategy<T>) o;
+		return dqs.strat.equals(this.strat) && dqs.numBits == this.numBits;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return this.strat.hashCode() ^ this.numBits;
+	}
+
 }

@@ -64,4 +64,34 @@ public final class HashQuotientingStrategy<T> implements QuotientingStrategy<T>
 		return new QuotientAndRemainder(quotient, remainder);
 	}
 
+	@Override
+	public QuotientingStrategy<T> getDoubledStrategy(int numDoublings)
+	{
+		if (this.nQBits + this.nRBits == 32)
+		{
+			// if all of the bits in the hash are used, we can do a simple recount.
+			return new HashQuotientingStrategy<T>(this.nQBits + numDoublings, this.nRBits - numDoublings);
+		}
+		else
+		{
+			// Otherwise, use the double.
+			return new DoublingQuotientingStrategy<T>(this, numDoublings);
+		}
+	}
+	
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (!(o instanceof HashQuotientingStrategy)) { return false; }
+		@SuppressWarnings("unchecked")
+		HashQuotientingStrategy<T> hqs = (HashQuotientingStrategy<T>) o;
+		return hqs.nQBits == this.nQBits && hqs.nRBits == this.nRBits;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return this.nQBits ^ (this.nRBits + 255);
+	}
+
 }
