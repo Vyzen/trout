@@ -12,7 +12,8 @@ import com.eigenvektor.amq.QuotientingStrategy.QuotientAndRemainder;
  * 
  * @param <T> The type of entry.
  */
-public final class QuotientFilter<T> implements ApproxMemQuery<T>, Iterable<QuotientingStrategy.QuotientAndRemainder>
+public final class QuotientFilter<T> implements ApproxMemQuery<T>, 
+		Iterable<QuotientingStrategy.QuotientAndRemainder>
 {
 	// The largest size of filter for which it makes sense to print out
 	// the entire contents of the table in toString();
@@ -35,6 +36,28 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>, Iterable<Quot
 	// The number of occupied records;
 	private int nOccupied = 0;
 	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param other The filter to copy.
+	 */
+	public QuotientFilter(final QuotientFilter<T> other)
+	{
+		if (other == null) { throw new NullPointerException("other may not be null."); }
+		
+		this.quot = other.quot; // Assumed to be immutable, so fine to share.
+		this.qBits = other.qBits;
+		this.recBits = other.recBits;
+		this.nSlots = other.nSlots;
+		this.bits = (BitSet) other.bits.clone();
+		this.nOccupied = other.nOccupied;
+	}
+	
+	/**
+	 * Creates a QuotientFilter with a particular quotienting strategy.
+	 * 
+	 * @param quot The quotienting strategy to employ.
+	 */
 	public QuotientFilter(QuotientingStrategy<T> quot)
 	{
 		if (quot == null) { throw new IllegalArgumentException("quot may not be null."); }
