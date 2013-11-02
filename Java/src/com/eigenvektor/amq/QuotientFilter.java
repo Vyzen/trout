@@ -1,6 +1,11 @@
 package com.eigenvektor.amq;
 
+import java.util.ArrayDeque;
 import java.util.BitSet;
+import java.util.Iterator;
+import java.util.Queue;
+
+import com.eigenvektor.amq.QuotientingStrategy.QuotientAndRemainder;
 
 /**
  * Implementation of a quotient filter.
@@ -495,6 +500,107 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			if (inserted) { this.nOccupied++; }  // increment the counter only if it was actually added,
 													// as opposed to just finding out it was already there.
 		}
+	}
+	
+	/**
+	 * Gets an iterator that iterates through all of the fingerprints in the filter.
+	 * 
+	 * @return An iterator that iterates through all of the fingerprints in the filter.
+	 */
+	Iterator<QuotientingStrategy.QuotientAndRemainder> getFingerprintIterator()
+	{
+		// Start at a slot that is at the start of a cluster.
+		int startOfCluster = findStartOfCluster(0);
+		
+		// Create an iterator that starts there.
+		return new FingerprintIterator(startOfCluster);
+	}
+	
+	/**
+	 * A fingerprint iterator.
+	 */
+	private class FingerprintIterator implements Iterator<QuotientingStrategy.QuotientAndRemainder>
+	{
+		// The quotient we started at.
+		private int start;
+		
+		// The slot we are currently at.
+		private int cur;
+		
+		// The quotients we have encountered but not yet completed
+		Queue<Integer> encounteredQuotients = new ArrayDeque<>();
+		
+		// The next thing we are going to return.
+		private QuotientingStrategy.QuotientAndRemainder next = null;
+		
+		/**
+		 * Creates a new Fingerprint iterator.
+		 * 
+		 * @param start The quotient to start at.  Must be the start of a cluster.
+		 */
+		public FingerprintIterator(final int start)
+		{
+			this.start = start;
+			this.cur = start;
+			
+			assert(isOccupied(start));
+			assert(!isContinuation(start));
+			assert(!isShifted(start));
+			
+			advance();
+		}
+		
+		private void advance()
+		{
+			// If we're pointed at an empty slot, point to the next non-empty slot.
+			while (isEmpty(this.cur))
+			{
+				this.cur = nextSlot(this.cur);
+				if (this.cur == this.start)
+				{
+					// If we're back to the start, we're done.
+					next = null;
+					return;
+				}
+
+			}
+
+			// If this is a canonical slot, remember the quotient.
+			if (isOccupied(this.cur)) { this.encounteredQuotients.add(this.cur); }
+			
+			// The next output has the head of the queue for a quotient and this slot's remainder.
+			int quotient = encounteredQuotients.element();
+			int remainder = getRemainder(this.cur);
+			this.next = new QuotientingStrategy.QuotientAndRemainder(quotient, remainder);
+			
+			// If the next slot is not a continuation, pop the head off the queue.
+			if (!isContinuation(nextSlot(this.cur)))
+			{
+				this.encounteredQuotients.remove();
+			}
+
+		}
+
+		@Override
+		public boolean hasNext()
+		{
+			return next == null;
+		}
+
+		@Override
+		public QuotientAndRemainder next()
+		{
+			QuotientingStrategy.QuotientAndRemainder ret = next;
+			advance();
+			return ret;
+		}
+
+		@Override
+		public void remove()
+		{
+			throw new UnsupportedOperationException("Remove not supported for this iterator.");
+		}
+		
 	}
 	
 	/**
