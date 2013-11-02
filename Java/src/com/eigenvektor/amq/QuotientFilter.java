@@ -620,7 +620,18 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>, Iterable<Quot
 	}
 	
 	/**
-	 * Gets a quotient filter double with a power of two times the quotient capacity of 
+	 * Gets a quotient filter with a double the quotient capacity of this one with the same data in it.  
+	 * This is done by transferring one bit of each fingerprint from the remainder to the quotient.
+	 * 
+	 * @return The doubled quotient filter.
+	 */
+	public QuotientFilter<T> getDoubled()
+	{
+		return this.getDoubled(1);
+	}
+	
+	/**
+	 * Gets a quotient filter with a power of two times the quotient capacity of 
 	 * this one with the same data in it.  This is done by transferring a number of bits 
 	 * of each fingerprint from the remainder to the quotient.
 	 * 
@@ -651,6 +662,31 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>, Iterable<Quot
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * Merges another quotient filter into this one.  The other filter must be the same
+	 * size and have the same quotienting strategy.
+	 * 
+	 * @param other The other to merge.
+	 */
+	public void merge(final QuotientFilter<T> other)
+	{
+		if (other == null) { throw new NullPointerException("other may not be null."); }
+		if (other.nSlots != this.nSlots) { throw new IllegalArgumentException("other must be the same size as this."); }
+		if (!other.quot.equals(this.quot)) { 
+			throw new IllegalArgumentException("other must have the same quotienting stategy as this."); }
+		if (this.nOccupied + other.nOccupied > this.nSlots) {
+			throw new IllegalArgumentException("Merge of other would overfill this.");
+		}
+		
+		// Easy case, if we're merging into ourselves, do nothing.
+		if (other == this) { return; }
+		
+		for (final QuotientingStrategy.QuotientAndRemainder qr : other)
+		{
+			this.addQR(qr.getQuotient(), qr.getRemainder());
+		}
 	}
 	
 	/**

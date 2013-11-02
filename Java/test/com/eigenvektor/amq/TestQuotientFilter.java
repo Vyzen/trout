@@ -484,4 +484,64 @@ public class TestQuotientFilter
 			assertTrue(beforeElements.equals(afterElements));
 		}
 	}
+	
+	@Test
+	public void mergeTest()
+	{
+		for (int j =0 ; j < 100000; ++j)
+		{
+			// 1024 slots.
+			QuotientFilter<Integer> qf1 = new QuotientFilter<Integer>(10); 
+
+			// A bunch of random elements.
+			Set<Integer> elements1 = new TreeSet<>();
+			Random rnd = new Random(j);
+			for (int k = 0 ; k < 400 ; ++k)
+			{
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int l = 0 ; l < 4 ; ++l)
+				{
+					test = test << 8;
+					test += b[l];
+				}
+
+				qf1.add(test);
+				elements1.add(test);
+			}
+
+			// 1024 slots.
+			QuotientFilter<Integer> qf2 = new QuotientFilter<Integer>(10); 
+
+			// A bunch of random elements.
+			Set<Integer> elements2 = new TreeSet<>();
+			for (int k = 0 ; k < 400 ; ++k)
+			{
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int l = 0 ; l < 4 ; ++l)
+				{
+					test = test << 8;
+					test += b[l];
+				}
+
+				qf2.add(test);
+				elements2.add(test);
+			}
+			
+			qf1.merge(qf2);
+
+			for (int x : elements1)
+			{
+				assertTrue(qf1.contains(x));
+			}
+			
+			for (int x : elements2)
+			{
+				assertTrue(qf1.contains(x));
+			}
+		}
+	}
 }
