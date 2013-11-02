@@ -443,4 +443,45 @@ public class TestQuotientFilter
 		
 		assertTrue(elements.isEmpty());
 	}
+	
+	@Test
+	public void doublingTest()
+	{
+		for (int j =0 ; j < 100000 ; ++j)
+		{
+			// 1024 slots.
+			QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
+
+			// A bunch of random elements.
+			Set<Integer> beforeElements = new TreeSet<>();
+			Random rnd = new Random(j);
+			for (int k = 0 ; k < 500 ; ++k)
+			{
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int l = 0 ; l < 4 ; ++l)
+				{
+					test = test << 8;
+					test += b[l];
+				}
+
+				qf.add(test);
+				beforeElements.add(test);
+			}
+			
+			// Double the filter.
+			QuotientFilter<Integer> dqf = qf.getDoubled(1);
+
+			// Re-get the elements through the iterator.
+			Set<Integer> afterElements = new TreeSet<>();
+			for (QuotientingStrategy.QuotientAndRemainder qr : dqf)
+			{
+				int recover = (qr.getQuotient() << 21) | qr.getRemainder();
+				afterElements.add(recover);
+			}
+
+			assertTrue(beforeElements.equals(afterElements));
+		}
+	}
 }

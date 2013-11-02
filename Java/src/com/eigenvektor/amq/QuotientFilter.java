@@ -12,7 +12,7 @@ import com.eigenvektor.amq.QuotientingStrategy.QuotientAndRemainder;
  * 
  * @param <T> The type of entry.
  */
-public final class QuotientFilter<T> implements ApproxMemQuery<T>
+public final class QuotientFilter<T> implements ApproxMemQuery<T>, Iterable<QuotientingStrategy.QuotientAndRemainder>
 {
 	// The largest size of filter for which it makes sense to print out
 	// the entire contents of the table in toString();
@@ -502,6 +502,12 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 		}
 	}
 	
+	@Override
+	public Iterator<QuotientAndRemainder> iterator()
+	{
+		return getFingerprintIterator();
+	}
+
 	/**
 	 * Gets an iterator that iterates through all of the fingerprints in the filter.
 	 * 
@@ -611,6 +617,40 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>
 			throw new UnsupportedOperationException("Remove not supported for this iterator.");
 		}
 		
+	}
+	
+	/**
+	 * Gets a quotient filter double with a power of two times the quotient capacity of 
+	 * this one with the same data in it.  This is done by transferring a number of bits 
+	 * of each fingerprint from the remainder to the quotient.
+	 * 
+	 * @param numDoublings The number of doublings to apply. (i.e. the new filter will have
+	 * 2^numDoublings times more quotients than this.
+	 * @return The doubled quotient filter.
+	 */
+	public QuotientFilter<T> getDoubled(final int numDoublings)
+	{
+		if (numDoublings <= 0) { throw new IllegalArgumentException("numDoublings must be strictly positive."); }
+		if (numDoublings >= quot.getRemainderBits())
+		{
+			throw new IllegalArgumentException("Not enough remainder bits to do " + numDoublings + " doublings");
+		}
+		
+		// Create a quotient filter with a doubled strategy.
+		QuotientingStrategy<T> newStrat = this.quot.getDoubledStrategy(numDoublings);
+		QuotientFilter<T> ret = new QuotientFilter<T>(newStrat);
+		
+		// Iterate through the fingerprints, transferring from here to there.
+		for (final QuotientingStrategy.QuotientAndRemainder qr : this)
+		{
+			int newRemainder = qr.getRemainder(); // We don't have to chop of bits because they are ignored anyway.
+			int newQuotient = qr.getQuotient() << numDoublings;
+			newQuotient |= newRemainder >>> (quot.getRemainderBits() - numDoublings); 
+			
+			ret.addQR(newQuotient, newRemainder);
+		}
+		
+		return ret;
 	}
 	
 	/**

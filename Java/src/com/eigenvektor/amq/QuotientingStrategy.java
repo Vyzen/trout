@@ -110,8 +110,9 @@ public interface QuotientingStrategy<T>
 	 * class applied to <code>this</code> but may be more efficient to implement in
 	 * another way.
 	 * 
-	 * @param numDoublings
-	 * @return
+	 * @param numDoublings The number of doublings to apply.
+	 * @return A strategy with <code>numDoublings</code> bits transferred from the remainder to
+	 * the quotient.
 	 */
 	public QuotientingStrategy<T> getDoubledStrategy(int numDoublings);
 }
