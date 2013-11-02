@@ -11,7 +11,7 @@ package com.eigenvektor.amq;
  */
 public interface QuotientingStrategy<T>
 {
-	public static class QuotientAndRemainder
+	public static final class QuotientAndRemainder
 	{
 		private final int quotient;
 		private final int remainder;
@@ -46,6 +46,36 @@ public interface QuotientingStrategy<T>
 		public int getRemainder()
 		{
 			return remainder;
+		}
+		
+		@Override
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append("[");
+			sb.append(quotient);
+			sb.append(",");
+			sb.append(remainder);
+			sb.append("]");
+			return sb.toString();
+		}
+		
+		@Override
+		public boolean equals(final Object o)
+		{
+			if (!(o instanceof QuotientAndRemainder))
+			{
+				return false;
+			}
+			
+			QuotientAndRemainder qr = (QuotientAndRemainder) o;
+			return qr.quotient == this.quotient && qr.remainder == this.remainder;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return quotient ^ remainder;
 		}
 	}
 	

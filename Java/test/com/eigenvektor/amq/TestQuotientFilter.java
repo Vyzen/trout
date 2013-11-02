@@ -423,4 +423,24 @@ public class TestQuotientFilter
 			assertTrue(beforeElements.equals(afterElements));
 		}
 	}
+	
+	/**
+	 * Testing the fingerprint iterator in the empty case.
+	 */
+	@Test
+	public void emptyIteratorTest()
+	{
+		// 1024 slots.
+		QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
+		Set<Integer> elements = new TreeSet<>();
+		for (Iterator<QuotientingStrategy.QuotientAndRemainder> it = qf.getFingerprintIterator()
+				; it.hasNext(); )
+		{
+			QuotientingStrategy.QuotientAndRemainder qr = it.next();
+			int recover = (qr.getQuotient() << 22) | qr.getRemainder();
+			elements.add(recover);
+		}
+		
+		assertTrue(elements.isEmpty());
+	}
 }
