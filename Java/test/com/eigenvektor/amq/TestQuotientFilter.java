@@ -381,40 +381,46 @@ public class TestQuotientFilter
 		
 	}
 	
+	/**
+	 * Testing the fingerprint iterator.
+	 */
 	@Test
 	public void iteratorTest()
 	{
-		// 1024 slots.
-		QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
-		
-		// A bunch of random elements.
-		Set<Integer> beforeElements = new TreeSet<>();
-		Random rnd = new Random(1337);
-		for (int j = 0 ; j < 500 ; ++j)
+		for (int j =0 ; j < 100000 ; ++j)
 		{
-			byte[] b = new byte[4];
-			rnd.nextBytes(b);
-			int test = 0;
-			for (int k = 0 ; k < 4 ; ++k)
+			// 1024 slots.
+			QuotientFilter<Integer> qf = new QuotientFilter<Integer>(10); 
+
+			// A bunch of random elements.
+			Set<Integer> beforeElements = new TreeSet<>();
+			Random rnd = new Random(j);
+			for (int k = 0 ; k < 500 ; ++k)
 			{
-				test = test << 8;
-				test += b[k];
+				byte[] b = new byte[4];
+				rnd.nextBytes(b);
+				int test = 0;
+				for (int l = 0 ; l < 4 ; ++l)
+				{
+					test = test << 8;
+					test += b[l];
+				}
+
+				qf.add(test);
+				beforeElements.add(test);
 			}
-			
-			qf.add(test);
-			beforeElements.add(test);
+
+			// Re-get the elements through the iterator.
+			Set<Integer> afterElements = new TreeSet<>();
+			for (Iterator<QuotientingStrategy.QuotientAndRemainder> it = qf.getFingerprintIterator()
+					; it.hasNext(); )
+			{
+				QuotientingStrategy.QuotientAndRemainder qr = it.next();
+				int recover = (qr.getQuotient() << 22) | qr.getRemainder();
+				afterElements.add(recover);
+			}
+
+			assertTrue(beforeElements.equals(afterElements));
 		}
-		
-		// Re-get the elements through the iterator.
-		Set<Integer> afterElements = new TreeSet<>();
-		for (Iterator<QuotientingStrategy.QuotientAndRemainder> it = qf.getFingerprintIterator()
-				; it.hasNext(); )
-		{
-			QuotientingStrategy.QuotientAndRemainder qr = it.next();
-			int recover = (qr.getQuotient() << 22) | qr.getRemainder();
-			afterElements.add(recover);
-		}
-		
-		assertTrue(beforeElements.equals(afterElements));
 	}
 }
