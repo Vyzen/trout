@@ -18,10 +18,8 @@
 
 package com.eigenvektor.amq;
 
-import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.Queue;
 
 import com.eigenvektor.amq.QuotientingStrategy.QuotientAndRemainder;
 
@@ -556,13 +554,46 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>,
 	 */
 	public Iterator<QuotientingStrategy.QuotientAndRemainder> getFingerprintIterator()
 	{
+		if (this.nOccupied == 0)
+		{
+			return new Iterator<QuotientingStrategy.QuotientAndRemainder>() {
+				@Override
+				public boolean hasNext() { return false; }
+				@Override
+				public QuotientAndRemainder next() { return null; }
+				@Override
+				public void remove() 
+				{
+					throw new UnsupportedOperationException("Remove not supported for this iterator.");
+				}
+			};
+		}
+		
+		// Find the first non-empty slot.
+		int first = findFirstNonEmpty(0);
+		
 		// Start at a slot that is at the start of a cluster.
-		int startOfCluster = findStartOfCluster(0);
+		int startOfCluster = findStartOfCluster(first);
 		
 		// Create an iterator that starts there.
 		return new FingerprintIterator(startOfCluster);
 	}
 	
+	/**
+	 * Finds the first non-empty slot at or after a given slot.
+	 * 
+	 * @param slot The index of the slot to search from.
+	 * @return The first non-empty slot at or after <code>slot</code>.
+	 */
+	private int findFirstNonEmpty(int slot)
+	{
+		while (isEmpty(slot))
+		{
+			slot = nextSlot(slot);
+		}
+		return slot;
+	}
+
 	/**
 	 * A fingerprint iterator.
 	 */
@@ -574,8 +605,8 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>,
 		// The slot we are currently at.
 		private int cur;
 		
-		// The quotients we have encountered but not yet completed
-		Queue<Integer> encounteredQuotients = new ArrayDeque<>();
+		// The current quotient.
+		private int quotient;
 		
 		// The next thing we are going to return.
 		private QuotientingStrategy.QuotientAndRemainder next = null;
@@ -589,6 +620,7 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>,
 		{
 			this.start = start;
 			this.cur = start;
+			this.quotient = start;
 			
 			assert(isOccupied(start));
 			assert(!isContinuation(start));
@@ -620,22 +652,26 @@ public final class QuotientFilter<T> implements ApproxMemQuery<T>,
 
 			}
 
-			// If this is a canonical slot, remember the quotient.
-			if (isOccupied(this.cur)) { this.encounteredQuotients.add(this.cur); }
-			
 			// The next output has the head of the queue for a quotient and this slot's remainder.
-			int quotient = encounteredQuotients.element();
 			int remainder = getRemainder(this.cur);
-			this.next = new QuotientingStrategy.QuotientAndRemainder(quotient, remainder);
+			this.next = new QuotientingStrategy.QuotientAndRemainder(this.quotient, remainder);
 			
 			this.cur = nextSlot(this.cur);
 			
 			// If the next slot is not a continuation, pop the head off the queue.
 			if (!isContinuation(this.cur))
 			{
-				this.encounteredQuotients.remove();
+				advanceQuotient();
 			}
 
+		}
+
+		/**
+		 * Advance the quotient pointer to the next canoncial slot.
+		 */
+		private void advanceQuotient()
+		{
+			do { this.quotient = nextSlot(this.quotient); } while (!isOccupied(quotient));
 		}
 
 		@Override
