@@ -1,4 +1,5 @@
 /*
+ *  A Double that is aware of matrices so we can write things like 5 * M without pain
  *  Copyright (C) 2013 Michael Thorsley
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,29 +19,11 @@
 package com.eigenvektor.matrix
 
 /**
- * A test for the scala-fied matrix stuff.
+ * A simple double-wrapping class that can be multiplied on the right
+ * by a matrix without complaining.
  */
-object TestMatrix {
- 
-  def main(args:Array[String]) = {
-    val f1 = new FullMatrix(3,3)
-    val f2 = new FullMatrix(3,3)
-    
-    for (j <- 0 to 2 ; k <- 0 to 2) 
-    { 
-      f1.set(j,k,j*k)
-      f2.set(j,k,j+k) 
-    }
-    println(f1);
-    println(f2);
-    println(f1 + f2 + (f1*f2))
-    println(f1 - f1)
-    
-    f1 += f2;
-    println(f1)
-    
-    val f3 = 5 * f2
-    println(f3)
-    
-  }
+final class MatrixAwareDouble(private val d:Double) {
+  
+	// Standard multiply.
+	def *(m:Matrix) = m.multiply(d)
 }
