@@ -73,7 +73,7 @@ public abstract class AbstractMatrix implements Matrix
 		FullMatrix ret = new FullMatrix(this.getNRows(), this.getNCols());
 		for (int j = 0 ; j < ret.getNRows() ; ++j)
 		{
-			for (int k = 0 ; k < ret.getNCols() ; ++j)
+			for (int k = 0 ; k < ret.getNCols() ; ++k)
 			{
 				ret.set(j, k, this.get(j,k) + m.get(j, k));
 			}
@@ -94,7 +94,7 @@ public abstract class AbstractMatrix implements Matrix
 		FullMatrix ret = new FullMatrix(this.getNRows(), this.getNCols());
 		for (int j = 0 ; j < ret.getNRows() ; ++j)
 		{
-			for (int k = 0 ; k < ret.getNCols() ; ++j)
+			for (int k = 0 ; k < ret.getNCols() ; ++k)
 			{
 				ret.set(j, k, this.get(j,k) - m.get(j, k));
 			}
