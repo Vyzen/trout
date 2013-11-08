@@ -27,4 +27,6 @@ class MatrixOps(private val mat:Matrix) {
   def -(m:Matrix) = mat.subtract(m);
   def *(m:Matrix) = mat.multiply(m);
   
+  def apply(j:Int, k:Int) = mat.get(j,k)
+  
 }

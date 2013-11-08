@@ -39,8 +39,11 @@ object TestMatrix {
     f1 += f2;
     println(f1)
     
-    val f3 = 5 * f2
+    val f3  = 5.0 * f2
     println(f3)
     
+    println(f3(1,1))
+    
+    f2(1,1) = 15
   }
 }

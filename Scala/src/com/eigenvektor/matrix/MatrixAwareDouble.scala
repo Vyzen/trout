@@ -26,4 +26,7 @@ final class MatrixAwareDouble(private val d:Double) {
   
 	// Standard multiply.
 	def *(m:Matrix) = m.multiply(d)
+	
+	// Standard multiply.
+	def *(m:MutableMatrix) = m.multiply(d)
 }

@@ -31,4 +31,7 @@ final class MutableMatrixOps(private val mat:MutableMatrix) extends MatrixOps(ma
   def +=(m:Matrix) = mat.inPlaceAdd(m)
   def -=(m:Matrix) = mat.inPlaceSubtract(m)
   def *=(d:Double) = mat.inPlaceMultiply(d)
+  
+  // Update
+  def update(i:Int, j:Int, d:Double) = mat.set(i, j, d);
 }
