@@ -17,12 +17,14 @@
 
 package com.eigenvektor.matrix
 
+import org.scalatest.FlatSpec
+
 /**
  * A test for the scala-fied matrix stuff.
  */
-object TestMatrix {
+class TestMatrix extends FlatSpec {
  
-  def main(args:Array[String]) = {
+    // Set up some matrices.
     val f1 = new FullMatrix(3,3)
     val f2 = new FullMatrix(3,3)
     
@@ -31,19 +33,27 @@ object TestMatrix {
       f1.set(j,k,j*k)
       f2.set(j,k,j+k) 
     }
-    println(f1);
-    println(f2);
-    println(f1 + f2 + (f1*f2))
-    println(f1 - f1)
     
-    f1 += f2;
-    println(f1)
+    "Matrix" should "sum correctly" in {
+      val sum = f1 + f2
+      for (j <- 0 to 2 ; k <- 0 to 2)
+      {
+        assert(sum(j,k) === f1(j,k) + f2(j,k))
+      }
+    }
     
-    val f3  = 5.0 * f2
-    println(f3)
+    it should "scalar multiply correctly" in
+    {
+      val f3 = 5.0 * f2
+      for (j <- 0 to 2 ; k <- 0 to 2)
+      {
+        assert(f3(j,k) === 5.0 * f2(j,k))
+      }
+    }
     
-    println(f3(1,1))
-    
-    f2(1,1) = 15
-  }
+    "MutableMatrix" should "assign elements correctly" in 
+    {
+      f2(1,1) = 15;
+      assert(f2(1,1) === 15.0)
+    }
 }

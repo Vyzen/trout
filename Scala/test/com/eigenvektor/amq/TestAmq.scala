@@ -17,18 +17,27 @@
 
 package com.eigenvektor.amq
 
-object TestAmq {
+import org.scalatest.FlatSpec
 
-  def main(args: Array[String]) {
-    val qf = new QuotientFilter[Int](10)
-    
+class TestQuotientFilter extends FlatSpec
+{
+   val qf = new QuotientFilter[Int](10)
+  
+  "Quotient Filter" should "initialize to empty" in {
+    assert(qf.getNumOccupied == 0)
+  }
+  
+  it should "recover input data" in 
+  { 
     qf += 5
     qf += 27
     qf ++= 200 to 250
     
-    println(qf(230))
-    println(qf(251))
-    println(qf(27))
+    assert(qf(5))
+    assert(qf(27))
+    for (x <- 200 to 250) { assert(qf(x)) }
+    
+    assert (!qf(100))
   }
 
 }
