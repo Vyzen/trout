@@ -137,8 +137,13 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   }
   
   private def mergeTrees(x:BinomialTree[T], y:BinomialTree[T]) = {
-    // Merge the one with a smaller head into the one with a larger head.
-    if (order.lt(x.value, y.value)) { y.merge(x) } else { x.merge(y) }
+    // Merge the one with a larger head into the one with a smaller head.
+    if (order.lt(x.value, y.value)) { x.merge(y) } else { y.merge(x) }
   }
+  
+  def min = trees.map(_.value).min(order)
+  
+  /** Simple toString that just shows the orders of the trees */
+  override def toString() = trees.map(_.size).mkString("<", ", ", ">")
   
 }

@@ -45,8 +45,13 @@ final class TestPriorityQueue extends FlatSpec {
     val heap3 = heap1 merge heap2
     val heap4 = heap2 merge heap1
     
+    // The new heaps should be singletons.
     assert (heap3.size == 1)
     assert (heap4.size == 1)
+    
+    // The new heaps should have the right minimum.
+    assert(heap3.min == 5);
+    assert(heap4.min == 5);
   }
   
   it should "merge two singletons into a heap of size two" in   {
@@ -56,8 +61,13 @@ final class TestPriorityQueue extends FlatSpec {
     val heap3 = heap1 merge heap2
     val heap4 = heap2 merge heap1
     
+    // The new heaps should be of size 2.
     assert(heap3.size == 2)
     assert(heap4.size == 2)
+    
+    // The new heaps should both have minimum 3
+    assert(heap3.min == 3)
+    assert(heap4.min == 3)
   }
 
 }
