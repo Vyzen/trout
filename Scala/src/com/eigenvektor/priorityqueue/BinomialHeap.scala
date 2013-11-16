@@ -53,96 +53,62 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   def merge(other:BinomialHeap[T]) = {
     require(other.order == this.order, "Orderings must match in merged trees")
     
-    var left = trees;
-    var right = other.trees;
-    var carry:Option[BinomialTree[T]] = None;
-    
-    val builder = new ListBuffer[BinomialTree[T]]
-    while (left != Nil && right != Nil) {
-      
-      // Branch based on whether we have a carry.
-      carry match {
-        case None => {
-          // fold in the smaller tree
-          if (left.head.size < right.head.size) {
-            builder += left.head
-            left = left.tail
-          }
-          else if (right.head.size < left.head.size) {
-            builder += right.head
-            right = right.tail
-          }
-          else {
-            carry = Some(mergeTrees(left.head, right.head))
-            left = left.tail
-            right = right.tail
-          }
-        }
-        case Some(c) => {
-          if (c.size < left.head.size && c.size < right.head.size) {
-            // If the carry is the smallest, append it.
-            builder += c
-            carry = None
-          }
-          else if (c.size < right.head.size) {
-            // The carry now merges the left and its current.
-            carry = Some(mergeTrees(c, left.head))
-            left = left.tail;
-          }
-          else if (c.size < left.head.size) {
-            // The carry now merges the right and its current.
-            carry = Some(mergeTrees(c, right.head))
-            right = right.tail;
-          }
-          else
-          {
-            // All three trees are the same size.  Retain one (arbitrarily the left)
-            // and merge the other into the carry.
-            builder += left.head
-            carry = Some(mergeTrees(c, right.head))
-            left = left.tail;
-            right = right.tail;
-          }
-        }
-      }
+    /** Merges two binomial trees based on the ordering specified for this heap. */
+    def mergeTrees(x:BinomialTree[T], y:BinomialTree[T]) = {
+      // Merge the one with a larger head into the one with a smaller head.
+      if (order.lt(x.value, y.value)) { x.merge(y) } else { y.merge(x) }
     }
     
-    // Handle any remaining trees.
-    var remainder = if (left == Nil) { right } else { left }
-    while (remainder != Nil)
+    /** Merges lists together with a carry. */
+    def mergeLists(
+        left:List[BinomialTree[T]],
+        right:List[BinomialTree[T]],
+        carry:Option[BinomialTree[T]]) : List[BinomialTree[T]] =
     {
-      carry match
-      {
-        case None => { 
-          builder += remainder.head
-          remainder = remainder.tail
-          }
-        case Some(c) if (c.size == remainder.head.size) => {
-          carry = Some(mergeTrees(c, remainder.head));
-          remainder = remainder.tail;
+      // Match on all the cases that might be passed in.
+      (left, right, carry) match {
+        // If nothing is passed in, return an empty list.
+        case (Nil, Nil, None) => Nil
+        
+        // If only one of the items is passed in, return it.
+        case (l, Nil, None) => l
+        case (Nil, r, None) => r 
+        case (Nil, Nil, Some(c)) => List(c)
+        
+        // If two lists are specified, merge them.
+        case (l, r, None) => {
+          if (l.head.size < r.head.size) l.head :: mergeLists(l.tail, r, None)
+          else if (r.head.size < l.head.size) r.head :: mergeLists(l, r.tail, None)
+          else mergeLists(l.tail, r.tail, Some(mergeTrees(l.head, r.head)))
         }
-        case Some(c) if (c.size > remainder.head.size) => {
-          builder += remainder.head
-          remainder = remainder.tail;
+        
+        // If one list and a carry are specified, merge them.
+        case (l, Nil, Some(c)) => {
+          if (l.head.size < c.size) l.head :: mergeLists(l.tail, Nil, carry) 
+          else if (c.size < l.head.size) c :: mergeLists(l, Nil, None)
+          else mergeLists(l.tail, Nil, Some(mergeTrees(l.head, c)))
         }
-        case Some(c) if (c.size < remainder.head.size) => {
-          builder += c
-          carry = None;
+        case (Nil, r, Some(c)) => mergeLists(r, Nil, carry) // Reduce to the other case.
+        
+        // If all three are specified, do complicated things.
+        case (l, r, Some(c)) => {
+          // If the carry is smaller than both the others, merge it here.
+          if (c.size < left.head.size && c.size < right.head.size) c :: mergeLists(l, r, None)
+          // l is equal in size to c.
+          else if (c.size < r.head.size) mergeLists(l.tail, r, Some(mergeTrees(l.head, c)))
+          // r is equal in size to c
+          else if (c.size < l.head.size) mergeLists(l, r.tail, Some(mergeTrees(r.head, c)))
+          // all three are equal. Keep the left one, and merge the right into the carry.
+          else l.head :: mergeLists(l.tail, r.tail, Some(mergeTrees(r.head, c)))
         }
       }
     }
-    
-    // Finally, if we have a leftover carry, append it.
-    builder ++= carry;
     
     // Create the new.
-    new BinomialHeap[T](builder.toList, order)
+    new BinomialHeap[T](mergeLists(trees, other.trees, None), order)
   }
   
-  private def mergeTrees(x:BinomialTree[T], y:BinomialTree[T]) = {
-    // Merge the one with a larger head into the one with a smaller head.
-    if (order.lt(x.value, y.value)) { x.merge(y) } else { y.merge(x) }
-  }
+  
   
   /** Gets the minimum element of the heap */
   def min = {
