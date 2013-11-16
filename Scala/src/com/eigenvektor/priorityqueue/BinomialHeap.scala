@@ -122,6 +122,16 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
    */
   def +(x:T) = merge(new BinomialHeap[T](x, order))
   
+  /** Adds a sequence of elements to the heap.
+   *  
+   *  @param t the elements to add.
+   */
+  def ++(t:Traversable[T]) = {
+    var ret = this;
+    for (x <- t) { ret = ret + x }
+    ret
+  }
+  
   /** Removes the min element from the heap.
    *  
    *  Returns a pair with the removed min as its first element, and the

@@ -135,5 +135,79 @@ final class TestBinomialHeap extends FlatSpec {
     assert (heap.isEmpty)
     assert (builder.toList.map(_.size) == (0 to 1000).toList.reverse)
   }
+  
+  it should "order random data" in {
+    val r = new scala.util.Random(1337)
+    val l = List.fill(1000)(r.nextInt)
+    
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    heap = heap ++ l
+    
+    val sorted = new ListBuffer[Int]
+    while(!heap.isEmpty) {
+      val (x, h) = heap.removeMin
+      sorted += x
+      heap = h
+    }
+    
+    for (pair <- sorted.toList.sliding(2))
+    {
+      assert(pair(1) >= pair(0))
+    }
+  }
+  
+  it should "handle duplicates" in {
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    heap = heap + 6
+    heap = heap + 6
+    heap = heap + 6
+    heap = heap + 6
+    heap = heap + 6
+    heap = heap + 6
+    
+    assert(heap.min == 6)
+    assert(heap.size == 6)
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.min == 6)
+    assert(h.size == 5)
+    heap = h;
+    }
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.min == 6)
+    assert(h.size == 4)
+    heap = h;
+    }
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.min == 6)
+    assert(h.size == 3)
+    heap = h;
+    }
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.min == 6)
+    assert(h.size == 2)
+    heap = h;
+    }
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.min == 6)
+    assert(h.size == 1)
+    heap = h;
+    }
+    
+    {
+    val (x, h) = heap.removeMin
+    assert(h.size == 0)
+    heap = h;
+    }
+  }
 
 }
