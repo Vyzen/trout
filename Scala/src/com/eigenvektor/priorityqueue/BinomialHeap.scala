@@ -122,7 +122,7 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
           builder += remainder.head
           remainder = remainder.tail;
         }
-        case Some(c) if (c.size > remainder.head.size) => {
+        case Some(c) if (c.size < remainder.head.size) => {
           builder += c
           carry = None;
         }
@@ -142,6 +142,8 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   }
   
   def min = trees.map(_.value).min(order)
+  
+  def +(x:T) = merge(new BinomialHeap[T](x, order))
   
   /** Simple toString that just shows the orders of the trees */
   override def toString() = trees.map(_.size).mkString("<", ", ", ">")

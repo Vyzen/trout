@@ -69,5 +69,12 @@ final class TestPriorityQueue extends FlatSpec {
     assert(heap3.min == 3)
     assert(heap4.min == 3)
   }
+  
+  it should "accept a bunch of numbers without failing" in {
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    for (j <- 0 to 1000) { heap = heap + j }
+    assert (heap.size == 1001)
+    assert (heap.min == 0)
+  }
 
 }
