@@ -141,9 +141,32 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
     if (order.lt(x.value, y.value)) { x.merge(y) } else { y.merge(x) }
   }
   
+  /** Gets the minimum element of the heap */
   def min = trees.map(_.value).min(order)
   
+  /** Adds an element to the heap.
+   * 
+   * @param x the element to add.
+   */
   def +(x:T) = merge(new BinomialHeap[T](x, order))
+  
+  /** Removes the min element from the heap.
+   *  
+   *  Returns a pair with the removed min as its first element, and the
+   *  heap without that min as its second.
+   */
+  def removeMin = {
+    // Make a heap from the list of trees without the tree that has the min for its root.
+    val (before, after) = trees.span(_.value != min)
+    val bhWithout = new BinomialHeap[T](before ::: after.drop(1), order)
+    
+    // Create a heap from the kids of the tree we dropped.
+    // (reverse because the tree stores from largest to smallest instead 
+    // of smallest to largest like we do.
+    val bhKids = new BinomialHeap[T](after.head.subtrees.reverse, order)
+    
+    (min, bhWithout merge bhKids)
+  }
   
   /** Simple toString that just shows the orders of the trees */
   override def toString() = trees.map(_.size).mkString("<", ", ", ">")

@@ -18,8 +18,9 @@
 package com.eigenvektor.priorityqueue
 
 import org.scalatest.FlatSpec
+import scala.collection.mutable.ListBuffer
 
-final class TestPriorityQueue extends FlatSpec {
+final class TestBinomialHeap extends FlatSpec {
   
   "BinomialHeap" should "initailize to empty" in {
     val heap = new BinomialHeap[Int](Ordering.Int)
@@ -75,6 +76,59 @@ final class TestPriorityQueue extends FlatSpec {
     for (j <- 0 to 1000) { heap = heap + j }
     assert (heap.size == 1001)
     assert (heap.min == 0)
+  }
+  
+  it should "be persistent during adds" in {
+    val builder = new ListBuffer[BinomialHeap[Int]]
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    for (j <- 0 to 1000) {
+      heap = heap + j;
+      builder += heap;
+    }
+    
+    // The sizes should be 0 to 1000
+    val sizes = builder.toList.map(_.size)
+    for (x <- sizes.zipWithIndex) {
+      assert(x._1 == x._2+1)
+    }
+  }
+  
+  it should "remove from a singleton to get an empty" in {
+    val heap1 = new BinomialHeap(5, Ordering.Int)
+    val (num, heap2) = heap1.removeMin;
+    
+    assert(num == 5)
+    assert(heap2.size == 0)
+  }
+  
+  it should "remove a bunch of numbers without failing" in {
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    for (j <- 0 to 1000) { heap = heap + j }
+    
+    val builder = new ListBuffer[Int]
+    for (j <- 0 to 1000) {
+    	val (x, h) = heap.removeMin
+    	heap = h;
+    	builder += x
+    }
+    
+    assert (heap.size == 0)
+    assert (builder.toList == (0 to 1000).toList)
+  }
+  
+  it should "be persistent during removal" in {
+    var heap = new BinomialHeap[Int](Ordering.Int)
+    for (j <- 0 to 1000) { heap = heap + j }
+    
+    val builder = new ListBuffer[BinomialHeap[Int]]
+    for (j <- 0 to 1000) {
+    	val (x, h) = heap.removeMin
+    	builder += h
+    	heap = h
+    }
+    
+    assert (heap.size == 0)
+    assert (builder.toList.map(_.size) == (0 to 1000).toList.reverse)
   }
 
 }
