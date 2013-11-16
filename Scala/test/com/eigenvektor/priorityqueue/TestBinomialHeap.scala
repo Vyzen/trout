@@ -25,6 +25,7 @@ final class TestBinomialHeap extends FlatSpec {
   "BinomialHeap" should "initailize to empty" in {
     val heap = new BinomialHeap[Int](Ordering.Int)
     assert(heap.size == 0)
+    assert(heap.isEmpty)
   }
   
   it should "initailize to singleton" in {
@@ -37,6 +38,7 @@ final class TestBinomialHeap extends FlatSpec {
     val heap2 = new BinomialHeap[Int](Ordering.Int)
     val heap3 = heap1 merge heap2
     assert(heap3.size == 0)
+    assert(heap3.isEmpty)
   }
   
   it should "merge an empty with a singleton to get a singleton" in  {
@@ -99,6 +101,7 @@ final class TestBinomialHeap extends FlatSpec {
     
     assert(num == 5)
     assert(heap2.size == 0)
+    assert(heap2.isEmpty)
   }
   
   it should "remove a bunch of numbers without failing" in {
@@ -112,7 +115,8 @@ final class TestBinomialHeap extends FlatSpec {
     	builder += x
     }
     
-    assert (heap.size == 0)
+    assert(heap.size == 0)
+    assert(heap.isEmpty)
     assert (builder.toList == (0 to 1000).toList)
   }
   
@@ -128,6 +132,7 @@ final class TestBinomialHeap extends FlatSpec {
     }
     
     assert (heap.size == 0)
+    assert (heap.isEmpty)
     assert (builder.toList.map(_.size) == (0 to 1000).toList.reverse)
   }
 
