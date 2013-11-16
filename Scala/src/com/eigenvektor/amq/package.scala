@@ -18,8 +18,9 @@
 
 package com.eigenvektor
 
+/** Implicit conversions for appoximate memory query interface. */
 package object amq {
 
-  // Implicit conversion from ApproxMemQuery to AmqOps
+  /** Implicit conversion from ApproxMemQuery to AmqOps */
   implicit def amqToAmqOps[T](amq:ApproxMemQuery[T]) = new AmqOps[T](amq);
 }

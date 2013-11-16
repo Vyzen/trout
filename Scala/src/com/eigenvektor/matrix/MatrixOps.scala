@@ -18,15 +18,19 @@
 
 package com.eigenvektor.matrix
 
-/**
- * A wrapper for a matrix that scala-izes the basic operations.
- */
+/** A wrapper for a matrix that scala-izes the basic operations. */
 class MatrixOps(private val mat:Matrix) {
 
+  /** Add another matrix to this */
   def +(m:Matrix) = mat.add(m)
+  
+  /** Subtract another matrix from this */
   def -(m:Matrix) = mat.subtract(m);
+  
+  /** multiply this by another matrix. */
   def *(m:Matrix) = mat.multiply(m);
   
+  /** Extract an element of this matrix */
   def apply(j:Int, k:Int) = mat.get(j,k)
   
 }

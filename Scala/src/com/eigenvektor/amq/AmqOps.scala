@@ -18,12 +18,15 @@
 
 package com.eigenvektor.amq
 
-/**
- * A wrapper for scala-fication of ApproxMemQuery instances.
- */
+/** A wrapper for scala-fication of ApproxMemQuery instances. */
 final class AmqOps[T](private val amq:ApproxMemQuery[T]) {
 
+  /** Determine if ean element is (probably) contained */
   def apply(x:T) = amq.contains(x)
+  
+  /** Add an object to this amq. */
   def +=(x:T) = { amq.add(x) ; amq }
+  
+  /** Add a set of elements to this amq. */
   def ++=(x:Traversable[T]) = { x.foreach(amq.add(_)) ; amq}
 }

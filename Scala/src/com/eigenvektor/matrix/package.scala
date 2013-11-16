@@ -18,14 +18,17 @@
 
 package com.eigenvektor
 
+/** Implicit conversions form matrix objects.
+ * 
+ */
 package object matrix {
 	
-	// Implicit conversion of MutableMatrix to MutableMatrixOps
+	/** Implicit conversion of MutableMatrix to MutableMatrixOps */
 	implicit def mutableMatrixToMutableMatrixOps(m:MutableMatrix) = new MutableMatrixOps(m)
   
-	// Implicit conversion of Matrix to MatrixOps
+	/** Implicit conversion of Matrix to MatrixOps */
 	implicit def matrixToMatrixOps(m:Matrix) = new MatrixOps(m)
 	
-	// Implcit conversion of Double to MatrixAwareDouble
+	/** Implcit conversion of Double to MatrixAwareDouble */
 	implicit def doubleToMatAware(d:Double) = new MatrixAwareDouble(d)
 }

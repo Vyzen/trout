@@ -18,15 +18,14 @@
 
 package com.eigenvektor.matrix
 
-/**
- * A simple double-wrapping class that can be multiplied on the right
- * by a matrix without complaining.
+/** A simple double-wrapping class that can be multiplied on the right
+ *  by a matrix without complaining.
  */
 final class MatrixAwareDouble(private val d:Double) {
   
-	// Standard multiply.
+	/** Standard multiply. */
 	def *(m:Matrix) = m.multiply(d)
 	
-	// Standard multiply.
+	/** Standard multiply */
 	def *(m:MutableMatrix) = m.multiply(d)
 }

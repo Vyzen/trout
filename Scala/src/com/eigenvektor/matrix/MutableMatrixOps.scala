@@ -18,20 +18,27 @@
 
 package com.eigenvektor.matrix
 
-/**
- * A wrapper for a matrix that scala-izes the basic operations.
- */
+/** A wrapper for a matrix that scala-izes the basic operations. */
 final class MutableMatrixOps(private val mat:MutableMatrix) extends MatrixOps(mat) {
-  /// Override to specialize return type.
+  
+  /** Override + to specialize return type. */
   override def +(m:Matrix) = mat.add(m).asInstanceOf[MutableMatrix]
+  
+  /** Override - to specialize return type. */
   override def -(m:Matrix) = mat.subtract(m).asInstanceOf[MutableMatrix]
+  
+  /** Override * to specialize return type. */
   override def *(m:Matrix) = mat.multiply(m).asInstanceOf[MutableMatrix]
   
-  // Additional in-place operations
+  /** In place addition */
   def +=(m:Matrix) = mat.inPlaceAdd(m)
+  
+  /** In place subtraction */
   def -=(m:Matrix) = mat.inPlaceSubtract(m)
+  
+  /** In place multiplication by scalar */
   def *=(d:Double) = mat.inPlaceMultiply(d)
   
-  // Update
+  /** Update a single element of the matrix */
   def update(i:Int, j:Int, d:Double) = mat.set(i, j, d);
 }
