@@ -12,6 +12,6 @@ Currently consists of four java trees:
 
 And three Scala trees:
 
-+com.eigenvektor.amq -- Wrappers and implicits for the Java amq package.
-+com.eigenvektor.matrix -- Wrappers and implicits for the Java matrix package.
-+com.eigenvektor.priorityqueue -- A native Scala fully-persistent priority queue implementation.
++ com.eigenvektor.amq -- Wrappers and implicits for the Java amq package.
++ com.eigenvektor.matrix -- Wrappers and implicits for the Java matrix package.
++ com.eigenvektor.priorityqueue -- A native Scala fully-persistent priority queue implementation.
