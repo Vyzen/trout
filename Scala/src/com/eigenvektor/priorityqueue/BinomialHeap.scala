@@ -16,10 +16,7 @@
  *  along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
-
 package com.eigenvektor.priorityqueue
-
-import scala.collection.mutable.ListBuffer
 
 /** Implementation of a binomial tree with values
  *  
