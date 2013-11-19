@@ -22,7 +22,7 @@ package com.eigenvektor.priorityqueue
  *  
  *  Simple implementation with just an add method.
  */
-final class BinomialTree[T](val value:T, val subtrees:List[BinomialTree[T]]) {
+final class BinomialTree[+T](val value:T, val subtrees:List[BinomialTree[T]]) {
   
   /** Secondary constructor for a single-node binomial tree */
   def this(value:T) = this(value, Nil)
@@ -38,9 +38,9 @@ final class BinomialTree[T](val value:T, val subtrees:List[BinomialTree[T]]) {
    *  @param other the tree to merge.
    *  @throws IllegalArgumentException if other is not the same size as this.
    */
-  def merge(other:BinomialTree[T]) = {
+  def merge[B >: T](other:BinomialTree[B]) = {
     require(other.size == this.size, "other must have the same size as this.")
-    new BinomialTree(value, other :: subtrees)
+    new BinomialTree[B](value, other :: subtrees)
     }
   
 }
