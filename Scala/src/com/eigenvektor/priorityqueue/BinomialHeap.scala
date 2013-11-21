@@ -31,7 +31,7 @@ final class BinomialTree[+T](val value:T, val subtrees:List[BinomialTree[T]]) {
    *  
    *  This is always 2^(number of subtrees)
    */
-  def size = 1 << subtrees.size
+  val size = 1 << subtrees.size
   
   /** Merges another tree with this one.
    *  
@@ -64,7 +64,7 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   def this(x:T, order:Ordering[T]) = this(List(new BinomialTree(x)), order)
   
   /** Gets the size of this heap */
-  val size = trees.foldLeft(0)((x,y) => x + y.size)
+  lazy val size = trees.foldLeft(0)((x,y) => x + y.size)
   
   /** Tells if the heap is empty */
   val isEmpty = trees == Nil
@@ -135,7 +135,7 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   
   
   /** Gets the minimum element of the heap */
-  def min = {
+  lazy val min = {
     require(!isEmpty, "Empty heap has no min.")
     trees.map(_.value).min(order)
   }
@@ -161,7 +161,7 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
    *  Returns a pair with the removed min as its first element, and the
    *  heap without that min as its second.
    */
-  def removeMin = {
+  lazy val removeMin = {
     require(!isEmpty, "Can't remove from empty heap")
     
     // Make a heap from the list of trees without the tree that has the min for its root.

@@ -21,7 +21,7 @@ package com.eigenvektor.priorityqueue
 /** A fully-persistent min-priority queue implemented using a binomial heap.
  *  
  *  @type E The type of element in the queue
- *  @type P The type of prioirity in the queue
+ *  @type P The type of priority in the queue
  */
 final class PriorityQueue[E, P] private (private val heap:BinomialHeap[Pair[E, P]]) {
 
@@ -40,28 +40,28 @@ final class PriorityQueue[E, P] private (private val heap:BinomialHeap[Pair[E, P
   def +(element:Pair[E, P]) = insert(element._1, element._2)
   
   /** Gets the next element of the queue without removing it. */
-  def nextElement = heap.min._1
+  lazy val nextElement = heap.min._1
   
   /** Gets the next priority of the queue */
-  def nextPriority = heap.min._2
+  lazy val nextPriority = heap.min._2
   
   /** Convenience method that gets the queue without returning the element as well */
-  def nextQueue = new PriorityQueue(heap.removeMin._2)
+  lazy val nextQueue = new PriorityQueue(heap.removeMin._2)
   
   /** Removes and returns the next element of the queue
    *  
    *  @return a triple consisting of the next element, its priority, and the queue after
    *  that element is removed.
    */
-  def pop = {
+  lazy val pop = {
     val ((element, priority), newHeap) = heap.removeMin
     (element, priority, new PriorityQueue(newHeap))
   }
   
   /** The size of the queue */
-  def size = heap.size
+  lazy val size = heap.size
   
   /** Whether the queue is empty */
-  def isEmpty = heap.isEmpty
+  lazy val isEmpty = heap.isEmpty
   
 }
