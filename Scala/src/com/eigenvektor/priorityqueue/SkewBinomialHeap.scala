@@ -19,27 +19,27 @@
 package com.eigenvektor.priorityqueue
 
 /** Implementation of s skew binomial tree with values. */
-final class SkewBinomialTree[T] private (val value:T, val subtrees:List[SkewBinomialTree[T]], val rank:Int) {
+final class SkewBinomialTree[+T] private (val value:T, val subtrees:List[SkewBinomialTree[T]], val rank:Int) {
   
   /** Convenience constructor for singleton instance. */
   def this(value:T) = this(value, Nil, 0);
   
   /** Non-skew link.  This tree is taken to be new root. */
-  def link(other:SkewBinomialTree[T]) = {
+  def link[B >: T](other:SkewBinomialTree[B]) = {
     require(other.rank == this.rank, "other must have the same rank as this. other.rank = " + other.rank + " this.rank = " + this.rank)
-    new SkewBinomialTree(value, other :: subtrees, rank + 1)
+    new SkewBinomialTree[B](value, other :: subtrees, rank + 1)
   }
   
   /** Type A skew link.  The singleton is the new root. */
-  def skewLinkA(other:SkewBinomialTree[T], single:T)  = {
+  def skewLinkA[B >: T](other:SkewBinomialTree[B], single:B)  = {
     require(other.rank == this.rank, "other must have the same rank as this.")
-    new SkewBinomialTree(single, this :: other :: Nil, rank + 1)
+    new SkewBinomialTree[B](single, this :: other :: Nil, rank + 1)
   }
   
   /** Type B skew link.  This tree is the new root. */
-  def skewLinkB(other:SkewBinomialTree[T], single:T)  = {
+  def skewLinkB[B >: T](other:SkewBinomialTree[B], single:B)  = {
     require(other.rank == this.rank, "other must have the same rank as this.")
-    new SkewBinomialTree(value, new SkewBinomialTree[T](single) :: other :: subtrees, rank + 1)
+    new SkewBinomialTree(value, new SkewBinomialTree[B](single) :: other :: subtrees, rank + 1)
   }
   
   /** The size of the tree. */
