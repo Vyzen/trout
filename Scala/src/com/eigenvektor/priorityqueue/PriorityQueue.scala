@@ -23,10 +23,10 @@ package com.eigenvektor.priorityqueue
  *  @type E The type of element in the queue
  *  @type P The type of priority in the queue
  */
-final class PriorityQueue[E, P] private (private val heap:BinomialHeap[Pair[E, P]]) {
+final class PriorityQueue[E, P] private (private val heap:SkewBinomialHeap[Pair[E, P]]) {
 
   /** Creates a new, empty, priority queue */
-  def this(order:Ordering[P]) = this(new BinomialHeap[Pair[E,P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
+  def this(order:Ordering[P]) = this(new SkewBinomialHeap[Pair[E,P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
   
   /** Inserts an element into this
    *
