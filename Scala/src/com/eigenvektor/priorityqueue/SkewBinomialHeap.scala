@@ -95,10 +95,14 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
     new SkewBinomialHeap(mergeUnique(uniqify(trees), uniqify(other.trees)), order)
   }
   
-  /** Inserts an element into this. */
+  /** Inserts an element into this.
+   *  
+   *  @param x the element to add.
+   */
   def +(x:T) = {
 	  
-    /** Performs the correct skew link of two trees based on the ordering */
+    /** Performs the correct skew link of two trees and a singleton based on the specified order
+     *  If the singleton is minimal,  */
     def skewLink(t1:SkewBinomialTree[T], t2:SkewBinomialTree[T], x:T) = {
       if (order.lt(x, t1.value) && order.lt(x, t2.value)) {
         t1.skewLinkA(t2, x);
@@ -120,10 +124,41 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
         
   }
   
+  /** Adds a sequence of elements to the heap.
+   *  
+   *  @param t the elements to add.
+   */
+  def ++(t:Traversable[T]) = {
+    var ret = this;
+    for (x <- t) { ret = ret + x }
+    ret
+  }
+  
   /** Gets the minimum element of the heap */
   lazy val min = {
     require(!isEmpty, "Empty heap has no min.")
     trees.map(_.value).min(order)
+  }
+  
+  /** Removes the minimum value from the heap. */
+  lazy val removeMin = {
+	require(!isEmpty, "Can't remove from empty heap")
+    
+    // Make a heap from the list of trees without the tree that has the min for its root.
+    val (before, after) = trees.span(_.value != min)
+    val bhWithout = new SkewBinomialHeap[T](before ::: after.tail, order)
+    
+    // Partition the kids of the new element into the rank 0 and rank non-zero ones.
+    val removedTree = after.head;
+	val (zeros, nonZeros) = removedTree.subtrees.partition(_.rank == 0)
+	
+	// The non zero kids for a valid help themselves, so just merge it.
+	val partMerged = bhWithout.merge(new SkewBinomialHeap(nonZeros, order))
+	
+	// Merge in the zero kids one at a time.
+	val merged = zeros.foldLeft(partMerged)((heap, tree) => heap + tree.value)
+	
+	(removedTree.value, merged)
   }
   
   /** Simple toString that just shows the orders of the trees */

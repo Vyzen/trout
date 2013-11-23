@@ -58,4 +58,13 @@ final class TestSkewBinomialHeap extends FlatSpec {
     }
   }
   
+  it should "remove from a singleton to get an empty" in {
+    val heap1 = new SkewBinomialHeap(Ordering.Int) + 5
+    val (num, heap2) = heap1.removeMin;
+    
+    assert(num == 5)
+    assert(heap2.size == 0)
+    assert(heap2.isEmpty)
+  }
+  
 }
