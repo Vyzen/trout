@@ -1,0 +1,103 @@
+/*
+ *  An implementation of a skew heap.
+ *  Copyright (C) 2013 Michael Thorsley
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+package com.eigenvektor.priorityqueue
+
+/** Implementation of s skew binomial tree with values. */
+final class SkewBinomialTree[T] private (val value:T, val subtrees:List[SkewBinomialTree[T]], val rank:Int) {
+  
+  /** Convenience constructor for singleton instance. */
+  def this(value:T) = this(value, Nil, 0);
+  
+  /** Non-skew link.  This tree is taken to be new root. */
+  def link(other:SkewBinomialTree[T]) = {
+    require(other.rank == this.rank, "other must have the same rank as this.")
+    new SkewBinomialTree(value, other :: subtrees, rank + 1)
+  }
+  
+  /** Type A skew link.  The singleton is the new root. */
+  def skewLinkA(other:SkewBinomialTree[T], single:T)  = {
+    require(other.rank == this.rank, "other must have the same rank as this.")
+    new SkewBinomialTree(single, this :: other :: Nil, rank + 1)
+  }
+  
+  /** Type B skew link.  This tree is the new root. */
+  def skewLinkB(other:SkewBinomialTree[T], single:T)  = {
+    require(other.rank == this.rank, "other must have the same rank as this.")
+    new SkewBinomialTree(value, new SkewBinomialTree[T](single) :: other :: subtrees, rank + 1)
+  }
+  
+  /** The size of the tree. */
+  lazy val size:Int = 1 + subtrees.foldLeft(0)((x,y) => x + y.size)
+}
+
+/** Implementation of a skew binomial heap */
+final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree[T]], private val order:Ordering[T]){
+
+  /** Constructor for an empty heap */
+  def this(order:Ordering[T]) = this(Nil, order)
+  
+  /** The size of the heap */
+  lazy val size = trees.foldLeft(0)((x,y) => x + y.size)
+  
+  /** Tells if this is empty */
+  val isEmpty = trees == Nil;
+  
+  /** Merges another heap with this. */
+  def merge(other:SkewBinomialHeap[T]) = {
+    require(other.order == this.order, "Orderings must match in merged trees")
+    
+    /** Inserts a single tree into a list of trees. */
+    def ins(tree:SkewBinomialTree[T], list:List[SkewBinomialTree[T]]):List[SkewBinomialTree[T]] = {
+      list match {
+        case Nil => List(tree)
+        case head::tail => if (tree.rank < head.rank) tree :: list else {
+          if (order.lt(head.value, tree.value)) ins(head.link(tree), tail)
+          else ins(tree.link(head), tail)
+        }
+      }
+    }
+    
+    /** Makes the lowest rank unique */
+    def uniqify(list:List[SkewBinomialTree[T]]) = ins(list.head, list.tail)
+    
+    /** Merge lists of tress that are known to have unique lowest rank */
+    def mergeUnique(left:List[SkewBinomialTree[T]], right:List[SkewBinomialTree[T]]):List[SkewBinomialTree[T]] = {
+      (left, right) match {
+        case (_, Nil) => left
+        case (Nil, _) => right
+        case (lhead::ltail, rhead::rtail) => {
+          if (lhead.rank < rhead.rank) lhead :: mergeUnique(ltail, right)
+          else if (rhead.rank < lhead.rank) rhead :: mergeUnique(left, rtail)
+          else {
+            if (order.lt(lhead.value, rhead.value)) ins(lhead.link(rhead), mergeUnique(ltail, rtail))
+            else ins(rhead.link(lhead), mergeUnique(ltail, rtail))
+          }
+        }
+      }
+    }
+    
+    new SkewBinomialHeap(mergeUnique(uniqify(trees), uniqify(other.trees)), order)
+  }
+  
+  /** Gets the minimum element of the heap */
+  lazy val min = {
+    require(!isEmpty, "Empty heap has no min.")
+    trees.map(_.value).min(order)
+  }
+}
