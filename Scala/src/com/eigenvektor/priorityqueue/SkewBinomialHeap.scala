@@ -74,7 +74,7 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
     }
     
     /** Makes the lowest rank unique */
-    def uniqify(list:List[SkewBinomialTree[T]]) = ins(list.head, list.tail)
+    def uniqify(list:List[SkewBinomialTree[T]]) = if (list == Nil) Nil else ins(list.head, list.tail)
     
     /** Merge lists of tress that are known to have unique lowest rank */
     def mergeUnique(left:List[SkewBinomialTree[T]], right:List[SkewBinomialTree[T]]):List[SkewBinomialTree[T]] = {
@@ -95,9 +95,37 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
     new SkewBinomialHeap(mergeUnique(uniqify(trees), uniqify(other.trees)), order)
   }
   
+  /** Inserts an element into this. */
+  def +(x:T) = {
+	  
+    /** Performs the correct skew link of two trees based on the ordering */
+    def skewLink(t1:SkewBinomialTree[T], t2:SkewBinomialTree[T], x:T) = {
+      if (order.lt(x, t1.value) && order.lt(x, t2.value)) {
+        t1.skewLinkA(t2, x);
+      }
+      else if (order.lt(t1.value, t2.value)) {
+        t1.skewLinkB(t2, x)
+      }
+      else {
+        t2.skewLinkB(t1, x)
+      }
+    }
+    
+    trees match {
+      case h1 :: h2 :: tail if (h1.rank == h2.rank) => 
+        new SkewBinomialHeap(skewLink(h1, h2, x) :: tail, order) 
+      case _ =>
+        new SkewBinomialHeap(new SkewBinomialTree(x) :: trees, order)
+    }
+        
+  }
+  
   /** Gets the minimum element of the heap */
   lazy val min = {
     require(!isEmpty, "Empty heap has no min.")
     trees.map(_.value).min(order)
   }
+  
+  /** Simple toString that just shows the orders of the trees */
+  override def toString() = trees.map(_.rank).mkString("<", ", ", ">")
 }
