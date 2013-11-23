@@ -67,4 +67,20 @@ final class TestSkewBinomialHeap extends FlatSpec {
     assert(heap2.isEmpty)
   }
   
+  it should "remove a bunch of numbers without failing" in {
+    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    for (j <- 0 to 1000) { heap = heap + j }
+    
+    val builder = new ListBuffer[Int]
+    for (j <- 0 to 1000) {
+    	val (x, h) = heap.removeMin
+    	heap = h;
+    	builder += x
+    }
+    
+    assert(heap.size == 0)
+    assert(heap.isEmpty)
+    assert (builder.toList == (0 to 1000).toList)
+  }
+  
 }

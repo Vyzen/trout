@@ -26,7 +26,7 @@ final class SkewBinomialTree[T] private (val value:T, val subtrees:List[SkewBino
   
   /** Non-skew link.  This tree is taken to be new root. */
   def link(other:SkewBinomialTree[T]) = {
-    require(other.rank == this.rank, "other must have the same rank as this.")
+    require(other.rank == this.rank, "other must have the same rank as this. other.rank = " + other.rank + " this.rank = " + this.rank)
     new SkewBinomialTree(value, other :: subtrees, rank + 1)
   }
   
@@ -44,6 +44,9 @@ final class SkewBinomialTree[T] private (val value:T, val subtrees:List[SkewBino
   
   /** The size of the tree. */
   lazy val size:Int = 1 + subtrees.foldLeft(0)((x,y) => x + y.size)
+  
+  /** Simple toString.  Useful for debugging */
+  override def toString() = "[Rank: " + rank + "]"
 }
 
 /** Implementation of a skew binomial heap */
@@ -153,7 +156,7 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
 	val (zeros, nonZeros) = removedTree.subtrees.partition(_.rank == 0)
 	
 	// The non zero kids for a valid help themselves, so just merge it.
-	val partMerged = bhWithout.merge(new SkewBinomialHeap(nonZeros, order))
+	val partMerged = bhWithout.merge(new SkewBinomialHeap(nonZeros.reverse, order))
 	
 	// Merge in the zero kids one at a time.
 	val merged = zeros.foldLeft(partMerged)((heap, tree) => heap + tree.value)
