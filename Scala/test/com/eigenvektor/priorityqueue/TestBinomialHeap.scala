@@ -140,7 +140,7 @@ final class TestBinomialHeap extends FlatSpec {
     val r = new scala.util.Random(1337)
     val l = List.fill(1000)(r.nextInt)
     
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new BinomialHeap[Int](Ordering.Int)
     heap = heap ++ l
     
     val sorted = new ListBuffer[Int]

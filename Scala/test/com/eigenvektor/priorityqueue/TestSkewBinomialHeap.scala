@@ -37,15 +37,15 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "accept a bunch of numbers without failing" in {
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     assert (heap.size == 1001)
     assert (heap.min == 0)
   }
   
   it should "be persistent during adds" in {
-    val builder = new ListBuffer[SkewBinomialHeap[Int]]
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    val builder = new ListBuffer[Heap[Int]]
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) {
       heap = heap + j;
       builder += heap;
@@ -68,7 +68,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "remove a bunch of numbers without failing" in {
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
     val builder = new ListBuffer[Int]
@@ -84,10 +84,10 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "be persistent during removal" in {
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
-    val builder = new ListBuffer[SkewBinomialHeap[Int]]
+    val builder = new ListBuffer[Heap[Int]]
     for (j <- 0 to 1000) {
     	val (x, h) = heap.removeMin
     	builder += h
@@ -103,7 +103,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
     val r = new scala.util.Random(1337)
     val l = List.fill(1000)(r.nextInt)
     
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     heap = heap ++ l
     
     val sorted = new ListBuffer[Int]
@@ -120,7 +120,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "handle duplicates" in {
-    var heap = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
     heap = heap + 6
     heap = heap + 6
     heap = heap + 6

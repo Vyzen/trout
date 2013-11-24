@@ -48,7 +48,8 @@ final class BinomialTree[+T](val value:T, val subtrees:List[BinomialTree[T]]) {
 /**
  * Implementation of a binomial heap.
  */
-final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], private val order:Ordering[T]) {
+final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], private val order:Ordering[T])
+	extends Heap[T] {
 
   /** Secondary constructor to make an empty heap
    *  
@@ -145,16 +146,6 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
    * @param x the element to add.
    */
   def +(x:T) = merge(new BinomialHeap[T](x, order))
-  
-  /** Adds a sequence of elements to the heap.
-   *  
-   *  @param t the elements to add.
-   */
-  def ++(t:Traversable[T]) = {
-    var ret = this;
-    for (x <- t) { ret = ret + x }
-    ret
-  }
   
   /** Removes the min element from the heap.
    *  

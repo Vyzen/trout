@@ -56,7 +56,7 @@ final class TestPriorityQueue extends FlatSpec {
   
   it should "order random data" in {
     val r = new scala.util.Random(1337)
-    val l = List.fill(1000)(r.nextInt)
+    val l = List.fill(1000000)(r.nextInt)
     
     var pq = new PriorityQueue[Int, Int](Ordering.Int)
     for (x <- l) { pq = pq + (x,x) }

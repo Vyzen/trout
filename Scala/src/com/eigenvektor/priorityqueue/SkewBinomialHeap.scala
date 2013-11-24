@@ -50,7 +50,8 @@ final class SkewBinomialTree[+T] private (val value:T, val subtrees:List[SkewBin
 }
 
 /** Implementation of a skew binomial heap */
-final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree[T]], private val order:Ordering[T]){
+final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree[T]], private val order:Ordering[T]) 
+	extends Heap[T] {
 
   /** Constructor for an empty heap */
   def this(order:Ordering[T]) = this(Nil, order)
@@ -126,17 +127,7 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
     }
         
   }
-  
-  /** Adds a sequence of elements to the heap.
-   *  
-   *  @param t the elements to add.
-   */
-  def ++(t:Traversable[T]) = {
-    var ret = this;
-    for (x <- t) { ret = ret + x }
-    ret
-  }
-  
+
   /** Gets the minimum element of the heap */
   lazy val min = {
     require(!isEmpty, "Empty heap has no min.")
@@ -159,7 +150,7 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
 	val partMerged = bhWithout.merge(new SkewBinomialHeap(nonZeros.reverse, order))
 	
 	// Merge in the zero kids one at a time.
-	val merged = zeros.foldLeft(partMerged)((heap, tree) => heap + tree.value)
+	val merged = zeros.foldLeft[Heap[T]](partMerged)((heap, tree) => heap + tree.value)
 	
 	(removedTree.value, merged)
   }
