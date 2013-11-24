@@ -23,11 +23,7 @@ trait Heap[E] {
    *  
    *  @param t The elements to add.
    */
-  def ++(t:Traversable[E]) = {
-    var ret = this;
-    for (x <- t) { ret = ret + x }
-    ret
-  }
+  def ++(t:Traversable[E]) = t.foldLeft(this)((x,y) => x + y)
   
   /** Gets the minimum value in the heap */
   val min:E
