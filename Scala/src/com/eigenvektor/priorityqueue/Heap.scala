@@ -34,3 +34,17 @@ trait Heap[E] {
    */
   val removeMin:Pair[E, Heap[E]]
 }
+
+/** Companion object for heaps */
+object Heap {
+  
+  /** Creates a new heap.
+   *  
+   *  Default implementation is skew binomial
+   *  
+   *  @param order the element ordering.
+   */
+  def apply[E](implicit order:Ordering[E]) = {
+    new SkewBinomialHeap(order);
+  }
+}
