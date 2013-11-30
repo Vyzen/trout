@@ -38,13 +38,22 @@ trait Heap[E] {
 /** Companion object for heaps */
 object Heap {
   
-  /** Creates a new heap.
+  /** Creates a new, empty heap.
    *  
    *  Default implementation is skew binomial
    *  
    *  @param order the element ordering.
    */
-  def apply[E](implicit order:Ordering[E]) = {
+  def apply[E](implicit order:Ordering[E]):Heap[E] = {
     new SkewBinomialHeap(order);
+  }
+  
+  /** Creates a heap populated from a traversable.
+   *  
+   *  @param x The traversable to populate with.
+   *  @param order The ordering to use.
+   */
+  def apply[E](x:Traversable[E])(implicit order:Ordering[E]):Heap[E] = {
+    x.foldLeft(Heap[E](order))(_ + _)
   }
 }

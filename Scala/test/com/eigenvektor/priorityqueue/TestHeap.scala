@@ -22,8 +22,8 @@ import org.scalatest.FlatSpec
 final class TestHeap extends FlatSpec {
 
   "Heap" should "construct with implicit ordering" in {
-    var hInt:Heap[Int] = Heap[Int]
-    var hString:Heap[String] = Heap[String]
+    var hInt = Heap[Int]
+    var hString = Heap[String]
     
     for (j:Int <- 1 to 10) {
       hInt = hInt + j;
@@ -35,6 +35,17 @@ final class TestHeap extends FlatSpec {
     
     assert(hString.size == 10)
     assert(hString.min == "Trout1")
+  }
+  
+  it should "construct from a traversable" in {
+    val hInt = Heap[Int](1 to 10)
+    val hString = Heap[String]((1 to 10).map("Flounder"+_))
+    
+    assert(hInt.size == 10)
+    assert(hInt.min == 1)
+    
+    assert(hString.size == 10)
+    assert(hString.min == "Flounder1")
   }
   
 }
