@@ -59,11 +59,8 @@ trait Tree[E] extends Flow[E] {
 
 object Tree {
   
-  /** Creates a single-node tree */
-  def apply[E](root:E) = new DefaultTree(root)
-  
   /** Creates a tree with kids */
-  def apply[E](root:E, kids:List[Tree[E]]) = new DefaultTree(root, kids)
+  def apply[E](root:E, kids:Tree[E]*) = new DefaultTree(root, kids.toList)
   
   /** Unapply for patter matching */
   def unapply[E](t:Tree[E]):Option[(E, List[Tree[E]])] = Some(t.root, t.children)
