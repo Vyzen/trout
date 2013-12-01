@@ -83,7 +83,7 @@ class TestDiGraph extends FlatSpec {
     assert (h.numNodes == 4)
     assert (h.numEdges == 3)
     
-    assert (h.getNeighbours("Four") == Set())
+    assert (h.getNeighbours("Four") == Set("One"))
     assert (h.getNeighbours("One") == Set("Two", "Three"))
     assert (h.getNeighbours("Two") == Set())
     assert (h.getNeighbours("Three") == Set())
