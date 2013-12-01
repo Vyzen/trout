@@ -39,7 +39,7 @@ trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
   override def isDefinedAt(x:E) = nodes.contains(x)
   
   /** Evaluates this at x.  Returns the neighbours of x. */
-  override def apply(x:E) = getNeighbours(x)
+  override def apply(x:E) = getNeighbours(x).toSet
   
   /** Adds a node to this */
   def +(x:E):DiGraph[E]

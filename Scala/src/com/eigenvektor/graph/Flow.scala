@@ -37,6 +37,6 @@ trait Flow[E] {
    *  @param x the node to get the neighbours of.
    *  @return the neighbours of [[x]]
    */
-  def getNeighbours(x:E):Set[E]
+  def getNeighbours(x:E):Iterable[E]
   
 }
