@@ -33,7 +33,7 @@ trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
   def numNodes = nodes.size
 
   /** Gets the number of edges in the graph */
-  def numEdges = nodes.toList.map(this).map(_.size).foldLeft(0)(_+_)
+  def numEdges = nodes.foldLeft(0)(_ + this.getNeighbours(_).size)
   
   /** Tells if this is defined at x.  True if x is a node of this. */
   override def isDefinedAt(x:E) = nodes.contains(x)
