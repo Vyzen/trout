@@ -52,5 +52,41 @@ class TestDiGraph extends FlatSpec {
     assert (gr.getNeighbours("Two") == Set("One"))
     assert (gr.getNeighbours("Three") == Set("One"))
   }
+  
+  it should "fail to create" in {
+    intercept[NoSuchElementException] {
+    	val g = DiGraph[String]("One", "Two", "Three")("One"->"Two", "One"->"Three", "Five"->"Three")
+    }
+  }
+  
+  it should "add nodes correctly" in {
+    val g = DiGraph[String]("One", "Two", "Three")("One"->"Two", "One"->"Three")
+    assert (g.numNodes == 3)
+    assert (g.numEdges == 2)
+    
+    val h = g + "Four"
+    assert (h.numNodes == 4)
+    assert (h.numEdges == 2)
+    
+    assert (h.getNeighbours("Four") == Set())
+    assert (h.getNeighbours("One") == Set("Two", "Three"))
+    assert (h.getNeighbours("Two") == Set())
+    assert (h.getNeighbours("Three") == Set())
+  }
+  
+  it should "add edges correctly" in {
+    val g = DiGraph[String]("One", "Two", "Three")("One"->"Two", "One"->"Three")
+    assert (g.numNodes == 3)
+    assert (g.numEdges == 2)
+    
+    val h = g + "Four" + ("Four" -> "One")
+    assert (h.numNodes == 4)
+    assert (h.numEdges == 3)
+    
+    assert (h.getNeighbours("Four") == Set())
+    assert (h.getNeighbours("One") == Set("Two", "Three"))
+    assert (h.getNeighbours("Two") == Set())
+    assert (h.getNeighbours("Three") == Set())
+  }
 
 }

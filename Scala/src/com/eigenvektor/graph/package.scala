@@ -1,5 +1,5 @@
 /*
- *  Package object for priority queue package.
+ *  Package object for graph package.
  *  Copyright (C) 2013 Michael Thorsley
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,15 +15,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
+
 package com.eigenvektor
 
-/** Package for a fully-persistent priority queue.
- * 
- * The main class is [[PriorityQueue]], which is backed by a the skew-binomial heap
- * implementation in [[SkewBinomialHeap]].  There is also a regular binomial heap
- * implementation in [[BinomialHeap]].
- * 
+/** Package to contain representations of directed graphs.
+ *  
+ *  [[DiGraph]] is the main trait for directed graphs.
+ *  [[AdjacencySetDiGraph]] is an adjacency-set-based implementation of that trait.
  */
-package object priorityqueue {
+package object graph {
 
 }
