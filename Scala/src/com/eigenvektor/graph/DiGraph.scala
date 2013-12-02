@@ -35,11 +35,14 @@ trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
   /** Gets the number of edges in the graph */
   def numEdges = nodes.foldLeft(0)(_ + this.getNeighbours(_).size)
   
+  /** Override getNeighbours so it returns a Set, rather than a generic Iterable */
+  def getNeighbours(x:E):Set[E]
+  
   /** Tells if this is defined at x.  True if x is a node of this. */
-  override def isDefinedAt(x:E) = nodes.contains(x)
+  def isDefinedAt(x:E) = nodes.contains(x)
   
   /** Evaluates this at x.  Returns the neighbours of x. */
-  override def apply(x:E) = getNeighbours(x).toSet
+  def apply(x:E) = getNeighbours(x)
   
   /** Adds a node to this */
   def +(x:E):DiGraph[E]
