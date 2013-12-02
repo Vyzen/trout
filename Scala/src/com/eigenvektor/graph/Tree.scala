@@ -55,6 +55,17 @@ trait Tree[E] extends Flow[E] {
   
   /** Adds another tree to this as the first subtree */
   def +(t:Tree[E]):Tree[E]
+  
+  override def toString() = {
+    if (isLeaf) root.toString()
+    else {
+      val ret = new StringBuilder()
+      ret append root
+      ret append ":"
+      ret append children.mkString("[", ",", "]")
+      ret.toString
+  	}
+  }
 }
 
 object Tree {
