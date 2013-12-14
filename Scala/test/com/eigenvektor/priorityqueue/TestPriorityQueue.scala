@@ -23,13 +23,19 @@ import scala.collection.mutable.ListBuffer
 final class TestPriorityQueue extends FlatSpec {
 
   "PriorityQueue" should "initailize to empty" in {
-    val pq = new PriorityQueue[Any, Int](Ordering.Int)
+    val pq = PriorityQueue[Any, Int](Ordering.Int)
+    assert(pq.size == 0)
+    assert(pq.isEmpty)
+  }
+  
+  it should "construct with implicit ordering" in {
+    val pq = PriorityQueue[Any, Int]
     assert(pq.size == 0)
     assert(pq.isEmpty)
   }
   
   it should "accept a bunch of elements without failing" in {
-    var pq = new PriorityQueue[Any, Int](Ordering.Int)
+    var pq = PriorityQueue[Any, Int](Ordering.Int)
     for (j <- 0 to 1000) { pq = pq + ("Trout" + j, j) }
     assert (pq.size == 1001)
     assert (pq.nextElement == "Trout0")
@@ -37,7 +43,7 @@ final class TestPriorityQueue extends FlatSpec {
   }
   
   it should "remove a bunch of elements without failing" in {
-    var pq = new PriorityQueue[Int, Int](Ordering.Int)
+    var pq = PriorityQueue[Int, Int](Ordering.Int)
     for (j <- 0 to 1000) { pq = pq + (j + 1000,  j) }
     
     val elements = new ListBuffer[Int]
@@ -58,7 +64,7 @@ final class TestPriorityQueue extends FlatSpec {
     val r = new scala.util.Random(1337)
     val l = List.fill(1000000)(r.nextInt)
     
-    var pq = new PriorityQueue[Int, Int](Ordering.Int)
+    var pq = PriorityQueue[Int, Int](Ordering.Int)
     for (x <- l) { pq = pq + (x,x) }
     
     val sorted = new ListBuffer[Int]

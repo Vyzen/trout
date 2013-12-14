@@ -1,5 +1,5 @@
 /*
- *  An implementation of a priority queue based on the binomial heap.
+ *  A fully persistent implementation of a priority queue based on the skew binomial heap.
  *  Copyright (C) 2013 Michael Thorsley
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -25,9 +25,6 @@ package com.eigenvektor.priorityqueue
  */
 final class PriorityQueue[E, P] private (private val heap:Heap[Pair[E, P]]) {
 
-  /** Creates a new, empty, priority queue */
-  def this(order:Ordering[P]) = this(SkewBinomialHeap[Pair[E,P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
-  
   /** Inserts an element into this
    *
    *  @param element The element to add.
@@ -64,4 +61,17 @@ final class PriorityQueue[E, P] private (private val heap:Heap[Pair[E, P]]) {
   /** Whether the queue is empty */
   lazy val isEmpty = heap.isEmpty
   
+}
+
+/** Companion object for PriorityQueue */
+object PriorityQueue {
+  
+  /** Creates a new, empty, priority queue.
+   *  
+   *  @type E The type of element in the queue
+   *  @type P The type of priority in the queue
+   *  @param order An ordering for these things.
+   */
+  def apply[E, P](implicit order:Ordering[P]) = 
+    new PriorityQueue[E, P](Heap[Pair[E, P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
 }
