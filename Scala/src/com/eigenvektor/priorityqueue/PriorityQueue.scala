@@ -26,7 +26,7 @@ package com.eigenvektor.priorityqueue
 final class PriorityQueue[E, P] private (private val heap:Heap[Pair[E, P]]) {
 
   /** Creates a new, empty, priority queue */
-  def this(order:Ordering[P]) = this(new SkewBinomialHeap[Pair[E,P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
+  def this(order:Ordering[P]) = this(SkewBinomialHeap[Pair[E,P]](Ordering.by((x:Pair[E,P]) => x._2)(order)))
   
   /** Inserts an element into this
    *

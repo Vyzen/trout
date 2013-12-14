@@ -23,21 +23,21 @@ import scala.collection.mutable.ListBuffer
 final class TestSkewBinomialHeap extends FlatSpec {
 
   "SkewBinomialHeap" should "initailize to empty" in {
-    val heap = new SkewBinomialHeap[Int](Ordering.Int)
+    val heap = SkewBinomialHeap[Int](Ordering.Int)
     assert(heap.size == 0)
     assert(heap.isEmpty)
   }
   
   it should "merge empties to get empty" in  {
-    val heap1 = new SkewBinomialHeap[Int](Ordering.Int)
-    val heap2 = new SkewBinomialHeap[Int](Ordering.Int)
+    val heap1 = SkewBinomialHeap[Int](Ordering.Int)
+    val heap2 = SkewBinomialHeap[Int](Ordering.Int)
     val heap3 = heap1 merge heap2
     assert(heap3.size == 0)
     assert(heap3.isEmpty)
   }
   
   it should "accept a bunch of numbers without failing" in {
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     assert (heap.size == 1001)
     assert (heap.min == 0)
@@ -45,7 +45,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   
   it should "be persistent during adds" in {
     val builder = new ListBuffer[Heap[Int]]
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) {
       heap = heap + j;
       builder += heap;
@@ -59,7 +59,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "remove from a singleton to get an empty" in {
-    val heap1 = new SkewBinomialHeap(Ordering.Int) + 5
+    val heap1 = SkewBinomialHeap(Ordering.Int) + 5
     val (num, heap2) = heap1.removeMin;
     
     assert(num == 5)
@@ -68,7 +68,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "remove a bunch of numbers without failing" in {
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
     val builder = new ListBuffer[Int]
@@ -84,7 +84,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "be persistent during removal" in {
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
     val builder = new ListBuffer[Heap[Int]]
@@ -103,7 +103,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
     val r = new scala.util.Random(1337)
     val l = List.fill(1000)(r.nextInt)
     
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     heap = heap ++ l
     
     val sorted = new ListBuffer[Int]
@@ -120,7 +120,7 @@ final class TestSkewBinomialHeap extends FlatSpec {
   }
   
   it should "handle duplicates" in {
-    var heap:Heap[Int] = new SkewBinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = SkewBinomialHeap[Int](Ordering.Int)
     heap = heap + 6
     heap = heap + 6
     heap = heap + 6

@@ -18,43 +18,11 @@
 
 package com.eigenvektor.priorityqueue
 
-/** Implementation of s skew binomial tree with values. */
-final class SkewBinomialTree[+T] private (val value:T, val subtrees:List[SkewBinomialTree[T]], val rank:Int) {
-  
-  /** Convenience constructor for singleton instance. */
-  def this(value:T) = this(value, Nil, 0);
-  
-  /** Non-skew link.  This tree is taken to be new root. */
-  def link[B >: T](other:SkewBinomialTree[B]) = {
-    require(other.rank == this.rank, "other must have the same rank as this. other.rank = " + other.rank + " this.rank = " + this.rank)
-    new SkewBinomialTree[B](value, other :: subtrees, rank + 1)
-  }
-  
-  /** Type A skew link.  The singleton is the new root. */
-  def skewLinkA[B >: T](other:SkewBinomialTree[B], single:B)  = {
-    require(other.rank == this.rank, "other must have the same rank as this.")
-    new SkewBinomialTree[B](single, this :: other :: Nil, rank + 1)
-  }
-  
-  /** Type B skew link.  This tree is the new root. */
-  def skewLinkB[B >: T](other:SkewBinomialTree[B], single:B)  = {
-    require(other.rank == this.rank, "other must have the same rank as this.")
-    new SkewBinomialTree(value, new SkewBinomialTree[B](single) :: other :: subtrees, rank + 1)
-  }
-  
-  /** The size of the tree. */
-  lazy val size:Int = 1 + subtrees.foldLeft(0)((x,y) => x + y.size)
-  
-  /** Simple toString.  Useful for debugging */
-  override def toString() = "[Rank: " + rank + "]"
-}
+import com.eigenvektor.priorityqueue.SkewBinomialHeap.SkewBinomialTree
 
 /** Implementation of a skew binomial heap */
 final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree[T]], private val order:Ordering[T]) 
 	extends Heap[T] {
-
-  /** Constructor for an empty heap */
-  def this(order:Ordering[T]) = this(Nil, order)
   
   /** The size of the heap */
   lazy val size = trees.foldLeft(0)((x,y) => x + y.size)
@@ -157,4 +125,46 @@ final class SkewBinomialHeap[T] private (private val trees:List[SkewBinomialTree
   
   /** Simple toString that just shows the orders of the trees */
   override def toString() = trees.map(_.rank).mkString("<", ", ", ">")
+}
+
+/** Companion object for SkewBinomialHeap */
+object SkewBinomialHeap {
+    
+  /** Implementation of s skew binomial tree with values. */
+  private final class SkewBinomialTree[+T] private (val value:T, val subtrees:List[SkewBinomialTree[T]], val rank:Int) {
+  
+    /** Convenience constructor for singleton instance. */
+    def this(value:T) = this(value, Nil, 0);
+  
+    /** Non-skew link.  This tree is taken to be new root. */
+    def link[B >: T](other:SkewBinomialTree[B]) = {
+      require(other.rank == this.rank, "other must have the same rank as this. other.rank = " + other.rank + " this.rank = " + this.rank)
+      new SkewBinomialTree[B](value, other :: subtrees, rank + 1)
+    }
+  
+    /** Type A skew link.  The singleton is the new root. */
+    def skewLinkA[B >: T](other:SkewBinomialTree[B], single:B)  = {
+      require(other.rank == this.rank, "other must have the same rank as this.")
+      new SkewBinomialTree[B](single, this :: other :: Nil, rank + 1)
+    }
+  
+    /** Type B skew link.  This tree is the new root. */
+    def skewLinkB[B >: T](other:SkewBinomialTree[B], single:B)  = {
+      require(other.rank == this.rank, "other must have the same rank as this.")
+      new SkewBinomialTree(value, new SkewBinomialTree[B](single) :: other :: subtrees, rank + 1)
+    }
+  
+    /** The size of the tree. */
+    lazy val size:Int = 1 + subtrees.foldLeft(0)((x,y) => x + y.size)
+  
+    /** Simple toString.  Useful for debugging */
+    override def toString() = "[Rank: " + rank + "]"
+  }
+
+  /** Create an empty instance
+   *  
+   *  @param order the ordering of the instance.
+   */
+  def apply[T](order:Ordering[T]) = new SkewBinomialHeap(Nil, order) 
+  
 }

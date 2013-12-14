@@ -44,9 +44,7 @@ object Heap {
    *  
    *  @param order the element ordering.
    */
-  def apply[E](implicit order:Ordering[E]):Heap[E] = {
-    new SkewBinomialHeap(order);
-  }
+  def apply[E](implicit order:Ordering[E]):Heap[E] = SkewBinomialHeap(order);
   
   /** Creates a heap populated from a traversable.
    *  
