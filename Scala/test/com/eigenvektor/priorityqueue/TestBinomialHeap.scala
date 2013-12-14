@@ -23,27 +23,27 @@ import scala.collection.mutable.ListBuffer
 final class TestBinomialHeap extends FlatSpec {
   
   "BinomialHeap" should "initailize to empty" in {
-    val heap = new BinomialHeap[Int](Ordering.Int)
+    val heap = BinomialHeap[Int](Ordering.Int)
     assert(heap.size == 0)
     assert(heap.isEmpty)
   }
   
   it should "initailize to singleton" in {
-    val heap = new BinomialHeap[Int](5, Ordering.Int)
+    val heap = BinomialHeap[Int](5, Ordering.Int)
     assert(heap.size == 1)
   }
   
   it should "merge empties to get empty" in  {
-    val heap1 = new BinomialHeap[Int](Ordering.Int)
-    val heap2 = new BinomialHeap[Int](Ordering.Int)
+    val heap1 = BinomialHeap[Int](Ordering.Int)
+    val heap2 = BinomialHeap[Int](Ordering.Int)
     val heap3 = heap1 merge heap2
     assert(heap3.size == 0)
     assert(heap3.isEmpty)
   }
   
   it should "merge an empty with a singleton to get a singleton" in  {
-    val heap1 = new BinomialHeap[Int](Ordering.Int)
-    val heap2 = new BinomialHeap[Int](5, Ordering.Int)
+    val heap1 = BinomialHeap[Int](Ordering.Int)
+    val heap2 = BinomialHeap[Int](5, Ordering.Int)
     
     val heap3 = heap1 merge heap2
     val heap4 = heap2 merge heap1
@@ -58,8 +58,8 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "merge two singletons into a heap of size two" in   {
-    val heap1 = new BinomialHeap[Int](3, Ordering.Int)
-    val heap2 = new BinomialHeap[Int](5, Ordering.Int)
+    val heap1 = BinomialHeap[Int](3, Ordering.Int)
+    val heap2 = BinomialHeap[Int](5, Ordering.Int)
     
     val heap3 = heap1 merge heap2
     val heap4 = heap2 merge heap1
@@ -74,7 +74,7 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "accept a bunch of numbers without failing" in {
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap = BinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     assert (heap.size == 1001)
     assert (heap.min == 0)
@@ -82,7 +82,7 @@ final class TestBinomialHeap extends FlatSpec {
   
   it should "be persistent during adds" in {
     val builder = new ListBuffer[BinomialHeap[Int]]
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap = BinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) {
       heap = heap + j;
       builder += heap;
@@ -96,7 +96,7 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "remove from a singleton to get an empty" in {
-    val heap1 = new BinomialHeap(5, Ordering.Int)
+    val heap1 = BinomialHeap(5, Ordering.Int)
     val (num, heap2) = heap1.removeMin;
     
     assert(num == 5)
@@ -105,7 +105,7 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "remove a bunch of numbers without failing" in {
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap = BinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
     val builder = new ListBuffer[Int]
@@ -121,7 +121,7 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "be persistent during removal" in {
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap = BinomialHeap[Int](Ordering.Int)
     for (j <- 0 to 1000) { heap = heap + j }
     
     val builder = new ListBuffer[BinomialHeap[Int]]
@@ -140,7 +140,7 @@ final class TestBinomialHeap extends FlatSpec {
     val r = new scala.util.Random(1337)
     val l = List.fill(1000)(r.nextInt)
     
-    var heap:Heap[Int] = new BinomialHeap[Int](Ordering.Int)
+    var heap:Heap[Int] = BinomialHeap[Int](Ordering.Int)
     heap = heap ++ l
     
     val sorted = new ListBuffer[Int]
@@ -157,7 +157,7 @@ final class TestBinomialHeap extends FlatSpec {
   }
   
   it should "handle duplicates" in {
-    var heap = new BinomialHeap[Int](Ordering.Int)
+    var heap = BinomialHeap[Int](Ordering.Int)
     heap = heap + 6
     heap = heap + 6
     heap = heap + 6

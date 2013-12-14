@@ -50,19 +50,6 @@ final class BinomialTree[+T](val value:T, val subtrees:List[BinomialTree[T]]) {
  */
 final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], private val order:Ordering[T])
 	extends Heap[T] {
-
-  /** Secondary constructor to make an empty heap
-   *  
-   *   @param order The ordering to use for this heap
-    */
-  def this(order:Ordering[T]) = this(Nil, order)
-  
-  /** Secondary constructor to make a single-entry heap
-   *
-   *  @param x the single entry for the heap.
-   *  @param order the ordering for this heap.
-   */
-  def this(x:T, order:Ordering[T]) = this(List(new BinomialTree(x)), order)
   
   /** Gets the size of this heap */
   lazy val size = trees.foldLeft(0)((x,y) => x + y.size)
@@ -133,8 +120,6 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
     new BinomialHeap[T](mergeLists(trees, other.trees, None), order)
   }
   
-  
-  
   /** Gets the minimum element of the heap */
   lazy val min = {
     require(!isEmpty, "Empty heap has no min.")
@@ -145,7 +130,7 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
    * 
    * @param x the element to add.
    */
-  def +(x:T) = merge(new BinomialHeap[T](x, order))
+  def +(x:T) = merge(BinomialHeap[T](x, order))
   
   /** Removes the min element from the heap.
    *  
@@ -171,3 +156,21 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
   override def toString() = trees.map(_.size).mkString("<", ", ", ">")
   
 }
+
+/** Companion object for BinomialHeap class */
+object BinomialHeap {
+
+  /** Create an empty instance 
+   *
+   *  @param order The ordering to use for this heap  
+   */
+  def apply[T](order:Ordering[T]) = new BinomialHeap[T](Nil, order) 
+  
+  /** Create a singleton instance 
+   *  
+   *  @param x the single entry for the heap.
+   *  @param order the ordering for this heap.
+   */
+  def apply[T](x:T, order:Ordering[T]) = new BinomialHeap[T](List(new BinomialTree(x)), order)
+}
+
