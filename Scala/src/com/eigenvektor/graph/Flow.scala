@@ -49,7 +49,14 @@ object Flow {
   
   /** A trait for Edge implementations to implement */
   trait Edge[E] {
+    
+    /** The node the edge is from. */
     def from:E
+    
+    /** The node the edge is to. */
     def to:E
+    
+    /** Gets the reversed version of this edge. */
+    def reverse:Edge[E]
   }
 }

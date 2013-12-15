@@ -26,40 +26,51 @@ import com.eigenvektor.graph.DiGraph.DiGraphEdge
  * Main constructor constructs with a map from nodes to a set of neighbours, and the
  * inverse of that map.
  */
-final class AdjacencyListDiGraph[E] private (
-    private val adj:Map[E, Set[DiGraphEdge[E]]], 
-    private val invAdj:Map[E, Set[DiGraphEdge[E]]]) 
-    extends DiGraph[E] {
+final class AdjacencyListDiGraph[E] extends DiGraph[E] {
   
   type EdgeType = DiGraphEdge[E]
   
-  /** Construct an empty instance */
-  def this() = this(Map[E, Set[DiGraphEdge[E]]](), Map[E, Set[DiGraphEdge[E]]]())
+  // These are vars only to allow construction of derived graphs quickly
+  // They are not externally visible.
+  private var adj = Map[E, Set[EdgeType]]()
+  private var invAdj = Map[E, Set[EdgeType]]()
   
   /** The nodes of this graph */
-  val nodes = adj.keySet
+  def nodes = adj.keySet
   
   /** All of the nodes are roots */
-  val roots = nodes
+  def roots = nodes
   
   /** Gets the neighbours of a node */
   def getNeighbours(x:E) = adj(x)
   
   /** Reverses this DiGraph */
-  lazy val reverse = new AdjacencyListDiGraph(invAdj, adj)
+  lazy val reverse = {
+    val ret = new AdjacencyListDiGraph[E]()
+    ret.adj = this.invAdj
+    ret.invAdj = this.adj
+    ret
+  }
   
   /** Adds a node to this */
   def +(x:E) = {
-    new AdjacencyListDiGraph(adj + (x -> Set[DiGraphEdge[E]]()), invAdj + (x -> Set[DiGraphEdge[E]]()))
+    val ret = new AdjacencyListDiGraph[E]
+    ret.adj = this.adj + (x -> Set[EdgeType]())
+    ret.invAdj = this.invAdj + (x -> Set[EdgeType]())
+    ret
   }
   
   /** Adds a directed edge to this */
-  def +(e:Pair[E,E]) = {
-    val newEdge = new EdgeType(e._1, e._2)
-    val newREdge = new EdgeType(e._2, e._1)
-    val newNeighbours = adj(e._1) + newEdge
-    val newPredecessors = invAdj(e._2) + newREdge
-    new AdjacencyListDiGraph(adj + (e._1 -> newNeighbours), invAdj + (e._2 -> newPredecessors))
+  def +(e:EdgeType) = {
+    val newNeighbours = adj(e.from) + e
+    val newPredecessors = invAdj(e.to) + e.reverse
+    val ret = new AdjacencyListDiGraph[E]
+    ret.adj = this.adj + (e.from -> newNeighbours)
+    ret.invAdj = this.invAdj + (e.to -> newPredecessors)
+    ret
   }
+  
+  /** Adds a directed edge to this */
+  def +(e:Pair[E,E]) = this + new EdgeType(e._1, e._2)
 
 }

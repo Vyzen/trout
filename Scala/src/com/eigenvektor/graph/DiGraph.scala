@@ -38,11 +38,11 @@ trait DiGraph[E] extends ReversibleFlow[E] {
   /** Override getNeighbours so it returns a Set, rather than a generic Iterable */
   def getNeighbours(x:E):Set[EdgeType]
   
-  /** Tells if this is defined at x.  True if x is a node of this. */
-  def isDefinedAt(x:E) = nodes.contains(x)
-  
   /** Adds a node to this */
   def +(x:E):DiGraph[E]
+  
+  /** Adds a directed edge to this */
+  def +(e:EdgeType):DiGraph[E]
   
   /** Adds a directed edge to this */
   def +(e:Pair[E,E]):DiGraph[E]
@@ -53,6 +53,8 @@ trait DiGraph[E] extends ReversibleFlow[E] {
 object DiGraph {
   
   class DiGraphEdge[E](val from:E, val to:E) extends Equals with Flow.Edge[E] {
+    
+    lazy val reverse = new DiGraphEdge(to, from)
     
     def canEqual(that: Any) = that.isInstanceOf[DiGraphEdge[E]]
     

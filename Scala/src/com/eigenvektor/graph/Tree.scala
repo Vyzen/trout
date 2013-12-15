@@ -72,6 +72,9 @@ object Tree {
   
   /** An edge for this type of class */
   class TreeEdge[E](val from:E, val to:E) extends Equals with Flow.Edge[E] {
+    
+    lazy val reverse = new TreeEdge[E](to, from)
+    
     def canEqual(that: Any) = that.isInstanceOf[TreeEdge[E]]
     
     override def equals(that:Any) = {
