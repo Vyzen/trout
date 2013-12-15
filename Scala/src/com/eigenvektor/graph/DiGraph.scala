@@ -79,7 +79,7 @@ object DiGraph {
   
   /** Create a graph with given nodes and edges */
   def apply[E](nodes:E*)(edges:Pair[E,E]*) = {
-    edges.foldLeft(nodes.foldLeft(new AdjacencyListDiGraph[E]())(_+_))(_+_)
+    edges.foldLeft(nodes.foldLeft(new AdjacencySetDiGraph[E]())(_+_))(_+_)
   }
   
 }

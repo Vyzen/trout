@@ -26,7 +26,7 @@ import com.eigenvektor.graph.DiGraph.DiGraphEdge
  * Main constructor constructs with a map from nodes to a set of neighbours, and the
  * inverse of that map.
  */
-final class AdjacencyListDiGraph[E] extends DiGraph[E] {
+final class AdjacencySetDiGraph[E] extends DiGraph[E] {
   
   type EdgeType = DiGraphEdge[E]
   
@@ -46,7 +46,7 @@ final class AdjacencyListDiGraph[E] extends DiGraph[E] {
   
   /** Reverses this DiGraph */
   lazy val reverse = {
-    val ret = new AdjacencyListDiGraph[E]()
+    val ret = new AdjacencySetDiGraph[E]()
     ret.adj = this.invAdj
     ret.invAdj = this.adj
     ret
@@ -54,7 +54,7 @@ final class AdjacencyListDiGraph[E] extends DiGraph[E] {
   
   /** Adds a node to this */
   def +(x:E) = {
-    val ret = new AdjacencyListDiGraph[E]
+    val ret = new AdjacencySetDiGraph[E]
     ret.adj = this.adj + (x -> Set[EdgeType]())
     ret.invAdj = this.invAdj + (x -> Set[EdgeType]())
     ret
@@ -64,7 +64,7 @@ final class AdjacencyListDiGraph[E] extends DiGraph[E] {
   def +(e:EdgeType) = {
     val newNeighbours = adj(e.from) + e
     val newPredecessors = invAdj(e.to) + e.reverse
-    val ret = new AdjacencyListDiGraph[E]
+    val ret = new AdjacencySetDiGraph[E]
     ret.adj = this.adj + (e.from -> newNeighbours)
     ret.invAdj = this.invAdj + (e.to -> newPredecessors)
     ret
