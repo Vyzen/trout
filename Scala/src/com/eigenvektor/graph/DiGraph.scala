@@ -24,7 +24,7 @@ package com.eigenvektor.graph
  *  Extends PartialFunction as a function from its nodes to the neighbours of those nodes.
  * 
  */
-trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
+trait DiGraph[E] extends ReversibleFlow[E] {
   
   /** Gets the nodes of the graph */
   def nodes:Set[E]
@@ -36,13 +36,10 @@ trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
   def numEdges = nodes.foldLeft(0)(_ + this.getNeighbours(_).size)
   
   /** Override getNeighbours so it returns a Set, rather than a generic Iterable */
-  def getNeighbours(x:E):Set[E]
+  def getNeighbours(x:E):Set[EdgeType]
   
   /** Tells if this is defined at x.  True if x is a node of this. */
   def isDefinedAt(x:E) = nodes.contains(x)
-  
-  /** Evaluates this at x.  Returns the neighbours of x. */
-  def apply(x:E) = getNeighbours(x)
   
   /** Adds a node to this */
   def +(x:E):DiGraph[E]
@@ -54,6 +51,29 @@ trait DiGraph[E] extends ReversibleFlow[E] with PartialFunction[E, Set[E]] {
 
 /** Companion object for DiGraph */
 object DiGraph {
+  
+  class DiGraphEdge[E](val from:E, val to:E) extends Equals with Flow.Edge[E] {
+    
+    def canEqual(that: Any) = that.isInstanceOf[DiGraphEdge[E]]
+    
+    override def equals(that:Any) = {
+      if (!(that.isInstanceOf[DiGraphEdge[E]])) false
+      else {
+        val e = that.asInstanceOf[DiGraphEdge[E]]
+        e.canEqual(this) && e.from == this.from && e.to == this.to
+      }
+    }
+    
+    override def toString = {
+      val buf = new StringBuilder()
+      buf append "("
+      buf append from.toString()
+      buf append ", "
+      buf append to.toString()
+      buf append ")"
+      buf.toString
+    }
+  }
   
   /** Create a graph with given nodes and edges */
   def apply[E](nodes:E*)(edges:Pair[E,E]*) = {

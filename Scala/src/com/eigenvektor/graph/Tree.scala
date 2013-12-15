@@ -70,6 +70,29 @@ trait Tree[E] extends Flow[E] {
 
 object Tree {
   
+  /** An edge for this type of class */
+  class TreeEdge[E](val from:E, val to:E) extends Equals with Flow.Edge[E] {
+    def canEqual(that: Any) = that.isInstanceOf[TreeEdge[E]]
+    
+    override def equals(that:Any) = {
+      if (!(that.isInstanceOf[TreeEdge[E]])) false
+      else {
+        val e = that.asInstanceOf[TreeEdge[E]]
+        e.canEqual(this) && e.from == this.from && e.to == this.to
+      }
+    }
+    
+    override def toString = {
+      val buf = new StringBuilder()
+      buf append "("
+      buf append from.toString()
+      buf append ", "
+      buf append to.toString()
+      buf append ")"
+      buf.toString
+    }
+  }
+  
   /** Creates a tree with kids */
   def apply[E](root:E, kids:Tree[E]*) = new DefaultTree(root, kids.toList)
   

@@ -18,6 +18,8 @@
 
 package com.eigenvektor.graph
 
+import com.eigenvektor.graph.Flow.Edge
+
 /** Specification for a class that is like a directed graph, but does not necessarily know
  *  all of its nodes in advance of "discovering" them by following edges, in the same
  *  way that tree might only know its root initially and discover the remainder of its
@@ -28,6 +30,8 @@ package com.eigenvektor.graph
  *  @type E The node type of the flow.
  */
 trait Flow[E] {
+  /** The edge type of the flow */
+  type EdgeType <: Edge[E]
 
   /** Gets the roots of the flow.   */
   def roots:Set[E]
@@ -37,6 +41,15 @@ trait Flow[E] {
    *  @param x the node to get the neighbours of.
    *  @return the neighbours of [[x]]
    */
-  def getNeighbours(x:E):Iterable[E]
+  def getNeighbours(x:E):Iterable[EdgeType]
   
+}
+
+object Flow {
+  
+  /** A trait for Edge implementations to implement */
+  trait Edge[E] {
+    def from:E
+    def to:E
+  }
 }

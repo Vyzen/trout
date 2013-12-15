@@ -49,7 +49,7 @@ final class TestTree extends FlatSpec {
   }
   
   it should "find children of 2" in {
-    val kids = testTree.getNeighbours(2)
+    val kids = testTree.getNeighbours(2).map(_.to)
     assert (kids == List(3,4,5))
   }
   

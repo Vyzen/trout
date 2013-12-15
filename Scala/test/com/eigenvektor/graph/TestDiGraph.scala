@@ -37,9 +37,9 @@ class TestDiGraph extends FlatSpec {
     assert (g.numNodes == 3)
     assert (g.numEdges == 2)
     
-    assert (g.getNeighbours("One") == Set("Two", "Three"))
-    assert (g.getNeighbours("Two") == Set())
-    assert (g.getNeighbours("Three") == Set())
+    assert (g.getNeighbours("One").map(_.to) == Set("Two", "Three"))
+    assert (g.getNeighbours("Two").map(_.to) == Set())
+    assert (g.getNeighbours("Three").map(_.to) == Set())
   }
   
   it should "reverse correctly" in {
@@ -48,9 +48,9 @@ class TestDiGraph extends FlatSpec {
     assert (gr.numNodes == 3)
     assert (gr.numEdges == 2)
     
-    assert (gr.getNeighbours("One") == Set())
-    assert (gr.getNeighbours("Two") == Set("One"))
-    assert (gr.getNeighbours("Three") == Set("One"))
+    assert (gr.getNeighbours("One").map(_.to) == Set())
+    assert (gr.getNeighbours("Two").map(_.to) == Set("One"))
+    assert (gr.getNeighbours("Three").map(_.to) == Set("One"))
   }
   
   it should "fail to create" in {
@@ -68,10 +68,10 @@ class TestDiGraph extends FlatSpec {
     assert (h.numNodes == 4)
     assert (h.numEdges == 2)
     
-    assert (h.getNeighbours("Four") == Set())
-    assert (h.getNeighbours("One") == Set("Two", "Three"))
-    assert (h.getNeighbours("Two") == Set())
-    assert (h.getNeighbours("Three") == Set())
+    assert (h.getNeighbours("Four").map(_.to) == Set())
+    assert (h.getNeighbours("One").map(_.to) == Set("Two", "Three"))
+    assert (h.getNeighbours("Two").map(_.to) == Set())
+    assert (h.getNeighbours("Three").map(_.to) == Set())
   }
   
   it should "add edges correctly" in {
@@ -83,10 +83,10 @@ class TestDiGraph extends FlatSpec {
     assert (h.numNodes == 4)
     assert (h.numEdges == 3)
     
-    assert (h.getNeighbours("Four") == Set("One"))
-    assert (h.getNeighbours("One") == Set("Two", "Three"))
-    assert (h.getNeighbours("Two") == Set())
-    assert (h.getNeighbours("Three") == Set())
+    assert (h.getNeighbours("Four").map(_.to) == Set("One"))
+    assert (h.getNeighbours("One").map(_.to) == Set("Two", "Three"))
+    assert (h.getNeighbours("Two").map(_.to) == Set())
+    assert (h.getNeighbours("Three").map(_.to) == Set())
   }
 
 }

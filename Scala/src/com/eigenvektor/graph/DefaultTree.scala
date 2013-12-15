@@ -18,8 +18,13 @@
 
 package com.eigenvektor.graph
 
+import com.eigenvektor.graph.Tree.TreeEdge
+
+//import com.eigenvektor.graph.DefaultTree.DefaultTreeEdge
+
 /** Default implementation of a tree */
 final class DefaultTree[E](val root:E, val children:List[Tree[E]]) extends Tree[E] {
+  type EdgeType = TreeEdge[E]
   
   /** Convenience constructor for a singleton list */
   def this(root:E) = this(root, List())
@@ -30,7 +35,7 @@ final class DefaultTree[E](val root:E, val children:List[Tree[E]]) extends Tree[
    *  @param x the node to get the neighbours of.
    *  @return the neighbours of [[x]]
    */
-  def getNeighbours(x:E):List[E] = {
+  def getNeighbours(x:E):List[EdgeType] = {
     /** Tells if a given tree matches the root */
     def matchesRoot(t:Tree[E]):Option[Tree[E]] = {
       if (t.root == x) Some(t)
@@ -52,7 +57,7 @@ final class DefaultTree[E](val root:E, val children:List[Tree[E]]) extends Tree[
     
     val opt = findSubtreeWithRoot(this)
     opt match {
-      case Some(t:Tree[E]) => t.children.map(_.root);
+      case Some(t:Tree[E]) => t.children.map(y => new EdgeType(x, y.root));
       case None => throw new NoSuchElementException()
     }
   }
@@ -60,3 +65,5 @@ final class DefaultTree[E](val root:E, val children:List[Tree[E]]) extends Tree[
   /** Adds another tree to this as a subtree */
   def +(t:Tree[E]) = {new DefaultTree[E](root, t :: children)}
 }
+
+

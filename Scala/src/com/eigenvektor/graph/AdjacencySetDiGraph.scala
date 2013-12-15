@@ -18,6 +18,8 @@
 
 package com.eigenvektor.graph
 
+import com.eigenvektor.graph.DiGraph.DiGraphEdge
+
 /**
  * An implementation of DiGraph that uses adjacency sets.
  * 
@@ -25,12 +27,14 @@ package com.eigenvektor.graph
  * inverse of that map.
  */
 final class AdjacencyListDiGraph[E] private (
-    private val adj:Map[E, Set[E]], 
-    private val invAdj:Map[E, Set[E]]) 
+    private val adj:Map[E, Set[DiGraphEdge[E]]], 
+    private val invAdj:Map[E, Set[DiGraphEdge[E]]]) 
     extends DiGraph[E] {
   
+  type EdgeType = DiGraphEdge[E]
+  
   /** Construct an empty instance */
-  def this() = this(Map[E, Set[E]](), Map[E, Set[E]]())
+  def this() = this(Map[E, Set[DiGraphEdge[E]]](), Map[E, Set[DiGraphEdge[E]]]())
   
   /** The nodes of this graph */
   val nodes = adj.keySet
@@ -45,12 +49,16 @@ final class AdjacencyListDiGraph[E] private (
   lazy val reverse = new AdjacencyListDiGraph(invAdj, adj)
   
   /** Adds a node to this */
-  def +(x:E) = new AdjacencyListDiGraph(adj + (x -> Set[E]()), invAdj + (x -> Set[E]()))
+  def +(x:E) = {
+    new AdjacencyListDiGraph(adj + (x -> Set[DiGraphEdge[E]]()), invAdj + (x -> Set[DiGraphEdge[E]]()))
+  }
   
   /** Adds a directed edge to this */
   def +(e:Pair[E,E]) = {
-    val newNeighbours = adj(e._1) + e._2
-    val newPredecessors = invAdj(e._2) + e._1
+    val newEdge = new EdgeType(e._1, e._2)
+    val newREdge = new EdgeType(e._2, e._1)
+    val newNeighbours = adj(e._1) + newEdge
+    val newPredecessors = invAdj(e._2) + newREdge
     new AdjacencyListDiGraph(adj + (e._1 -> newNeighbours), invAdj + (e._2 -> newPredecessors))
   }
 
