@@ -39,6 +39,8 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   
   import scala.collection.mutable.ListBuffer	
   
+  import scala.annotation.tailrec
+  
   /** Gets the head of the list. */
   def head = trees.head.value
   
@@ -84,35 +86,40 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   }
   
   /** Gets value of the list at a given index. */
-  def apply(idx:Int):A = lookup(trees, idx)
-  
-  /** Performs a lookup of an index in a list of trees. */
-  private def lookup[B >: A](remainingTrees:List[CompleteBinaryTree[B]], remainingIdx:Int):B = {
-    if (remainingTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
-    else if (remainingIdx < remainingTrees.head.size) treeLookup(remainingTrees.head, remainingIdx)
-    else lookup(remainingTrees.tail, remainingIdx - remainingTrees.head.size)
+  def apply(idx:Int):A = {
+    
+    /** Performs a lookup of an index in a list of trees. */
+    @tailrec def lookup[B >: A](remainingTrees:List[CompleteBinaryTree[B]], remainingIdx:Int):B = {
+      if (remainingTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
+      else if (remainingIdx < remainingTrees.head.size) treeLookup(remainingTrees.head, remainingIdx)
+      else lookup(remainingTrees.tail, remainingIdx - remainingTrees.head.size)
+    }
+    
+    lookup(trees, idx)
   }
   
   /** Updates the value at a given index.  Returns a new list with the updated element. */
-  def updated[B >: A](idx:Int, value:B):RandomAccessList[B] = new RandomAccessList[B](
-    getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
-
-  /** Gets the updated list of trees for an update. */
-  private def getUpdatedTrees[B >: A](
-      prevTrees:ListBuffer[CompleteBinaryTree[B]],  // The trees before the current position.
-      nextTrees:List[CompleteBinaryTree[B]],        // The trees at or after the current position.
-      remainingIdx:Int,                             // The index remaining after being shifted to the current position.
-      value:B                                       // The value to update.
-      ):List[CompleteBinaryTree[B]] = {
-    if (nextTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
-    else if (remainingIdx < nextTrees.head.size) {
-      val newTree = treeUpdate(nextTrees.head, remainingIdx, value)
-      prevTrees.toList ::: newTree :: nextTrees.tail
+  def updated[B >: A](idx:Int, value:B):RandomAccessList[B] = {
+    
+    /** Gets the updated list of trees for an update. */
+    @tailrec def getUpdatedTrees[B >: A](
+        prevTrees:ListBuffer[CompleteBinaryTree[B]],  // The trees before the current position.
+        nextTrees:List[CompleteBinaryTree[B]],        // The trees at or after the current position.
+        remainingIdx:Int,                             // The index remaining after being shifted to the current position.
+        value:B                                       // The value to update.
+        ):List[CompleteBinaryTree[B]] = {
+      if (nextTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
+      else if (remainingIdx < nextTrees.head.size) {
+        val newTree = treeUpdate(nextTrees.head, remainingIdx, value)
+        prevTrees.toList ::: newTree :: nextTrees.tail
+      }
+      else {
+        prevTrees += nextTrees.head
+        getUpdatedTrees(prevTrees, nextTrees.tail, remainingIdx - nextTrees.head.size, value)
+      }
     }
-    else {
-      prevTrees += nextTrees.head
-      getUpdatedTrees(prevTrees, nextTrees.tail, remainingIdx - nextTrees.head.size, value)
-    }
+    
+    new RandomAccessList[B](getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
   }
   
   override def equals(o:Any) = {
@@ -133,6 +140,8 @@ object RandomAccessList {
   // Because I'm making my own RandomAccessList Nil here.
   import scala.collection.immutable.{Nil => NilList}
   
+  import scala.annotation.tailrec
+  
   /** An implementation of a complete binary tree, to be used inside the
    *  general random access list.
    */
@@ -150,7 +159,7 @@ object RandomAccessList {
   }
   
   /** Finds the element of a complete binary tree at a given index in log(n) time */
-  private def treeLookup[T](cbt:CompleteBinaryTree[T], idx:Int):T = {
+  @tailrec private def treeLookup[T](cbt:CompleteBinaryTree[T], idx:Int):T = {
     cbt match {
       case l: Leaf[T] => if (idx == 0) l.value else throw new IndexOutOfBoundsException("index out of bounds")
       case n: Node[T] => if (idx == 0) n.value else {
