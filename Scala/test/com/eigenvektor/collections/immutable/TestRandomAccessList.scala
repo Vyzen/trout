@@ -110,5 +110,33 @@ class TestRandomAccessList extends FlatSpec {
     
     assert(recover.reverse == (10000 to 10999))
   }
+  
+  it should "do equals() correctly" in {
+    var l1 = RandomAccessList[Int]
+    for (i <- 1 to 1000) {
+      l1 = i :: l1
+    }
+    
+    var l2 = RandomAccessList[Int]
+    for (i <- 1 to 1000) {
+      l2 = i :: l2
+    }
+    
+    var l3 = RandomAccessList[Int]
+    for (i <- 1 to 1000) {
+      l3 = (i*5) :: l3
+    }
+    
+    assert(l1 == l2)
+    assert(l1 != l3)
+    assert(l1 != "A large African Elephant")
+  }
+  
+  it should "initialize with a list" in {
+    val l = RandomAccessList(1,2,3,4,5,6,7,8,9)
+    assert(l.head == 1)
+    assert(l.tail.head == 2)
+    assert(l.size == 9)
+  }
 
 }

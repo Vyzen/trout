@@ -115,6 +115,17 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
     }
   }
   
+  override def equals(o:Any) = {
+    if (!o.isInstanceOf[RandomAccessList[A]]) false
+    else {
+      val ral = o.asInstanceOf[RandomAccessList[A]]
+      ral.trees.equals(this.trees)
+    }
+  }
+  
+  /** Simple toString for debugging. */
+  override def toString = trees.map(_.size).mkString("RAList(", ",", ")")
+  
 }
 
 object RandomAccessList {
@@ -188,4 +199,8 @@ object RandomAccessList {
 
   /** Creates a new, empty instance. */
   def apply[T]() = new RandomAccessList[T](Nil)
+  
+  /** Creates a new instance with elements passed in. */
+  def apply[T](elems:T*) = elems.reverse.foldLeft(new RandomAccessList[T](Nil))(_.cons(_))
+  
 }
