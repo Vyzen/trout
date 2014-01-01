@@ -34,9 +34,13 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   
   import com.eigenvektor.collections.immutable.RandomAccessList.Leaf
   import com.eigenvektor.collections.immutable.RandomAccessList.Node
+  import com.eigenvektor.collections.immutable.RandomAccessList.treeLookup
   
   /** Gets the head of the list. */
   def head = trees.head.value
+  
+  /** Tells if the list is empty. */
+  def isEmpty = trees.isEmpty
   
   /** The size of the list */
   lazy val size = trees.map(_.size).sum
@@ -75,6 +79,16 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
       case Node(value, left, right) :: rest => new RandomAccessList(left :: right :: rest)
     }
   }
+  
+  /** Gets value of the list at a given index. */
+  def apply(idx:Int):A = lookup(trees, idx)
+  
+  /** Performs a lookup of an index in a list of trees. */
+  private def lookup[B >: A](remainingTrees:List[CompleteBinaryTree[B]], remainingIdx:Int):B = {
+    if (remainingTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
+    else if (remainingIdx < remainingTrees.head.size) treeLookup(remainingTrees.head, remainingIdx)
+    else lookup(remainingTrees.tail, remainingIdx - remainingTrees.head.size)
+  }
 
 }
 
@@ -99,11 +113,11 @@ object RandomAccessList {
   /** Finds the element of a complete binary tree at a given index in log(n) time */
   private def treeLookup[T](cbt:CompleteBinaryTree[T], idx:Int):T = {
     cbt match {
-      case l: Leaf[T] => if (idx == 0) l.value else throw new IllegalArgumentException("index out of bounds")
+      case l: Leaf[T] => if (idx == 0) l.value else throw new IndexOutOfBoundsException("index out of bounds")
       case n: Node[T] => if (idx == 0) n.value else {
         val sz = n.left.size
         if (idx <= sz) treeLookup[T](n.left, idx-1)
-        else treeLookup[T](n.left, idx - 1 - sz)
+        else treeLookup[T](n.right, idx - 1 - sz)
       }
     }
   }

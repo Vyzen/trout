@@ -23,12 +23,12 @@ import scala.collection.mutable.ListBuffer
 class TestRandomAccessList extends FlatSpec {
   
   "RandomAccessList" should "initialize to empty" in {
-    val l = RandomAccessList[Int]()
+    val l = RandomAccessList[Int]
     assert(l.size == 0)
   }
   
   it should "cons correctly" in {
-    var l = RandomAccessList[Int]()
+    var l = RandomAccessList[Int]
     for (i <- 1 to 1000) {
       l = i :: l
       assert(l.size == i)
@@ -37,7 +37,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "tail correctly" in {
-    var l = RandomAccessList[Int]()
+    var l = RandomAccessList[Int]
     for (i <- 1 to 1000) {
       l = i :: l
     }
@@ -63,7 +63,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "be persistent during tails" in {
-    var l = RandomAccessList[Int]()
+    var l = RandomAccessList[Int]
     for (i <- 1 to 1000) {
       l = i :: l
     }
@@ -77,6 +77,20 @@ class TestRandomAccessList extends FlatSpec {
     
     assert (l.size == 0)
     assert(builder.toList.map(_.size) == (0 to 1000).toList.reverse)
+  }
+  
+  it should "reconstruct the original list" in {
+    var l = RandomAccessList[Int]
+    for (i <- 1 to 1000) {
+      l = i :: l
+    }
+    
+    var recover:List[Int] = Nil
+    for (i <- 0 to 999) {
+      recover = l(i) :: recover
+    }
+    
+    assert(recover == (1 to 1000))
   }
 
 }
