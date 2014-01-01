@@ -35,6 +35,9 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   import com.eigenvektor.collections.immutable.RandomAccessList.Leaf
   import com.eigenvektor.collections.immutable.RandomAccessList.Node
   import com.eigenvektor.collections.immutable.RandomAccessList.treeLookup
+  import com.eigenvektor.collections.immutable.RandomAccessList.treeUpdate
+  
+  import scala.collection.mutable.ListBuffer	
   
   /** Gets the head of the list. */
   def head = trees.head.value
@@ -89,7 +92,29 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
     else if (remainingIdx < remainingTrees.head.size) treeLookup(remainingTrees.head, remainingIdx)
     else lookup(remainingTrees.tail, remainingIdx - remainingTrees.head.size)
   }
+  
+  /** Updates the value at a given index.  Returns a new list with the updated element. */
+  def updated[B >: A](idx:Int, value:B):RandomAccessList[B] = new RandomAccessList[B](
+    getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
 
+  /** Gets the updated list of trees for an update. */
+  private def getUpdatedTrees[B >: A](
+      prevTrees:ListBuffer[CompleteBinaryTree[B]],  // The trees before the current position.
+      nextTrees:List[CompleteBinaryTree[B]],        // The trees at or after the current position.
+      remainingIdx:Int,                             // The index remaining after being shifted to the current position.
+      value:B                                       // The value to update.
+      ):List[CompleteBinaryTree[B]] = {
+    if (nextTrees == Nil) throw new IndexOutOfBoundsException("Index out of bounds")
+    else if (remainingIdx < nextTrees.head.size) {
+      val newTree = treeUpdate(nextTrees.head, remainingIdx, value)
+      prevTrees.toList ::: newTree :: nextTrees.tail
+    }
+    else {
+      prevTrees += nextTrees.head
+      getUpdatedTrees(prevTrees, nextTrees.tail, remainingIdx - nextTrees.head.size, value)
+    }
+  }
+  
 }
 
 object RandomAccessList {
@@ -116,8 +141,23 @@ object RandomAccessList {
       case l: Leaf[T] => if (idx == 0) l.value else throw new IndexOutOfBoundsException("index out of bounds")
       case n: Node[T] => if (idx == 0) n.value else {
         val sz = n.left.size
-        if (idx <= sz) treeLookup[T](n.left, idx-1)
-        else treeLookup[T](n.right, idx - 1 - sz)
+        if (idx <= sz) treeLookup(n.left, idx-1)
+        else treeLookup(n.right, idx - 1 - sz)
+      }
+    }
+  }
+  
+  /** Creates a binary tree that is just like an existing one, but updated at a given index with a given value
+   *  in log(n) time, reusing as much of the structure as possible.
+   */
+  private def treeUpdate[T, U >: T](cbt:CompleteBinaryTree[T], idx:Int, value:U):CompleteBinaryTree[U] = {
+    cbt match {
+      case l: Leaf[T] => if (idx == 0) new Leaf(value) else throw new IndexOutOfBoundsException("index out of bounds")
+      case n: Node[T] => if (idx == 0) new Node(value, n.left, n.right) else
+      {
+        val sz = n.left.size
+        if (idx <= sz) new Node(n.value, treeUpdate(n.left, idx-1, value), n.right)
+        else new Node(n.value, n.left, treeUpdate(n.right, idx - 1 - sz, value))
       }
     }
   }

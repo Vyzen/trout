@@ -92,5 +92,23 @@ class TestRandomAccessList extends FlatSpec {
     
     assert(recover == (1 to 1000))
   }
+  
+  it should "update the list" in {
+    var l = RandomAccessList[Int]
+    for (i <- 1 to 1000) {
+      l = i :: l
+    }
+    
+    for (i <- 0 to 999) {
+      l = l.updated(i, i + 10000)
+    }
+    
+    var recover:List[Int] = Nil
+    for (i <- 0 to 999) {
+      recover = l(i) :: recover
+    }
+    
+    assert(recover.reverse == (10000 to 10999))
+  }
 
 }
