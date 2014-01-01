@@ -130,6 +130,9 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
 
 object RandomAccessList {
   
+  // Because I'm making my own RandomAccessList Nil here.
+  import scala.collection.immutable.{Nil => NilList}
+  
   /** An implementation of a complete binary tree, to be used inside the
    *  general random access list.
    */
@@ -177,7 +180,7 @@ object RandomAccessList {
   private final class CBTIterator[T] (cbt:CompleteBinaryTree[T]) extends Iterator[T] {
     
     // The list of subtrees on the current path
-    private var trees:List[CompleteBinaryTree[T]] = cbt :: Nil
+    private var trees:List[CompleteBinaryTree[T]] = cbt :: NilList
     
     /** Tells if there are more values */
     def hasNext = !trees.isEmpty
@@ -198,9 +201,10 @@ object RandomAccessList {
   }
 
   /** Creates a new, empty instance. */
-  def apply[T]() = new RandomAccessList[T](Nil)
+  def apply[T]() = new RandomAccessList[T](NilList)
   
   /** Creates a new instance with elements passed in. */
-  def apply[T](elems:T*) = elems.reverse.foldLeft(new RandomAccessList[T](Nil))(_.cons(_))
+  def apply[T](elems:T*) = elems.reverse.foldLeft(new RandomAccessList[T](NilList))(_.cons(_))
   
+  val Nil = new RandomAccessList[Nothing](NilList)
 }

@@ -28,7 +28,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "cons correctly" in {
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     for (i <- 1 to 1000) {
       l = i :: l
       assert(l.size == i)
@@ -37,7 +37,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "tail correctly" in {
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     for (i <- 1 to 1000) {
       l = i :: l
     }
@@ -51,7 +51,7 @@ class TestRandomAccessList extends FlatSpec {
   
   it should "be persistent during adds" in {
     val builder = new ListBuffer[RandomAccessList[Int]]
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     builder += l
     for (i <- 1 to 1000) {
       l = i :: l
@@ -63,7 +63,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "be persistent during tails" in {
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     for (i <- 1 to 1000) {
       l = i :: l
     }
@@ -80,7 +80,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "reconstruct the original list" in {
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     for (i <- 1 to 1000) {
       l = i :: l
     }
@@ -94,7 +94,7 @@ class TestRandomAccessList extends FlatSpec {
   }
   
   it should "update the list" in {
-    var l = RandomAccessList[Int]
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
     for (i <- 1 to 1000) {
       l = i :: l
     }
