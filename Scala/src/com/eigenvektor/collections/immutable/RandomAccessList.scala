@@ -18,6 +18,8 @@
 
 package com.eigenvektor.collections.immutable
 
+import scala.collection.IterableLike
+
 import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
 
 /** Implementation of a random access list
@@ -30,7 +32,8 @@ import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
  *  This is principally taken from Chris Okasaki's paper, "Purely Functional 
  *  Random-Access Lists".
  */
-final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryTree[A]]) {
+final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryTree[A]]) 
+  extends IterableLike[A, RandomAccessList[A]] {
   
   import com.eigenvektor.collections.immutable.RandomAccessList.Leaf
   import com.eigenvektor.collections.immutable.RandomAccessList.Node
@@ -42,13 +45,13 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   import scala.annotation.tailrec
   
   /** Gets the head of the list. */
-  def head = trees.head.value
+  override def head = trees.head.value
   
   /** Tells if the list is empty. */
-  def isEmpty = trees.isEmpty
+  override def isEmpty = trees.isEmpty
   
   /** The size of the list */
-  lazy val size = trees.map(_.size).sum
+  override lazy val size = trees.map(_.size).sum
   
   /** Prepends a value to the list. */
   def cons[B >: A](value:B) = {
@@ -72,7 +75,7 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   def ::[B >: A](value:B) = cons(value)
   
   /** Gets the tail of the list. */
-  def tail = {
+  override def tail = {
     trees match {
       // If we're empty, there is no tail.
       case Nil => throw new IllegalStateException("Empty list has no tail.")
@@ -122,6 +125,54 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
     new RandomAccessList[B](getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
   }
   
+  def iterator() = {
+    if (isEmpty) Iterator.empty
+    else {
+      /** A simple iterator for this object that assumes that this is non-empty. */
+      class RALIterator extends Iterator[A] {
+      
+        val listIter = trees.iterator
+        var treeIter = listIter.next().iterator
+      
+        def hasNext = treeIter.hasNext || listIter.hasNext
+      
+        def next() = {
+          if (!treeIter.hasNext) {
+            treeIter = listIter.next.iterator
+          }
+    	  treeIter.next()
+        }
+      
+      }
+    
+      new RALIterator
+    }
+  }
+  
+  /** Override of the seq method from Iterable. */
+  override def seq = iterator
+  
+  import scala.collection.mutable.Builder
+  /** Creates a builder for this class. */
+  protected[this] def newBuilder: Builder[A, RandomAccessList[A]] = {
+    // A very simple builder that just collects its elements into a standard list
+    // and creates the RandomAccessList at the last moment.
+    class RALBuilder extends Builder[A, RandomAccessList[A]] {
+      private var elems:List[A] = Nil
+      
+      def +=(elem:A) = { 
+        elems = (elem :: elems) 
+        this
+        }
+      
+      def clear() = elems = Nil
+      
+      def result() = elems.foldLeft(new RandomAccessList[A](Nil))(_.cons(_))
+    }
+    
+    new RALBuilder
+  }
+  
   override def equals(o:Any) = {
     if (!o.isInstanceOf[RandomAccessList[A]]) false
     else {
@@ -147,6 +198,7 @@ object RandomAccessList {
    */
   sealed private abstract class CompleteBinaryTree[+T] (val value:T) {
     def size:Int
+    def iterator:Iterator[T] = new CBTIterator(this)
   }
   private case class Leaf[+T] (v:T) extends CompleteBinaryTree[T](v) {
     val size = 1;
@@ -215,5 +267,7 @@ object RandomAccessList {
   /** Creates a new instance with elements passed in. */
   def apply[T](elems:T*) = elems.reverse.foldLeft(new RandomAccessList[T](NilList))(_.cons(_))
   
+  // A special Nil for this kind of list.
   val Nil = new RandomAccessList[Nothing](NilList)
+ 
 }

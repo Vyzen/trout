@@ -138,5 +138,35 @@ class TestRandomAccessList extends FlatSpec {
     assert(l.tail.head == 2)
     assert(l.size == 9)
   }
+  
+  it should "do foreach() correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    
+    var sum:Int = 0
+    l.iterator.foreach{ sum += _}
+    assert(sum == 5050)
+  }
+  
+  it should "do foreach() correctly on an empty list" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+
+    var sum:Int = 0
+    l.iterator.foreach{ sum += _}
+    assert(sum == 0)
+  }
+  
+  it should "do filter() correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    
+    l = l.filter(_ % 2 == 0)
+    assert(l.size == 50)
+    assert(l.head == 100)
+  }
 
 }
