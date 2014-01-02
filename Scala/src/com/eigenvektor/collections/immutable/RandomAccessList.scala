@@ -19,7 +19,6 @@
 package com.eigenvektor.collections.immutable
 
 import scala.collection.IterableLike
-
 import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
 
 /** Implementation of a random access list
@@ -152,26 +151,8 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   /** Override of the seq method from Iterable. */
   override def seq = iterator
   
-  import scala.collection.mutable.Builder
   /** Creates a builder for this class. */
-  protected[this] def newBuilder: Builder[A, RandomAccessList[A]] = {
-    // A very simple builder that just collects its elements into a standard list
-    // and creates the RandomAccessList at the last moment.
-    class RALBuilder extends Builder[A, RandomAccessList[A]] {
-      private var elems:List[A] = Nil
-      
-      def +=(elem:A) = { 
-        elems = (elem :: elems) 
-        this
-        }
-      
-      def clear() = elems = Nil
-      
-      def result() = elems.foldLeft(new RandomAccessList[A](Nil))(_.cons(_))
-    }
-    
-    new RALBuilder
-  }
+  protected[this] def newBuilder = RandomAccessList.newBuilder[A]
   
   override def equals(o:Any) = {
     if (!o.isInstanceOf[RandomAccessList[A]]) false
@@ -188,9 +169,9 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
 
 object RandomAccessList {
   
-  // Because I'm making my own RandomAccessList Nil here.
-  import scala.collection.immutable.{Nil => NilList}
-  
+  import scala.collection.immutable.{Nil => NilList} // Because I'm making my own RandomAccessList Nil here.
+  import scala.collection.mutable.Builder
+  import scala.collection.generic.CanBuildFrom
   import scala.annotation.tailrec
   
   /** An implementation of a complete binary tree, to be used inside the
@@ -269,5 +250,31 @@ object RandomAccessList {
   
   // A special Nil for this kind of list.
   val Nil = new RandomAccessList[Nothing](NilList)
+  
+  /** Creates a builder for this class. */
+  def newBuilder[T]: Builder[T, RandomAccessList[T]] = {
+    // A very simple builder that just collects its elements into a standard list
+    // and creates the RandomAccessList at the last moment.
+    class RALBuilder extends Builder[T, RandomAccessList[T]] {
+      private var elems:List[T] = NilList
+      
+      def +=(elem:T) = { 
+        elems = (elem :: elems) 
+        this
+        }
+      
+      def clear() = elems = NilList
+      
+      def result() = elems.foldLeft(new RandomAccessList[T](NilList))(_.cons(_))
+    }
+    
+    new RALBuilder
+  }
+  
+  implicit def canBuildFrom[T, U >: T] : CanBuildFrom[RandomAccessList[T], U, RandomAccessList[U]] = 
+    new CanBuildFrom[RandomAccessList[T], U, RandomAccessList[U]] {
+      def apply():Builder[U, RandomAccessList[U]] = newBuilder[U]
+      def apply(from:RandomAccessList[T]) = newBuilder[U]
+    }
  
 }

@@ -168,5 +168,31 @@ class TestRandomAccessList extends FlatSpec {
     assert(l.size == 50)
     assert(l.head == 100)
   }
+  
+  it should "do map() correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    
+    val l2 = l.map(x => x*x)
+    assert(l2.size == 100)
+    assert(l2.head == 100 * 100)
+  }
+  
+  it should "do silly for loops correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    
+    val l2 = for (e <- l) yield e*e 
+    assert(l2.size == 100)
+    assert(l2.head == 100 * 100)
+    
+    val l3 = for (e <- l if e <= 50) yield e + 100
+    assert(l3.size == 50)
+    assert(l3.head == 150)
+  }
 
 }
