@@ -31,7 +31,7 @@ import scala.collection.SeqLike
  *  This is principally taken from Chris Okasaki's paper, "Purely Functional 
  *  Random-Access Lists".
  */
-final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryTree[A]]) 
+abstract class RandomAccessList[+A] protected[this] (private val trees:List[CompleteBinaryTree[A]]) 
   extends Seq[A] with SeqLike[A, RandomAccessList[A]] {
   
   import com.eigenvektor.collections.RandomAccessList.Leaf
@@ -42,6 +42,12 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   import scala.collection.mutable.ListBuffer	
   
   import scala.annotation.tailrec
+  
+  /** Creates a new instance of this type of random access list
+   *  
+   *  Subclasses should implement to return an instance of their specific type.
+   */
+  protected[this] def newInstance[B](trees:List[CompleteBinaryTree[B]]):RandomAccessList[B]
   
   /** Gets the head of the list. */
   override def head = trees.head.value
@@ -59,17 +65,17 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   def cons[B >: A](value:B) = {
     trees match {
       // If we're empty, make a singleton.
-      case Nil => new RandomAccessList[B](Leaf(value) :: Nil)
+      case Nil => newInstance[B](Leaf(value) :: Nil)
       
       // If we're a singleton, make a double.
-      case tree :: Nil => new RandomAccessList[B](Leaf(value) :: trees)
+      case tree :: Nil => newInstance[B](Leaf(value) :: trees)
       
       case t1 :: t2 :: tail => 
         // If the first two trees aren't the same size, we don't need to do anything special.
-        if (t1.size != t2.size) new RandomAccessList[B](Leaf(value) :: trees)
+        if (t1.size != t2.size) newInstance[B](Leaf(value) :: trees)
         
         // If they are, we combine them with the new value.
-        else new RandomAccessList[B](Node(value, t1, t2) :: tail)
+        else newInstance[B](Node(value, t1, t2) :: tail)
     }
   }
   
@@ -83,10 +89,10 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
       case Nil => throw new IllegalStateException("Empty list has no tail.")
       
       // If the first tree is a singleton, the tail is just the rest.
-      case Leaf(value) :: rest => new RandomAccessList(rest)
+      case Leaf(value) :: rest => newInstance(rest)
       
       // If the first tree is composite, prepend the subtrees to the rest.
-      case Node(value, left, right) :: rest => new RandomAccessList(left :: right :: rest)
+      case Node(value, left, right) :: rest => newInstance(left :: right :: rest)
     }
   }
   
@@ -124,7 +130,7 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
       }
     }
     
-    new RandomAccessList[B](getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
+    newInstance[B](getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
   }
   
   def iterator() = {
@@ -180,14 +186,14 @@ object RandomAccessList {
   /** An implementation of a complete binary tree, to be used inside the
    *  general random access list.
    */
-  sealed private abstract class CompleteBinaryTree[+T] (val value:T) {
+  sealed private[collections] abstract class CompleteBinaryTree[+T] (val value:T) {
     def size:Int
     def iterator:Iterator[T] = new CBTIterator(this)
   }
-  private case class Leaf[+T] (v:T) extends CompleteBinaryTree[T](v) {
+  private[collections] case class Leaf[+T] (v:T) extends CompleteBinaryTree[T](v) {
     val size = 1;
   }
-  private case class Node[+T] (v:T, 
+  private[collections] case class Node[+T] (v:T, 
     val left:CompleteBinaryTree[T], 
     val right:CompleteBinaryTree[T]) extends CompleteBinaryTree[T](v) {
     require(left.size == right.size)
@@ -195,7 +201,7 @@ object RandomAccessList {
   }
   
   /** Finds the element of a complete binary tree at a given index in log(n) time */
-  @tailrec private def treeLookup[T](cbt:CompleteBinaryTree[T], idx:Int):T = {
+  @tailrec private[collections] def treeLookup[T](cbt:CompleteBinaryTree[T], idx:Int):T = {
     cbt match {
       case l: Leaf[T] => if (idx == 0) l.value else throw new IndexOutOfBoundsException("index out of bounds")
       case n: Node[T] => if (idx == 0) n.value else {
@@ -209,7 +215,7 @@ object RandomAccessList {
   /** Creates a binary tree that is just like an existing one, but updated at a given index with a given value
    *  in log(n) time, reusing as much of the structure as possible.
    */
-  private def treeUpdate[T, U >: T](cbt:CompleteBinaryTree[T], idx:Int, value:U):CompleteBinaryTree[U] = {
+  private[collections] def treeUpdate[T, U >: T](cbt:CompleteBinaryTree[T], idx:Int, value:U):CompleteBinaryTree[U] = {
     cbt match {
       case l: Leaf[T] => if (idx == 0) new Leaf(value) else throw new IndexOutOfBoundsException("index out of bounds")
       case n: Node[T] => if (idx == 0) new Node(value, n.left, n.right) else
@@ -222,7 +228,7 @@ object RandomAccessList {
   }
   
   /** A simple iterator for a complete binary tree that iterates in pre-order */
-  private final class CBTIterator[T] (cbt:CompleteBinaryTree[T]) extends Iterator[T] {
+  private[collections] final class CBTIterator[T] (cbt:CompleteBinaryTree[T]) extends Iterator[T] {
     
     // The list of subtrees on the current path
     private var trees:List[CompleteBinaryTree[T]] = cbt :: NilList
@@ -246,13 +252,14 @@ object RandomAccessList {
   }
 
   /** Creates a new, empty instance. */
-  def apply[T]() = new RandomAccessList[T](NilList)
+  def apply[T]():RandomAccessList[T] = new immutable.RandomAccessList[T](NilList)
   
   /** Creates a new instance with elements passed in. */
-  def apply[T](elems:T*) = elems.reverse.foldLeft(new RandomAccessList[T](NilList))(_.cons(_))
+  def apply[T](elems:T*):RandomAccessList[T] = 
+    elems.reverse.foldLeft(new immutable.RandomAccessList[T](NilList):RandomAccessList[T])(_.cons(_))
   
   // A special Nil for this kind of list.
-  val Nil = new RandomAccessList[Nothing](NilList)
+  val Nil = new immutable.RandomAccessList[Nothing](NilList)
   
   /** Creates a builder for this class. */
   def newBuilder[T]: Builder[T, RandomAccessList[T]] = {
@@ -268,7 +275,8 @@ object RandomAccessList {
       
       def clear() = elems = NilList
       
-      def result() = elems.foldLeft(new RandomAccessList[T](NilList))(_.cons(_))
+      def result():RandomAccessList[T] = 
+        elems.foldLeft(new immutable.RandomAccessList[T](NilList):RandomAccessList[T])(_.cons(_))
     }
     
     new RALBuilder
