@@ -133,6 +133,16 @@ abstract class RandomAccessList[+A] protected[this] (private val trees:List[Comp
     newInstance[B](getUpdatedTrees(new ListBuffer[CompleteBinaryTree[B]], trees, idx, value))
   }
   
+  /** Reverses the list in O(N) time */
+  override def reverse = {
+    def reverseInto(a:RandomAccessList[A], b:RandomAccessList[A]):RandomAccessList[A] = {
+      if (a.isEmpty) b
+      else reverseInto(a.tail, a.head :: b)
+    }
+    
+    reverseInto(this, newInstance(Nil))
+  }
+  
   def iterator() = {
     if (isEmpty) Iterator.empty
     else {

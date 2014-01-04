@@ -194,5 +194,15 @@ class TestRAList extends FlatSpec {
     assert(l3.size == 50)
     assert(l3.head == 150)
   }
+  
+  it should "reverse correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    l = l.reverse
+    assert(l.length == 100)
+    assert(l.head == 1)
+  }
 
 }
