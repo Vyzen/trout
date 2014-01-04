@@ -15,7 +15,7 @@
  *  along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
-package com.eigenvektor.collections.immutable
+package com.eigenvektor.collections
 
 import org.scalatest.FlatSpec
 import scala.collection.mutable.ListBuffer

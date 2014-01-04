@@ -16,9 +16,9 @@
  *  along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
-package com.eigenvektor.collections.immutable
+package com.eigenvektor.collections
 
-import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
+import com.eigenvektor.collections.RandomAccessList.CompleteBinaryTree
 import scala.collection.SeqLike
 
 /** Implementation of a random access list
@@ -34,10 +34,10 @@ import scala.collection.SeqLike
 final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryTree[A]]) 
   extends Seq[A] with SeqLike[A, RandomAccessList[A]] {
   
-  import com.eigenvektor.collections.immutable.RandomAccessList.Leaf
-  import com.eigenvektor.collections.immutable.RandomAccessList.Node
-  import com.eigenvektor.collections.immutable.RandomAccessList.treeLookup
-  import com.eigenvektor.collections.immutable.RandomAccessList.treeUpdate
+  import com.eigenvektor.collections.RandomAccessList.Leaf
+  import com.eigenvektor.collections.RandomAccessList.Node
+  import com.eigenvektor.collections.RandomAccessList.treeLookup
+  import com.eigenvektor.collections.RandomAccessList.treeUpdate
   
   import scala.collection.mutable.ListBuffer	
   
