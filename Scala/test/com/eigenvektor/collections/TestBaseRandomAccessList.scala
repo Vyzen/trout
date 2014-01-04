@@ -20,7 +20,7 @@ package com.eigenvektor.collections
 import org.scalatest.FlatSpec
 import scala.collection.mutable.ListBuffer
 
-class TestRandomAccessList extends FlatSpec {
+class TestRAList extends FlatSpec {
   
   "RandomAccessList" should "initialize to empty" in {
     val l = RandomAccessList[Int]
