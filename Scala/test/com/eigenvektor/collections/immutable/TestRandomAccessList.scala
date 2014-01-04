@@ -175,7 +175,7 @@ class TestRandomAccessList extends FlatSpec {
       l = i :: l
     }
     
-    val l2 = l.map(x => x*x)
+    val l2:RandomAccessList[Int] = l.map(x => x*x)
     assert(l2.size == 100)
     assert(l2.head == 100 * 100)
   }
@@ -186,11 +186,11 @@ class TestRandomAccessList extends FlatSpec {
       l = i :: l
     }
     
-    val l2 = for (e <- l) yield e*e 
+    val l2:RandomAccessList[Int] = for (e <- l) yield e*e 
     assert(l2.size == 100)
     assert(l2.head == 100 * 100)
     
-    val l3 = for (e <- l if e <= 50) yield e + 100
+    val l3:RandomAccessList[Int] = for (e <- l if e <= 50) yield e + 100
     assert(l3.size == 50)
     assert(l3.head == 150)
   }

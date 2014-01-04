@@ -18,8 +18,8 @@
 
 package com.eigenvektor.collections.immutable
 
-import scala.collection.IterableLike
 import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
+import scala.collection.SeqLike
 
 /** Implementation of a random access list
  *  
@@ -32,7 +32,7 @@ import com.eigenvektor.collections.immutable.RandomAccessList.CompleteBinaryTree
  *  Random-Access Lists".
  */
 final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryTree[A]]) 
-  extends IterableLike[A, RandomAccessList[A]] {
+  extends Seq[A] with SeqLike[A, RandomAccessList[A]] {
   
   import com.eigenvektor.collections.immutable.RandomAccessList.Leaf
   import com.eigenvektor.collections.immutable.RandomAccessList.Node
@@ -51,6 +51,9 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   
   /** The size of the list */
   override lazy val size = trees.map(_.size).sum
+  
+  /** The size of the list. */
+  override lazy val length = size;
   
   /** Prepends a value to the list. */
   def cons[B >: A](value:B) = {
@@ -149,10 +152,10 @@ final class RandomAccessList[+A] private (private val trees:List[CompleteBinaryT
   }
   
   /** Override of the seq method from Iterable. */
-  override def seq = iterator
+  override def seq = this
   
   /** Creates a builder for this class. */
-  protected[this] def newBuilder = RandomAccessList.newBuilder[A]
+  override protected[this] def newBuilder = RandomAccessList.newBuilder[A]
   
   override def equals(o:Any) = {
     if (!o.isInstanceOf[RandomAccessList[A]]) false
