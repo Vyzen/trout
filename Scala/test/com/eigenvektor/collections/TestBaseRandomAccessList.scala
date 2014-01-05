@@ -204,5 +204,19 @@ class TestRAList extends FlatSpec {
     assert(l.length == 100)
     assert(l.head == 1)
   }
+  
+  it should "reverse iterate correctly" in {
+    var l:RandomAccessList[Int] = RandomAccessList.Nil
+    for (i <- 1 to 100) {
+      l = i :: l
+    }
+    
+    val builder = new ListBuffer[Int]
+    for (i <- l.reverseIterator) {
+      builder += i
+    }
+    val recover = builder.toList
+    assert(recover == (1 to 100))
+  }
 
 }

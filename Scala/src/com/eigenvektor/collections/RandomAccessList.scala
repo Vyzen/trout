@@ -167,6 +167,29 @@ abstract class RandomAccessList[+A] protected[this] (private val trees:List[Comp
     }
   }
   
+  override def reverseIterator() = {
+    if (isEmpty) Iterator.empty
+    else {
+      /** A simple reverse iterator. */
+      class RALReverseIterator extends Iterator[A] {
+       
+        val listIter = trees.reverse.iterator
+        var treeIter = listIter.next().reverseIterator
+      
+        def hasNext = treeIter.hasNext || listIter.hasNext
+      
+        def next() = {
+          if (!treeIter.hasNext) {
+            treeIter = listIter.next.reverseIterator
+          }
+    	  treeIter.next()
+        }
+      }
+      
+      new RALReverseIterator
+    }
+  }
+  
   /** Override of the seq method from Iterable. */
   override def seq = this
   
@@ -199,6 +222,7 @@ object RandomAccessList {
   sealed private[collections] abstract class CompleteBinaryTree[+T] (val value:T) {
     def size:Int
     def iterator:Iterator[T] = new CBTIterator(this)
+    def reverseIterator:Iterator[T] = new ReverseCBTIterator(this)
   }
   private[collections] case class Leaf[+T] (v:T) extends CompleteBinaryTree[T](v) {
     val size = 1;
@@ -258,6 +282,59 @@ object RandomAccessList {
         case Leaf(value) => trees.tail
       }
       ret
+    }
+  }
+  
+  /** A simple iterator for a complete binary tree that iterates in reverse post-order */
+  private[collections] final class ReverseCBTIterator[T] (cbt:CompleteBinaryTree[T]) extends Iterator[T] {
+    
+    // A list of trees combined with a flag to tells us whether we have already visited
+    // their left and right subtrees.
+    private var trees:List[Tuple3[CompleteBinaryTree[T], Boolean, Boolean]] = (cbt, false, false) :: NilList
+    
+    // Advance the tree list.
+    trees = advanceTrees(trees)
+    
+    /** Tells if there are more values. */
+    def hasNext = !trees.isEmpty
+    
+    def next() = {
+      val ret = trees.head._1.value
+      trees = advanceTrees(trees.tail)
+      ret
+    }
+    
+    /** Advance the trees to the next position.  I.e. the position where the next node is at the head
+     *  head of the list, and can be popped after use.
+     */
+    @tailrec private def advanceTrees(trees:List[Tuple3[CompleteBinaryTree[T], Boolean, Boolean]])
+      :List[Tuple3[CompleteBinaryTree[T], Boolean, Boolean]] = {
+      
+      // If we have an empty tree list, continue to have one.
+      if (trees.isEmpty) trees
+      else {
+        val head = trees.head
+        head match {
+          // If the head is a leaf or already visited node, we're already there.
+          case (Leaf(_), _ , _) => trees
+          case (Node(_, _, _), true, true) => trees
+        
+          // If it is a completely unvisited node, advance right.
+          case (Node(_, _, _), false, false) => {
+              val n = head._1.asInstanceOf[Node[T]]
+              advanceTrees((n.right, false, false) :: (n, false, true) :: trees.tail)
+            }
+        
+          // If it is visited on the right, but not the left, advance left.
+          case (Node(_, _, _), false, true)  => {
+              val n = head._1.asInstanceOf[Node[T]]
+              advanceTrees((n.left, false, false) :: (n, true, true) :: trees.tail)
+            }
+        
+          // This should not happen.
+          case _ => throw new IllegalStateException()
+        }
+      }
     }
   }
 
