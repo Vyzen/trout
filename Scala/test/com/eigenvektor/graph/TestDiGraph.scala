@@ -88,5 +88,47 @@ class TestDiGraph extends FlatSpec {
     assert (h.getNeighbours("Two").map(_.to) == Set())
     assert (h.getNeighbours("Three").map(_.to) == Set())
   }
+  
+  "WeightedDiGraph" should "construct correctly" in {
+    val g = DiGraph.getWeighted[String]("One", "Two", "Three")(("One", "Two", 5), ("One", "Three", 10))
+    assert (g.numNodes == 3)
+    assert (g.numEdges == 2)
+  }
+    
+  it should "add nodes correctly" in {
+    val g = DiGraph.getWeighted[String]("One", "Two", "Three")(("One", "Two", 5), ("One", "Three", 10))
+    assert (g.numNodes == 3)
+    assert (g.numEdges == 2)
+    
+    val h = g + "Four"
+    assert (h.numNodes == 4)
+    assert (h.numEdges == 2)
+    
+    assert (h.getNeighbours("Four").map(_.to) == Set())
+    assert (h.getNeighbours("One").map(_.to) == Set("Two", "Three"))
+    assert (h.getNeighbours("Two").map(_.to) == Set())
+    assert (h.getNeighbours("Three").map(_.to) == Set())
+    
+    
+    assert (h.getNeighbours("One").map(_.weight) == Set(5, 10))
+  }
+  
+  it should "add edges correctly" in {
+    val g = DiGraph.getWeighted[String]("One", "Two", "Three")(("One", "Two", 5), ("One", "Three", 10))
+    assert (g.numNodes == 3)
+    assert (g.numEdges == 2)
+    
+    val h = g + "Four" + new DiGraph.WeightedDiGraphEdge("Four", "One", 8)
+    assert (h.numNodes == 4)
+    assert (h.numEdges == 3)
+    
+    assert (h.getNeighbours("Four").map(_.to) == Set("One"))
+    assert (h.getNeighbours("One").map(_.to) == Set("Two", "Three"))
+    assert (h.getNeighbours("Two").map(_.to) == Set())
+    assert (h.getNeighbours("Three").map(_.to) == Set())
+    
+    assert (h.getNeighbours("One").map(_.weight) == Set(5, 10))
+    assert (h.getNeighbours("Four").map(_.weight) == Set(8))
+  }
 
 }

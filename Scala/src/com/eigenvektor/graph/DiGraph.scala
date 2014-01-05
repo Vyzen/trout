@@ -57,7 +57,7 @@ object DiGraph {
     def canEqual(that: Any) = that.isInstanceOf[DiGraphEdge[E]]
     
     override def equals(that:Any) = {
-      if (!(that.isInstanceOf[DiGraphEdge[E]])) false
+      if (!canEqual(that)) false
       else {
         val e = that.asInstanceOf[DiGraphEdge[E]]
         e.canEqual(this) && e.from == this.from && e.to == this.to
@@ -75,10 +75,42 @@ object DiGraph {
     }
   }
   
+  class WeightedDiGraphEdge[E](from:E, to:E, val weight:Double) extends DiGraphEdge[E](from, to) {
+    
+    override lazy val reverse:WeightedDiGraphEdge[E] = new WeightedDiGraphEdge(to, from, weight)
+    
+    override def canEqual(that: Any) = that.isInstanceOf[WeightedDiGraphEdge[E]]
+    
+    override def equals(that:Any) = {
+      if (!canEqual(that)) false
+      else {
+        val e = that.asInstanceOf[WeightedDiGraphEdge[E]]
+        e.canEqual(this) && e.from == this.from && e.to == this.to && e.weight == this.weight
+      }
+    }
+    
+    override def toString = {
+      val buf = new StringBuilder()
+      buf append "("
+      buf append from.toString()
+      buf append ", "
+      buf append to.toString()
+      buf append ", "
+      buf append weight
+      buf append ")"
+      buf.toString
+    }
+  }
+  
   /** Create a graph with given nodes and edges */
   def apply[E](nodes:E*)(edges:Pair[E,E]*) = {
     edges.foldLeft(nodes.foldLeft(AdjacencySetDiGraph[E, DiGraphEdge[E]]())(_+_))(
         (g, p) => g + new DiGraphEdge(p._1, p._2))
+  }
+  
+  def getWeighted[E](nodes:E*)(edges:Tuple3[E,E,Double]*) = {
+    edges.foldLeft(nodes.foldLeft(AdjacencySetDiGraph[E, WeightedDiGraphEdge[E]]())(_+_))(
+        (g, p) => g + new WeightedDiGraphEdge(p._1, p._2, p._3))
   }
   
 }
