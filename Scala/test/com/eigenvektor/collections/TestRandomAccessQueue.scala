@@ -100,4 +100,64 @@ class TestRandomAccessQueue extends FlatSpec{
       assert(q(idx) == 100 + idx)
     }
   }
+  
+  it should "do foreach() correctly" in {
+    var q:RandomAccessQueue[Int] = RandomAccessQueue.empty
+    for (i <- 1 to 100) {
+      q = q + i
+    }
+    
+    var sum:Int = 0
+    q.foreach{ sum += _}
+    assert(sum == 5050)
+  }
+  
+  it should "do foreach() correctly on an empty queue" in {
+    var q:RandomAccessQueue[Int] = RandomAccessQueue.empty
+
+    var sum:Int = 0
+    q.foreach{ sum += _}
+    assert(sum == 0)
+  }
+  
+  it should "do filter() correctly" in {
+    var q:RandomAccessQueue[Int] = RandomAccessQueue.empty
+    for (i <- 1 to 100) {
+      q = q + i
+    }
+    
+    q = q.filter(_ % 2 == 0)
+    assert(q.size == 50)
+    assert(q.head == 2)
+  }
+  
+  it should "do map() correctly" in {
+    var q:RandomAccessQueue[Int] = RandomAccessQueue.empty
+    for (i <- 1 to 100) {
+      q = q + i
+    }
+    
+    val q2:RandomAccessQueue[Int] = q.map(x => x*x)
+    assert(q2.size == 100)
+    for (i <- 1 to 100) {
+      assert(q2(i-1) == i*i)
+    }
+  }
+  
+  it should "do silly for loops correctly" in {
+    var q:RandomAccessQueue[Int] = RandomAccessQueue.empty
+    for (i <- 1 to 100) {
+      q = q + i
+    }
+    
+    val q2:RandomAccessQueue[Int] = for (e <- q) yield e*e 
+    assert(q2.size == 100)
+    for (i <- 1 to 100) {
+      assert(q2(i-1) == i*i)
+    }
+    
+    val q3:RandomAccessQueue[Int] = for (e <- q if e <= 50) yield e + 100
+    assert(q3.size == 50)
+    assert(q3(49) == 150)
+  }
 }

@@ -18,18 +18,21 @@
 
 package com.eigenvektor.collections
 
+import scala.collection.SeqLike
+
 /** A FIFO queue based on the random access list.
  *  
  *  In addition to O(1) insert, and amortized O(1) removal, this also supports log(n) random access.
  */
 final class RandomAccessQueue[+A] private (private val insert:RandomAccessList[A],
-    private val remove:RandomAccessList[A]) {
+    private val remove:RandomAccessList[A]) 
+    extends Seq[A] with SeqLike[A, RandomAccessQueue[A]]{
  
   /** Tells if the queue is empty. */
-  def isEmpty = insert.isEmpty && remove.isEmpty
+  override def isEmpty = insert.isEmpty && remove.isEmpty
   
   /** Gets the size of the queue. */
-  def size = insert.size + remove.size
+  override def size = insert.size + remove.size
   
   /** Same thing, different name. */
   def length = size;
@@ -50,10 +53,9 @@ final class RandomAccessQueue[+A] private (private val insert:RandomAccessList[A
   
   /** Gets an element from the queue. */
   def apply(idx:Int) = {
-    require(idx < this.size)
-    
     if (idx < remove.size) remove(idx)
     else if (idx - remove.size < insert.size) insert(insert.size - idx - 1 + remove.size)
+    else throw new IndexOutOfBoundsException("Index out of bounds.")
   }
   
   /** Updates the value at a given index.  Returns a new queue with the updated element. */
@@ -63,11 +65,48 @@ final class RandomAccessQueue[+A] private (private val insert:RandomAccessList[A
       new RandomAccessQueue[B](insert.updated(insert.size - idx - 1 + remove.size, value), remove)
     } else throw new IndexOutOfBoundsException("Index out of bounds")
   }
+  
+  /** Gets an iterator */
+  def iterator = remove.iterator ++ insert.reverseIterator
+  
+  /** Gets a reverse iterator. */
+  override def reverseIterator = insert.iterator ++ remove.reverseIterator
+  
+  /** Creates a builder for this class. */
+  override protected[this] def newBuilder = RandomAccessQueue.newBuilder[A]
 
 }
 
 object RandomAccessQueue {
+  import scala.collection.mutable.Builder
+  import scala.collection.generic.CanBuildFrom
   
   // An empty queue.
   val empty = new RandomAccessQueue(RandomAccessList.Nil, RandomAccessList.Nil)
+  
+  /** Creates a builder for this class. */
+  def newBuilder[T]: Builder[T, RandomAccessQueue[T]] = {
+    // A very simple builder that just collects its elements into a standard list
+    // and creates the RandomAccessList at the last moment.
+    class RAQBuilder extends Builder[T, RandomAccessQueue[T]] {
+      private var elems:RandomAccessList[T] = RandomAccessList.Nil
+      
+      def +=(elem:T) = { 
+        elems = (elem :: elems) 
+        this
+        }
+      
+      def clear() = elems = RandomAccessList.Nil
+      
+      def result():RandomAccessQueue[T] = new RandomAccessQueue(elems, RandomAccessList.Nil)
+    }
+    
+    new RAQBuilder
+  }
+  
+  implicit def canBuildFrom[T, U >: T] : CanBuildFrom[RandomAccessQueue[T], U, RandomAccessQueue[U]] = 
+    new CanBuildFrom[RandomAccessQueue[T], U, RandomAccessQueue[U]] {
+      def apply():Builder[U, RandomAccessQueue[U]] = newBuilder[U]
+      def apply(from:RandomAccessQueue[T]) = newBuilder[U]
+    }
 }
