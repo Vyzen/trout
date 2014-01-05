@@ -29,9 +29,7 @@ import com.eigenvektor.graph.Flow.Edge
  *  
  *  @type E The node type of the flow.
  */
-trait Flow[E] {
-  /** The edge type of the flow */
-  type EdgeType <: Edge[E]
+trait Flow[E, EdgeType <: Edge[E]] {
 
   /** Gets the roots of the flow.   */
   def roots:Set[E]

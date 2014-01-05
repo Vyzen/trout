@@ -26,14 +26,9 @@ import com.eigenvektor.graph.DiGraph.DiGraphEdge
  * Main constructor constructs with a map from nodes to a set of neighbours, and the
  * inverse of that map.
  */
-final class AdjacencySetDiGraph[E] extends DiGraph[E] {
-  
-  type EdgeType = DiGraphEdge[E]
-  
-  // These are vars only to allow construction of derived graphs quickly
-  // They are not externally visible.
-  private var adj = Map[E, Set[EdgeType]]()
-  private var invAdj = Map[E, Set[EdgeType]]()
+final class AdjacencySetDiGraph[E, EdgeType <: DiGraphEdge[E]] private (
+    private val adj:Map[E, Set[EdgeType]],
+    private val invAdj:Map[E, Set[EdgeType]]) extends DiGraph[E, EdgeType] {
   
   /** The nodes of this graph */
   def nodes = adj.keySet
@@ -45,32 +40,25 @@ final class AdjacencySetDiGraph[E] extends DiGraph[E] {
   def getNeighbours(x:E) = adj(x)
   
   /** Reverses this DiGraph */
-  lazy val reverse = {
-    val ret = new AdjacencySetDiGraph[E]()
-    ret.adj = this.invAdj
-    ret.invAdj = this.adj
-    ret
-  }
+  lazy val reverse = new AdjacencySetDiGraph[E, EdgeType](invAdj, adj)
+
   
   /** Adds a node to this */
-  def +(x:E) = {
-    val ret = new AdjacencySetDiGraph[E]
-    ret.adj = this.adj + (x -> Set[EdgeType]())
-    ret.invAdj = this.invAdj + (x -> Set[EdgeType]())
-    ret
-  }
+  def +(x:E) = new AdjacencySetDiGraph[E, EdgeType](this.adj + (x -> Set[EdgeType]()), 
+      this.invAdj + (x -> Set[EdgeType]()))
+
   
   /** Adds a directed edge to this */
   def +(e:EdgeType) = {
     val newNeighbours = adj(e.from) + e
-    val newPredecessors = invAdj(e.to) + e.reverse
-    val ret = new AdjacencySetDiGraph[E]
-    ret.adj = this.adj + (e.from -> newNeighbours)
-    ret.invAdj = this.invAdj + (e.to -> newPredecessors)
-    ret
+    val newPredecessors = invAdj(e.to) + e.reverse.asInstanceOf[EdgeType]
+    new AdjacencySetDiGraph[E, EdgeType](this.adj + (e.from -> newNeighbours), this.invAdj + (e.to -> newPredecessors))
   }
   
-  /** Adds a directed edge to this */
-  def +(e:Pair[E,E]) = this + new EdgeType(e._1, e._2)
+}
 
+object AdjacencySetDiGraph {
+  
+  /** Construct empty */
+  def apply[E, EdgeType <: DiGraphEdge[E]]() = new AdjacencySetDiGraph[E, EdgeType](Map[E, Set[EdgeType]](), Map[E, Set[EdgeType]]())
 }

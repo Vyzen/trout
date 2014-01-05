@@ -18,13 +18,15 @@
 
 package com.eigenvektor.graph
 
+import com.eigenvektor.graph.DiGraph.DiGraphEdge
+
 /** Specification for a directed graph, which differs from a [[Flow]] in that all of
  *  the nodes are known in advance. 
  *  
  *  Extends PartialFunction as a function from its nodes to the neighbours of those nodes.
  * 
  */
-trait DiGraph[E] extends ReversibleFlow[E] {
+trait DiGraph[E, EdgeType <: DiGraphEdge[E]] extends ReversibleFlow[E, EdgeType] {
   
   /** Gets the nodes of the graph */
   def nodes:Set[E]
@@ -39,14 +41,10 @@ trait DiGraph[E] extends ReversibleFlow[E] {
   def getNeighbours(x:E):Set[EdgeType]
   
   /** Adds a node to this */
-  def +(x:E):DiGraph[E]
+  def +(x:E):DiGraph[E, EdgeType]
   
   /** Adds a directed edge to this */
-  def +(e:EdgeType):DiGraph[E]
-  
-  /** Adds a directed edge to this */
-  def +(e:Pair[E,E]):DiGraph[E]
-  
+  def +(e:EdgeType):DiGraph[E, EdgeType]
 }
 
 /** Companion object for DiGraph */
@@ -54,7 +52,7 @@ object DiGraph {
   
   class DiGraphEdge[E](val from:E, val to:E) extends Equals with Flow.Edge[E] {
     
-    lazy val reverse = new DiGraphEdge(to, from)
+    lazy val reverse:DiGraphEdge[E] = new DiGraphEdge(to, from)
     
     def canEqual(that: Any) = that.isInstanceOf[DiGraphEdge[E]]
     
@@ -79,7 +77,8 @@ object DiGraph {
   
   /** Create a graph with given nodes and edges */
   def apply[E](nodes:E*)(edges:Pair[E,E]*) = {
-    edges.foldLeft(nodes.foldLeft(new AdjacencySetDiGraph[E]())(_+_))(_+_)
+    edges.foldLeft(nodes.foldLeft(AdjacencySetDiGraph[E, DiGraphEdge[E]]())(_+_))(
+        (g, p) => g + new DiGraphEdge(p._1, p._2))
   }
   
 }

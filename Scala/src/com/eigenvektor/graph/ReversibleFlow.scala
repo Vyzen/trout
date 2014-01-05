@@ -24,9 +24,9 @@ package com.eigenvektor.graph
  *  
  *  @type E The Node type.
  */
-trait ReversibleFlow[E] extends Flow[E] {
+trait ReversibleFlow[E, EdgeType <: Flow.Edge[E]] extends Flow[E, EdgeType] {
 
   /** Gets the flow that is the reverse of this one. */
-  def reverse:ReversibleFlow[E]
+  def reverse:ReversibleFlow[E, EdgeType]
   
 }

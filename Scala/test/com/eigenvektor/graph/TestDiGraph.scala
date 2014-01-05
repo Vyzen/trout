@@ -79,7 +79,7 @@ class TestDiGraph extends FlatSpec {
     assert (g.numNodes == 3)
     assert (g.numEdges == 2)
     
-    val h = g + "Four" + ("Four" -> "One")
+    val h = g + "Four" + new DiGraph.DiGraphEdge("Four", "One")
     assert (h.numNodes == 4)
     assert (h.numEdges == 3)
     

@@ -18,10 +18,12 @@
 
 package com.eigenvektor.graph
 
+import Tree.TreeEdge
+
 /**
  * A trait for all trees.
  */
-trait Tree[E] extends Flow[E] {
+trait Tree[E] extends Flow[E, TreeEdge[E]] {
   
   /** The root of the tree */
   def root:E
