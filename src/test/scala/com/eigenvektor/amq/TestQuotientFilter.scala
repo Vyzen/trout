@@ -19,7 +19,7 @@ package com.eigenvektor.amq
 
 import org.scalatest.FlatSpec
 
-class TestQuotientFilter extends FlatSpec
+class TestQuotientFilterScala extends FlatSpec
 {
    val qf = new QuotientFilter[Int](10)
   

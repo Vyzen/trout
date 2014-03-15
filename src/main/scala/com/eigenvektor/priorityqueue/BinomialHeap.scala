@@ -18,12 +18,10 @@
 
 package com.eigenvektor.priorityqueue
 
-import com.eigenvektor.priorityqueue.BinomialHeap.BinomialTree
-
 /**
  * Implementation of a binomial heap.
  */
-final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], private val order:Ordering[T])
+final class BinomialHeap[T] private (private val trees:List[BinomialHeap.BinomialTree[T]], private val order:Ordering[T])
 	extends Heap[T] {
   
   /** Gets the size of this heap */
@@ -41,16 +39,16 @@ final class BinomialHeap[T] private (private val trees:List[BinomialTree[T]], pr
     require(other.order == this.order, "Orderings must match in merged trees")
     
     /** Merges two binomial trees based on the ordering specified for this heap. */
-    def mergeTrees(x:BinomialTree[T], y:BinomialTree[T]) = {
+    def mergeTrees(x:BinomialHeap.BinomialTree[T], y:BinomialHeap.BinomialTree[T]) = {
       // Merge the one with a larger head into the one with a smaller head.
       if (order.lt(x.value, y.value)) { x.merge(y) } else { y.merge(x) }
     }
     
     /** Merges lists together with a carry. */
     def mergeLists(
-        left:List[BinomialTree[T]],
-        right:List[BinomialTree[T]],
-        carry:Option[BinomialTree[T]]) : List[BinomialTree[T]] =
+        left:List[BinomialHeap.BinomialTree[T]],
+        right:List[BinomialHeap.BinomialTree[T]],
+        carry:Option[BinomialHeap.BinomialTree[T]]) : List[BinomialHeap.BinomialTree[T]] =
     {
       // Match on all the cases that might be passed in.
       (left, right, carry) match {
