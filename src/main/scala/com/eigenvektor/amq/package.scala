@@ -18,6 +18,8 @@
 
 package com.eigenvektor
 
+import scala.language.implicitConversions
+
 /** Implicit conversions for appoximate memory query interface. */
 package object amq {
 
