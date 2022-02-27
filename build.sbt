@@ -6,8 +6,8 @@ scalaVersion := "2.12.1"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation","-feature")
 
-resolvers ++= Seq("snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-    "releases" at "http://oss.sonatype.org/content/repositories/releases")
+resolvers += ("snapshots" at "http://oss.sonatype.org/content/repositories/snapshots").withAllowInsecureProtocol(true)
+resolvers +=  ("releases" at "http://oss.sonatype.org/content/repositories/releases").withAllowInsecureProtocol(true)
 	
 libraryDependencies ++= Seq("org.scalactic" %% "scalactic" % "3.0.1",
 	"org.scalatest" %% "scalatest" % "3.0.1" % "test",
